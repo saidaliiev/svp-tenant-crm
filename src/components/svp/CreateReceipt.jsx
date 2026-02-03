@@ -348,7 +348,7 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
                 </div>
                 
                 <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                  <p className="text-sm text-blue-700 mb-2">Government RAS Support (Information Only)</p>
+                  <p className="text-sm text-blue-700 mb-2">Rent Assistance Support (Information Only)</p>
                   <p className="text-2xl font-bold text-blue-800">{formatCurrency(totalRasReceived)}</p>
                   <p className="text-xs text-blue-600 mt-1">Does not affect tenant balance</p>
                 </div>
