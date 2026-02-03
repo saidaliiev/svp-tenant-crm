@@ -75,7 +75,7 @@ export default function TransactionRow({ transaction, index, onUpdate, onDelete,
 
         {/* RAS Payment */}
         <div className="space-y-1 lg:col-span-2">
-          <Label className="text-xs text-slate-500">RAS (Government) Payment (€)</Label>
+          <Label className="text-xs text-slate-500">Rent Assistance Support (€)</Label>
           <div className="flex items-center gap-2">
             <Input
               type="number"
