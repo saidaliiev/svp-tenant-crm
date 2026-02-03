@@ -13,6 +13,8 @@ const DEFAULT_SETTINGS = {
   systemName: "SVP Housing Support System"
 };
 
+// Note: Receipt title should always contain "Monthly" for monthly rent statements
+
 export default function SettingsTab({ settings, setSettings }) {
   const [formData, setFormData] = useState(settings);
   const [success, setSuccess] = useState('');
@@ -61,15 +63,15 @@ export default function SettingsTab({ settings, setSettings }) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="receiptTitle">Receipt Title</Label>
+            <Label htmlFor="receiptTitle">Receipt Title (Monthly Statements)</Label>
             <Input
               id="receiptTitle"
               value={formData.receiptTitle}
               onChange={(e) => setFormData(prev => ({ ...prev, receiptTitle: e.target.value }))}
-              placeholder="Enter receipt title"
+              placeholder="Monthly Rent Statement"
               className="h-11"
             />
-            <p className="text-xs text-slate-500">Title displayed on printed receipts</p>
+            <p className="text-xs text-slate-500">Title for monthly rent statements (default: "Monthly Rent Statement")</p>
           </div>
 
           <div className="space-y-2">

@@ -42,7 +42,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
   });
 
   const generateId = () => {
-    return 'SVP-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substring(2, 5).toUpperCase();
+    return 'SVP-' + Math.random().toString(36).substring(2, 8).toUpperCase();
   };
 
   const resetForm = () => {
@@ -160,56 +160,99 @@ export default function ClientManagement({ clients, setClients, statements, onSe
           return;
         }
 
-        // Expected columns: Date, Tenant Name, Account Number, Payment Amount
+        // Flexible column detection using keywords
+        const findColumn = (row, keywords) => {
+          const keys = Object.keys(row);
+          for (const key of keys) {
+            const lowerKey = key.toLowerCase();
+            if (keywords.some(kw => lowerKey.includes(kw))) {
+              return row[key];
+            }
+          }
+          return null;
+        };
+
+        // Group payments by ID or normalized name
         const clientsMap = new Map();
+        let totalRows = 0;
 
         data.forEach(row => {
-          const tenantName = row['Tenant Name'] || row['Name'] || row['tenant_name'] || row['name'];
-          const accountNumber = row['Account Number'] || row['ID'] || row['account_number'] || row['id'];
-          const paymentAmount = parseFloat(row['Payment Amount'] || row['Amount'] || row['payment_amount'] || row['amount'] || 0);
+          totalRows++;
+          const tenantName = findColumn(row, ['name', 'tenant', 'client', 'full_name', 'fullname']);
+          const accountNumber = findColumn(row, ['id', 'account', 'number', 'acc']);
+          const paymentAmount = parseFloat(findColumn(row, ['amount', 'payment', 'sum', 'total']) || 0);
 
-          if (!tenantName) return;
+          if (!tenantName && !accountNumber) return;
 
-          const key = accountNumber || tenantName;
+          // Normalize name for matching
+          const normalizedName = tenantName ? tenantName.trim().toLowerCase() : '';
+          const key = accountNumber || normalizedName;
           
           if (clientsMap.has(key)) {
             const existing = clientsMap.get(key);
             existing.totalPayments += paymentAmount || 0;
           } else {
             clientsMap.set(key, {
-              id: accountNumber || generateId(),
-              fullName: tenantName,
-              address: row['Address'] || row['address'] || 'Address not provided',
+              id: accountNumber || null,
+              fullName: tenantName ? tenantName.trim() : 'Unknown',
+              normalizedName,
+              address: findColumn(row, ['address', 'addr', 'location']) || '',
               totalPayments: paymentAmount || 0,
               monthlyRent: 143.40
             });
           }
         });
 
-        const newClients = [];
-        clientsMap.forEach((value, key) => {
-          // Check if client already exists
-          if (!clients.some(c => c.id === value.id || c.fullName === value.fullName)) {
-            newClients.push({
-              ...value,
-              currentBalance: -value.totalPayments, // Negative means credit/overpayment
+        let newCount = 0;
+        let updatedCount = 0;
+        let totalCreditAdded = 0;
+
+        clientsMap.forEach((value) => {
+          // Check if client already exists by ID or normalized name
+          const existingClient = clients.find(c => 
+            (value.id && c.id === value.id) || 
+            c.fullName.toLowerCase() === value.normalizedName
+          );
+
+          if (existingClient) {
+            // Update existing client - add payment as credit (reduce debt)
+            setClients(prev => prev.map(c => {
+              if (c.id === existingClient.id) {
+                const newBalance = (c.currentBalance || 0) - value.totalPayments;
+                return { ...c, currentBalance: newBalance };
+              }
+              return c;
+            }));
+            updatedCount++;
+            totalCreditAdded += value.totalPayments;
+          } else {
+            // Create new client
+            const newClient = {
+              id: value.id || generateId(),
+              fullName: value.fullName,
+              address: value.address,
+              currentBalance: -value.totalPayments, // Negative = credit
+              monthlyRent: 143.40,
               createdDate: new Date().toISOString(),
               lastReceiptDate: null
-            });
+            };
+            setClients(prev => [...prev, newClient]);
+            newCount++;
+            totalCreditAdded += value.totalPayments;
           }
         });
 
-        if (newClients.length > 0) {
-          setClients(prev => [...prev, ...newClients]);
-          setSuccess(`Successfully imported ${newClients.length} new client(s)`);
+        if (newCount > 0 || updatedCount > 0) {
+          const creditMsg = totalCreditAdded > 0 ? ` (+€${totalCreditAdded.toFixed(2)} credit added total)` : '';
+          setSuccess(`Processed ${totalRows} rows: ${newCount} new clients created, ${updatedCount} updated${creditMsg}`);
         } else {
-          setError('No new clients found in file (all may already exist)');
+          setError('No valid client data found in file');
         }
         
         setTimeout(() => {
           setSuccess('');
           setError('');
-        }, 3000);
+        }, 5000);
       },
       error: (error) => {
         setError('Error reading file: ' + error.message);
