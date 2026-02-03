@@ -81,11 +81,16 @@ export function generateReceiptPDF(receiptData, settings) {
     const tenantPayment = parseFloat(t.tenantPayment) || 0;
     const rasPayment = parseFloat(t.rasPayment) || 0;
     
-    // Tenant payment row - always add rent due, subtract payment if paid
+    // Tenant payment row - add rent due, subtract payment if paid, subtract RAS if received
     if (t.tenantPaid) {
       runningBalance = runningBalance + rentDue - tenantPayment;
     } else {
       runningBalance = runningBalance + rentDue;
+    }
+    
+    // Subtract RAS from running balance if received
+    if (rasPayment > 0 && t.rasReceived) {
+      runningBalance = runningBalance - rasPayment;
     }
     
     tableData.push([

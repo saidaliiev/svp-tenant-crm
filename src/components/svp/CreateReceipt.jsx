@@ -108,7 +108,7 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
   const totalRasReceived = transactions
     .filter(t => t.rasReceived)
     .reduce((sum, t) => sum + (parseFloat(t.rasPayment) || 0), 0);
-  const netTenantObligation = totalRentDue - totalTenantPayments;
+  const netTenantObligation = totalRentDue - totalTenantPayments - totalRasReceived;
   const finalTenantBalance = (parseFloat(startingDebt) || 0) + netTenantObligation;
 
   const formatCurrency = (amount) => {
@@ -330,18 +330,17 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
                     <span>– Tenant Payments (paid):</span>
                     <span className="font-medium">{formatCurrency(totalTenantPayments)}</span>
                   </div>
+                  <div className="flex justify-between text-green-600">
+                    <span>– RAS (received):</span>
+                    <span className="font-medium">{formatCurrency(totalRasReceived)}</span>
+                  </div>
                   <hr className="my-2" />
                   <div className={`flex justify-between text-lg font-bold ${finalTenantBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>
                     <span>= Tenant Final Balance:</span>
                     <span>{formatCurrency(finalTenantBalance)}</span>
                   </div>
                 </div>
-                
-                <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                  <p className="text-sm text-blue-700 mb-2">Rent Assistance Support (Information Only)</p>
-                  <p className="text-2xl font-bold text-blue-800">{formatCurrency(totalRasReceived)}</p>
-                  <p className="text-xs text-blue-600 mt-1">Does not affect tenant balance</p>
-                </div>
+
               </div>
             </div>
 
