@@ -2,7 +2,7 @@ import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 
 export function generateReceiptPDF(receiptData, settings) {
-  const doc = new jsPDF();
+  const doc = new jsPDF('landscape');
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 15;
@@ -17,24 +17,23 @@ export function generateReceiptPDF(receiptData, settings) {
   
   let yPos = margin;
 
-  // Add SVP Logo
-  const logoUrl = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/3aa602531_Logo-SVP-Vectorai-OFFICIAL.png';
-  try {
-    doc.addImage(logoUrl, 'PNG', margin, yPos, 35, 12);
-  } catch (e) {
-    console.log('Could not load logo');
-  }
-  yPos += 2;
-
   // Header Bar - full width blue bar
   doc.setFillColor(...primaryBlue);
   doc.rect(0, 0, pageWidth, 30, 'F');
   
+  // Add SVP Logo on blue background
+  const logoUrl = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/3aa602531_Logo-SVP-Vectorai-OFFICIAL.png';
+  try {
+    doc.addImage(logoUrl, 'PNG', margin, 5, 40, 14);
+  } catch (e) {
+    console.log('Could not load logo');
+  }
+  
   // Organization Name (centered)
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(18);
+  doc.setFontSize(20);
   doc.setFont('helvetica', 'bold');
-  doc.text(settings.organizationName, pageWidth / 2, 15, { align: 'center' });
+  doc.text(settings.organizationName, pageWidth / 2, 17, { align: 'center' });
   
   // Receipt # and Date (right)
   doc.setFontSize(10);
