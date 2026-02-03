@@ -38,7 +38,8 @@ export default function ClientManagement({ clients, setClients, statements, onSe
     fullName: '',
     address: '',
     previousDebt: 0,
-    monthlyRent: 143.40
+    monthlyRent: 143.40,
+    weeklyRasAmount: 103.40
   });
 
   const generateId = () => {
@@ -51,7 +52,8 @@ export default function ClientManagement({ clients, setClients, statements, onSe
       fullName: '',
       address: '',
       previousDebt: 0,
-      monthlyRent: 143.40
+      monthlyRent: 143.40,
+      weeklyRasAmount: 103.40
     });
     setEditingClient(null);
     setError('');
@@ -68,7 +70,8 @@ export default function ClientManagement({ clients, setClients, statements, onSe
       fullName: client.fullName,
       address: client.address,
       previousDebt: client.currentBalance || 0,
-      monthlyRent: client.monthlyRent || 143.40
+      monthlyRent: client.monthlyRent || 143.40,
+      weeklyRasAmount: client.weeklyRasAmount || 103.40
     });
     setEditingClient(client);
     setShowAddDialog(true);
@@ -95,7 +98,8 @@ export default function ClientManagement({ clients, setClients, statements, onSe
               fullName: formData.fullName.trim(),
               address: formData.address.trim(),
               currentBalance: parseFloat(formData.previousDebt) || 0,
-              monthlyRent: parseFloat(formData.monthlyRent) || 143.40
+              monthlyRent: parseFloat(formData.monthlyRent) || 143.40,
+              weeklyRasAmount: parseFloat(formData.weeklyRasAmount) || 103.40
             }
           : c
       ));
@@ -113,6 +117,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
         address: formData.address.trim(),
         currentBalance: parseFloat(formData.previousDebt) || 0,
         monthlyRent: parseFloat(formData.monthlyRent) || 143.40,
+        weeklyRasAmount: parseFloat(formData.weeklyRasAmount) || 103.40,
         createdDate: new Date().toISOString(),
         lastReceiptDate: null
       };
@@ -198,7 +203,8 @@ export default function ClientManagement({ clients, setClients, statements, onSe
               normalizedName,
               address: findColumn(row, ['address', 'addr', 'location']) || '',
               totalPayments: paymentAmount || 0,
-              monthlyRent: 143.40
+              monthlyRent: 143.40,
+              weeklyRasAmount: 103.40
             });
           }
         });
@@ -233,6 +239,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
               address: value.address,
               currentBalance: -value.totalPayments, // Negative = credit
               monthlyRent: 143.40,
+              weeklyRasAmount: 103.40,
               createdDate: new Date().toISOString(),
               lastReceiptDate: null
             };
@@ -449,25 +456,37 @@ export default function ClientManagement({ clients, setClients, statements, onSe
                   placeholder="Enter address"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="previousDebt">Previous Debt (€)</Label>
-                  <Input
-                    id="previousDebt"
-                    type="number"
-                    step="0.01"
-                    value={formData.previousDebt}
-                    onChange={(e) => setFormData(prev => ({ ...prev, previousDebt: e.target.value }))}
-                  />
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="previousDebt">Previous Debt (€)</Label>
+                    <Input
+                      id="previousDebt"
+                      type="number"
+                      step="0.01"
+                      value={formData.previousDebt}
+                      onChange={(e) => setFormData(prev => ({ ...prev, previousDebt: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="monthlyRent">Monthly Rent (€)</Label>
+                    <Input
+                      id="monthlyRent"
+                      type="number"
+                      step="0.01"
+                      value={formData.monthlyRent}
+                      onChange={(e) => setFormData(prev => ({ ...prev, monthlyRent: e.target.value }))}
+                    />
+                  </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="monthlyRent">Monthly Rent (€)</Label>
+                  <Label htmlFor="weeklyRasAmount">Weekly RAS Amount (€)</Label>
                   <Input
-                    id="monthlyRent"
+                    id="weeklyRasAmount"
                     type="number"
                     step="0.01"
-                    value={formData.monthlyRent}
-                    onChange={(e) => setFormData(prev => ({ ...prev, monthlyRent: e.target.value }))}
+                    value={formData.weeklyRasAmount}
+                    onChange={(e) => setFormData(prev => ({ ...prev, weeklyRasAmount: e.target.value }))}
                   />
                 </div>
               </div>

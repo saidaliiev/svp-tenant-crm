@@ -17,6 +17,15 @@ export function generateReceiptPDF(receiptData, settings) {
   
   let yPos = margin;
 
+  // Add SVP Logo
+  const logoUrl = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/3aa602531_Logo-SVP-Vectorai-OFFICIAL.png';
+  try {
+    doc.addImage(logoUrl, 'PNG', margin, yPos, 35, 12);
+  } catch (e) {
+    console.log('Could not load logo');
+  }
+  yPos += 2;
+
   // Header Bar - full width blue bar
   doc.setFillColor(...primaryBlue);
   doc.rect(0, 0, pageWidth, 30, 'F');
@@ -96,7 +105,7 @@ export function generateReceiptPDF(receiptData, settings) {
         '-',
         t.rasReceived ? formatCurrency(rasPayment) : '-',
         t.rasReceived ? '' : 'NOT RECEIVED',
-        formatCurrency(runningBalance) + ' (RAS - does not affect tenant balance)'
+        '€0.00'
       ]);
     }
   });

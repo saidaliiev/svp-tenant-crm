@@ -29,7 +29,6 @@ import { generateReceiptPDF } from './pdfGenerator';
 
 export default function CreateReceipt({ clients, statements, settings, selectedClientId, onReceiptCreated }) {
   const [clientId, setClientId] = useState('');
-  const [showLoadPrompt, setShowLoadPrompt] = useState(false);
   const [startingDebt, setStartingDebt] = useState(0);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -47,16 +46,17 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
     }
   }, [selectedClientId]);
 
-  // When client is selected, check for previous receipts
+  // When client is selected, automatically load previous balance
   useEffect(() => {
     if (clientId && selectedClient) {
       const clientStatements = statements.filter(s => s.clientId === clientId);
       if (clientStatements.length > 0) {
-        setShowLoadPrompt(true);
+        const latest = clientStatements.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate))[0];
+        setStartingDebt(latest.finalBalance || 0);
       } else {
         setStartingDebt(selectedClient.currentBalance || 0);
-        initializeTransaction();
       }
+      initializeTransaction();
     }
   }, [clientId]);
 
@@ -68,22 +68,12 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
       rentDue: client?.monthlyRent || 143.40,
       tenantPayment: 40,
       tenantPaid: true,
-      rasPayment: 103.40,
+      rasPayment: client?.weeklyRasAmount || 103.40,
       rasReceived: true
     }]);
   };
 
-  const handleLoadPrevious = (load) => {
-    setShowLoadPrompt(false);
-    if (load) {
-      const clientStatements = statements.filter(s => s.clientId === clientId);
-      const latest = clientStatements.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate))[0];
-      setStartingDebt(latest.finalBalance || 0);
-    } else {
-      setStartingDebt(0);
-    }
-    initializeTransaction();
-  };
+
 
   const addTransaction = () => {
     const client = clients.find(c => c.id === clientId);
@@ -93,7 +83,7 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
       rentDue: client?.monthlyRent || 143.40,
       tenantPayment: 40,
       tenantPaid: true,
-      rasPayment: 103.40,
+      rasPayment: client?.weeklyRasAmount || 103.40,
       rasReceived: true
     }]);
   };
@@ -367,28 +357,7 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
           </>
         )}
 
-        {/* Load Previous Receipt Prompt */}
-        <AlertDialog open={showLoadPrompt} onOpenChange={setShowLoadPrompt}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Load Previous Receipt Data?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This client has previous receipts. Would you like to load the final balance from the most recent receipt as the starting debt?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => handleLoadPrevious(false)}>
-                No, Start Fresh
-              </AlertDialogCancel>
-              <AlertDialogAction 
-                onClick={() => handleLoadPrevious(true)}
-                className="bg-gradient-to-r from-blue-500 to-purple-500"
-              >
-                Yes, Load Previous Balance
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+
       </CardContent>
     </Card>
   );
