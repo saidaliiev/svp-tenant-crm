@@ -19,29 +19,33 @@ export function generateReceiptPDF(receiptData, settings) {
 
   // Header Bar - full width blue bar
   doc.setFillColor(...primaryBlue);
-  doc.rect(0, 0, pageWidth, 30, 'F');
+  doc.rect(0, 0, pageWidth, 35, 'F');
   
-  // Add SVP Logo on blue background
+  // White box for logo
+  doc.setFillColor(255, 255, 255);
+  doc.rect(margin, 5, 45, 20, 'F');
+  
+  // Add SVP Logo on white background
   const logoUrl = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/3aa602531_Logo-SVP-Vectorai-OFFICIAL.png';
   try {
-    doc.addImage(logoUrl, 'PNG', margin, 5, 40, 14);
+    doc.addImage(logoUrl, 'PNG', margin + 2.5, 7, 40, 16);
   } catch (e) {
     console.log('Could not load logo');
   }
   
   // Organization Name (centered)
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(20);
+  doc.setFontSize(22);
   doc.setFont('helvetica', 'bold');
-  doc.text(settings.organizationName, pageWidth / 2, 17, { align: 'center' });
+  doc.text(settings.organizationName, pageWidth / 2, 20, { align: 'center' });
   
   // Receipt # and Date (right)
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text(`Receipt #: ${receiptNum}`, pageWidth - 20, 10, { align: 'right' });
-  doc.text(`Date: ${formatDate(receiptData.createdDate)}`, pageWidth - 20, 18, { align: 'right' });
+  doc.text(`Receipt #: ${receiptNum}`, pageWidth - margin, 12, { align: 'right' });
+  doc.text(`Date: ${formatDate(receiptData.createdDate)}`, pageWidth - margin, 20, { align: 'right' });
   
-  yPos = 40;
+  yPos = 45;
 
   // Tenant Info
   doc.setTextColor(0, 0, 0);
@@ -71,7 +75,6 @@ export function generateReceiptPDF(receiptData, settings) {
     'Previous Balance Carried Forward',
     '-',
     '-',
-    '-',
     formatCurrency(runningBalance)
   ]);
   
@@ -92,59 +95,49 @@ export function generateReceiptPDF(receiptData, settings) {
       runningBalance = runningBalance - rasPayment;
     }
     
+    const tenantDesc = t.tenantPaid ? 'Tenant Payment' : 'Tenant Payment (NOT PAID)';
     tableData.push([
       formatDate(t.date),
-      'Tenant Payment',
+      tenantDesc,
       formatCurrency(rentDue),
       t.tenantPaid ? formatCurrency(tenantPayment) : '-',
-      t.tenantPaid ? '' : 'NOT PAID',
       formatCurrency(runningBalance)
     ]);
     
-    // RAS row (only if RAS amount > 0, does not affect balance)
+    // RAS row (only if RAS amount > 0)
     if (rasPayment > 0) {
+      const rasDesc = t.rasReceived ? 'RAS Payment' : 'RAS Payment (NOT RECEIVED)';
       tableData.push([
         formatDate(t.date),
-        'RAS Payment',
+        rasDesc,
         '-',
         t.rasReceived ? formatCurrency(rasPayment) : '-',
-        t.rasReceived ? '' : 'NOT RECEIVED',
-        '€0.00'
+        formatCurrency(runningBalance)
       ]);
     }
   });
 
   doc.autoTable({
     startY: yPos,
-    head: [['Date', 'Description', 'Rent Due', 'Payment', 'Status', 'Balance']],
+    head: [['Date', 'Description', 'Rent Due', 'Payment', 'Balance']],
     body: tableData,
     theme: 'grid',
     headStyles: {
       fillColor: primaryBlue,
       textColor: 255,
-      fontSize: 9,
+      fontSize: 10,
       fontStyle: 'bold'
     },
     bodyStyles: {
-      fontSize: 9,
-      cellPadding: 3
+      fontSize: 10,
+      cellPadding: 4
     },
     columnStyles: {
-      0: { cellWidth: 22 },
-      1: { cellWidth: 35 },
-      2: { cellWidth: 22, halign: 'right' },
-      3: { cellWidth: 22, halign: 'right' },
-      4: { cellWidth: 25, halign: 'center' },
-      5: { cellWidth: 54, halign: 'right' }
-    },
-    didParseCell: function(data) {
-      // Color status cells red for NOT PAID / NOT RECEIVED
-      if (data.column.index === 4 && data.section === 'body') {
-        if (data.cell.raw === 'NOT PAID' || data.cell.raw === 'NOT RECEIVED') {
-          data.cell.styles.textColor = [255, 0, 0];
-          data.cell.styles.fontStyle = 'bold';
-        }
-      }
+      0: { cellWidth: 30 },
+      1: { cellWidth: 75 },
+      2: { cellWidth: 35, halign: 'right' },
+      3: { cellWidth: 35, halign: 'right' },
+      4: { cellWidth: 70, halign: 'right', fontStyle: 'bold' }
     },
     alternateRowStyles: {
       fillColor: [248, 250, 252]
