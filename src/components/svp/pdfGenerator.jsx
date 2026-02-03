@@ -21,15 +21,11 @@ export function generateReceiptPDF(receiptData, settings) {
   doc.setFillColor(...primaryBlue);
   doc.rect(0, 0, pageWidth, 30, 'F');
   
-  // Organization Name (left)
+  // Organization Name (centered)
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.text(settings.organizationName, 20, 12);
-  
-  // Receipt Title (center)
   doc.setFontSize(18);
-  doc.text(settings.receiptTitle, pageWidth / 2, 12, { align: 'center' });
+  doc.setFont('helvetica', 'bold');
+  doc.text(settings.organizationName, pageWidth / 2, 15, { align: 'center' });
   
   // Receipt # and Date (right)
   doc.setFontSize(10);

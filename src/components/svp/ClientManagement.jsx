@@ -349,7 +349,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
                 <tr className="border-b-2 border-slate-200">
                   <th className="text-left py-3 px-4 font-semibold text-slate-700">ID</th>
                   <th className="text-left py-3 px-4 font-semibold text-slate-700">Full Name</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-700 hidden md:table-cell">Address</th>
+                  <th className="text-left py-3 px-4 font-semibold text-slate-700">Address</th>
                   <th className="text-right py-3 px-4 font-semibold text-slate-700">Balance</th>
                   <th className="text-left py-3 px-4 font-semibold text-slate-700 hidden sm:table-cell">Last Receipt</th>
                   <th className="text-right py-3 px-4 font-semibold text-slate-700">Actions</th>
@@ -363,7 +363,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
                   >
                     <td className="py-3 px-4 font-mono text-sm text-slate-600">{client.id}</td>
                     <td className="py-3 px-4 font-medium text-slate-800">{client.fullName}</td>
-                    <td className="py-3 px-4 text-slate-600 hidden md:table-cell max-w-xs truncate">{client.address}</td>
+                    <td className="py-3 px-4 text-slate-600 text-sm max-w-xs truncate">{client.address}</td>
                     <td className={`py-3 px-4 text-right font-semibold ${(client.currentBalance || 0) > 0 ? 'text-red-600' : 'text-green-600'}`}>
                       {formatCurrency(client.currentBalance || 0)}
                     </td>
