@@ -108,7 +108,7 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
   const totalRasReceived = transactions
     .filter(t => t.rasReceived)
     .reduce((sum, t) => sum + (parseFloat(t.rasPayment) || 0), 0);
-  const netTenantObligation = totalRentDue - totalTenantPayments;
+  const netTenantObligation = totalRentDue - totalTenantPayments - totalRasReceived;
   const finalTenantBalance = (parseFloat(startingDebt) || 0) + netTenantObligation;
 
   const formatCurrency = (amount) => {
