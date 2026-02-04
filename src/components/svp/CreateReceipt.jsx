@@ -340,28 +340,32 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">Previous Debt:</span>
-                    <span className="font-medium">{formatCurrency(startingDebt)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">Total Rent Due:</span>
-                    <span className="font-medium">{formatCurrency(totalRentDue)}</span>
-                  </div>
-                  <div className="flex justify-between text-green-600">
-                      <span>– Tenant Payments (paid):</span>
-                      <span className="font-medium">{formatCurrency(totalTenantPayments)}</span>
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">Previous Debt:</span>
+                      <span className="font-medium">{formatCurrency(startingDebt)}</span>
                     </div>
-                    <div className="flex justify-between text-blue-600">
-                      <span>RAS Received (info only):</span>
-                      <span className="font-medium">{formatCurrency(totalRasReceived)}</span>
+                    <div className="flex justify-between text-green-600">
+                      <span>– Credit:</span>
+                      <span className="font-medium">{formatCurrency(credit)}</span>
                     </div>
-                  <hr className="my-2" />
-                  <div className={`flex justify-between text-lg font-bold ${finalTenantBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                    <span>= Tenant Final Balance:</span>
-                    <span>{formatCurrency(finalTenantBalance)}</span>
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">Total Rent Due:</span>
+                      <span className="font-medium">{formatCurrency(totalRentDue)}</span>
+                    </div>
+                    <div className="flex justify-between text-green-600">
+                        <span>– Tenant Payments (paid):</span>
+                        <span className="font-medium">{formatCurrency(totalTenantPayments)}</span>
+                      </div>
+                      <div className="flex justify-between text-blue-600">
+                        <span>RAS Received (info only):</span>
+                        <span className="font-medium">{formatCurrency(totalRasReceived)}</span>
+                      </div>
+                    <hr className="my-2" />
+                    <div className={`flex justify-between text-lg font-bold ${finalTenantBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                      <span>= Tenant Final Balance:</span>
+                      <span>{formatCurrency(finalTenantBalance)}</span>
+                    </div>
                   </div>
-                </div>
 
               </div>
             </div>
