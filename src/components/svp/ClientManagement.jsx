@@ -38,6 +38,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
     fullName: '',
     address: '',
     previousDebt: 0,
+    credit: 0,
     monthlyRent: 143.40,
     weeklyRasAmount: 103.40,
     weeklyTenantPayment: 40
@@ -53,6 +54,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
       fullName: '',
       address: '',
       previousDebt: 0,
+      credit: 0,
       monthlyRent: 143.40,
       weeklyRasAmount: 103.40,
       weeklyTenantPayment: 40
@@ -72,6 +74,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
       fullName: client.fullName,
       address: client.address,
       previousDebt: client.currentBalance || 0,
+      credit: client.credit || 0,
       monthlyRent: client.monthlyRent || 143.40,
       weeklyRasAmount: client.weeklyRasAmount || 103.40,
       weeklyTenantPayment: client.weeklyTenantPayment || 40
@@ -101,6 +104,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
               fullName: formData.fullName.trim(),
               address: formData.address.trim(),
               currentBalance: parseFloat(formData.previousDebt) || 0,
+              credit: parseFloat(formData.credit) || 0,
               monthlyRent: parseFloat(formData.monthlyRent) || 143.40,
               weeklyRasAmount: parseFloat(formData.weeklyRasAmount) || 103.40,
               weeklyTenantPayment: parseFloat(formData.weeklyTenantPayment) || 40
@@ -120,6 +124,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
         fullName: formData.fullName.trim(),
         address: formData.address.trim(),
         currentBalance: parseFloat(formData.previousDebt) || 0,
+        credit: parseFloat(formData.credit) || 0,
         monthlyRent: parseFloat(formData.monthlyRent) || 143.40,
         weeklyRasAmount: parseFloat(formData.weeklyRasAmount) || 103.40,
         weeklyTenantPayment: parseFloat(formData.weeklyTenantPayment) || 40,
@@ -476,6 +481,18 @@ export default function ClientManagement({ clients, setClients, statements, onSe
                     />
                   </div>
                   <div className="space-y-2">
+                    <Label htmlFor="credit">Credit (€)</Label>
+                    <Input
+                      id="credit"
+                      type="number"
+                      step="0.01"
+                      value={formData.credit}
+                      onChange={(e) => setFormData(prev => ({ ...prev, credit: e.target.value }))}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
                     <Label htmlFor="monthlyRent">Weekly Rent (€)</Label>
                     <Input
                       id="monthlyRent"
@@ -483,18 +500,6 @@ export default function ClientManagement({ clients, setClients, statements, onSe
                       step="0.01"
                       value={formData.monthlyRent}
                       onChange={(e) => setFormData(prev => ({ ...prev, monthlyRent: e.target.value }))}
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="weeklyRasAmount">Weekly RAS (€)</Label>
-                    <Input
-                      id="weeklyRasAmount"
-                      type="number"
-                      step="0.01"
-                      value={formData.weeklyRasAmount}
-                      onChange={(e) => setFormData(prev => ({ ...prev, weeklyRasAmount: e.target.value }))}
                     />
                   </div>
                   <div className="space-y-2">
@@ -507,6 +512,16 @@ export default function ClientManagement({ clients, setClients, statements, onSe
                       onChange={(e) => setFormData(prev => ({ ...prev, weeklyTenantPayment: e.target.value }))}
                     />
                   </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="weeklyRasAmount">Weekly RAS (€)</Label>
+                  <Input
+                    id="weeklyRasAmount"
+                    type="number"
+                    step="0.01"
+                    value={formData.weeklyRasAmount}
+                    onChange={(e) => setFormData(prev => ({ ...prev, weeklyRasAmount: e.target.value }))}
+                  />
                 </div>
               </div>
             </div>
