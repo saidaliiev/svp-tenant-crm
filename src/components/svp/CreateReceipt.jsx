@@ -108,7 +108,7 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
   const totalRasReceived = transactions
     .filter(t => t.rasReceived)
     .reduce((sum, t) => sum + (parseFloat(t.rasPayment) || 0), 0);
-  const netTenantObligation = totalRentDue - totalTenantPayments - totalRasReceived;
+  const netTenantObligation = totalRentDue - totalTenantPayments;
   const finalTenantBalance = (parseFloat(startingDebt) || 0) + netTenantObligation;
 
   const formatCurrency = (amount) => {
@@ -327,13 +327,13 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
                     <span className="font-medium">{formatCurrency(totalRentDue)}</span>
                   </div>
                   <div className="flex justify-between text-green-600">
-                    <span>– Tenant Payments (paid):</span>
-                    <span className="font-medium">{formatCurrency(totalTenantPayments)}</span>
-                  </div>
-                  <div className="flex justify-between text-green-600">
-                    <span>– RAS (received):</span>
-                    <span className="font-medium">{formatCurrency(totalRasReceived)}</span>
-                  </div>
+                      <span>– Tenant Payments (paid):</span>
+                      <span className="font-medium">{formatCurrency(totalTenantPayments)}</span>
+                    </div>
+                    <div className="flex justify-between text-blue-600">
+                      <span>RAS Received (info only):</span>
+                      <span className="font-medium">{formatCurrency(totalRasReceived)}</span>
+                    </div>
                   <hr className="my-2" />
                   <div className={`flex justify-between text-lg font-bold ${finalTenantBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>
                     <span>= Tenant Final Balance:</span>
