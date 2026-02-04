@@ -39,7 +39,8 @@ export default function ClientManagement({ clients, setClients, statements, onSe
     address: '',
     previousDebt: 0,
     monthlyRent: 143.40,
-    weeklyRasAmount: 103.40
+    weeklyRasAmount: 103.40,
+    weeklyTenantPayment: 40
   });
 
   const generateId = () => {
@@ -53,7 +54,8 @@ export default function ClientManagement({ clients, setClients, statements, onSe
       address: '',
       previousDebt: 0,
       monthlyRent: 143.40,
-      weeklyRasAmount: 103.40
+      weeklyRasAmount: 103.40,
+      weeklyTenantPayment: 40
     });
     setEditingClient(null);
     setError('');
@@ -71,7 +73,8 @@ export default function ClientManagement({ clients, setClients, statements, onSe
       address: client.address,
       previousDebt: client.currentBalance || 0,
       monthlyRent: client.monthlyRent || 143.40,
-      weeklyRasAmount: client.weeklyRasAmount || 103.40
+      weeklyRasAmount: client.weeklyRasAmount || 103.40,
+      weeklyTenantPayment: client.weeklyTenantPayment || 40
     });
     setEditingClient(client);
     setShowAddDialog(true);
@@ -99,7 +102,8 @@ export default function ClientManagement({ clients, setClients, statements, onSe
               address: formData.address.trim(),
               currentBalance: parseFloat(formData.previousDebt) || 0,
               monthlyRent: parseFloat(formData.monthlyRent) || 143.40,
-              weeklyRasAmount: parseFloat(formData.weeklyRasAmount) || 103.40
+              weeklyRasAmount: parseFloat(formData.weeklyRasAmount) || 103.40,
+              weeklyTenantPayment: parseFloat(formData.weeklyTenantPayment) || 40
             }
           : c
       ));
@@ -118,6 +122,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
         currentBalance: parseFloat(formData.previousDebt) || 0,
         monthlyRent: parseFloat(formData.monthlyRent) || 143.40,
         weeklyRasAmount: parseFloat(formData.weeklyRasAmount) || 103.40,
+        weeklyTenantPayment: parseFloat(formData.weeklyTenantPayment) || 40,
         createdDate: new Date().toISOString(),
         lastReceiptDate: null
       };
@@ -204,7 +209,8 @@ export default function ClientManagement({ clients, setClients, statements, onSe
               address: findColumn(row, ['address', 'addr', 'location']) || '',
               totalPayments: paymentAmount || 0,
               monthlyRent: 143.40,
-              weeklyRasAmount: 103.40
+              weeklyRasAmount: 103.40,
+              weeklyTenantPayment: 40
             });
           }
         });
@@ -240,6 +246,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
               currentBalance: -value.totalPayments, // Negative = credit
               monthlyRent: 143.40,
               weeklyRasAmount: 103.40,
+              weeklyTenantPayment: 40,
               createdDate: new Date().toISOString(),
               lastReceiptDate: null
             };
@@ -479,15 +486,27 @@ export default function ClientManagement({ clients, setClients, statements, onSe
                     />
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="weeklyRasAmount">Weekly RAS Amount (€)</Label>
-                  <Input
-                    id="weeklyRasAmount"
-                    type="number"
-                    step="0.01"
-                    value={formData.weeklyRasAmount}
-                    onChange={(e) => setFormData(prev => ({ ...prev, weeklyRasAmount: e.target.value }))}
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="weeklyRasAmount">Weekly RAS (€)</Label>
+                    <Input
+                      id="weeklyRasAmount"
+                      type="number"
+                      step="0.01"
+                      value={formData.weeklyRasAmount}
+                      onChange={(e) => setFormData(prev => ({ ...prev, weeklyRasAmount: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="weeklyTenantPayment">Weekly Tenant Payment (€)</Label>
+                    <Input
+                      id="weeklyTenantPayment"
+                      type="number"
+                      step="0.01"
+                      value={formData.weeklyTenantPayment}
+                      onChange={(e) => setFormData(prev => ({ ...prev, weeklyTenantPayment: e.target.value }))}
+                    />
+                  </div>
                 </div>
               </div>
             </div>

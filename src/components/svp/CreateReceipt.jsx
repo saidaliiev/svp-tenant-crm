@@ -32,7 +32,7 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
   const [startingDebt, setStartingDebt] = useState(0);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [notes, setNotes] = useState('Your monthly rent statement is shown above. Contact SVP at 084 7834665 if you need assistance.');
+  const [notes, setNotes] = useState('');
   const [transactions, setTransactions] = useState([]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -46,7 +46,7 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
     }
   }, [selectedClientId]);
 
-  // When client is selected, automatically load previous balance
+  // When client is selected, automatically load previous balance and generate notes
   useEffect(() => {
     if (clientId && selectedClient) {
       const clientStatements = statements.filter(s => s.clientId === clientId);
@@ -56,6 +56,12 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
       } else {
         setStartingDebt(selectedClient.currentBalance || 0);
       }
+      
+      // Generate notes with payment info
+      const weeklyTenant = selectedClient.weeklyTenantPayment || 40;
+      const weeklyRas = selectedClient.weeklyRasAmount || 103.40;
+      setNotes(`Your monthly rent statement is shown above. You should pay €${weeklyTenant.toFixed(2)} per week (RAS covers €${weeklyRas.toFixed(2)} per week). Contact SVP at 086 7856869 if you need assistance.`);
+      
       initializeTransaction();
     }
   }, [clientId]);
