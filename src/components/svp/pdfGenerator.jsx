@@ -224,5 +224,8 @@ function formatDate(dateStr) {
 
 function formatCurrency(amount) {
   const num = parseFloat(amount) || 0;
+  if (num < 0) {
+    return '-€' + Math.abs(num).toFixed(2);
+  }
   return '€' + num.toFixed(2);
 }

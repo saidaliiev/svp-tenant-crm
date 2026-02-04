@@ -121,10 +121,12 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
   const finalTenantBalance = (parseFloat(startingDebt) || 0) + netTenantObligation;
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-IE', { 
+    const num = parseFloat(amount) || 0;
+    const formatted = new Intl.NumberFormat('en-IE', { 
       style: 'currency', 
       currency: 'EUR' 
-    }).format(amount);
+    }).format(Math.abs(num));
+    return num < 0 ? '-' + formatted : formatted;
   };
 
   const handleGenerateReceipt = async () => {
