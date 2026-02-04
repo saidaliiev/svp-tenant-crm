@@ -30,6 +30,7 @@ import { generateReceiptPDF } from './pdfGenerator';
 export default function CreateReceipt({ clients, statements, settings, selectedClientId, onReceiptCreated }) {
   const [clientId, setClientId] = useState('');
   const [startingDebt, setStartingDebt] = useState(0);
+  const [credit, setCredit] = useState(0);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [notes, setNotes] = useState('');
@@ -56,12 +57,14 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
       } else {
         setStartingDebt(selectedClient.currentBalance || 0);
       }
-      
+
+      setCredit(selectedClient.credit || 0);
+
       // Generate notes with payment info
       const weeklyTenant = selectedClient.weeklyTenantPayment || 40;
       const weeklyRas = selectedClient.weeklyRasAmount || 103.40;
       setNotes(`Your monthly rent statement is shown above. You should pay €${weeklyTenant.toFixed(2)} per week (RAS covers €${weeklyRas.toFixed(2)} per week). Contact SVP at 086 7856869 if you need assistance.`);
-      
+
       initializeTransaction();
     }
   }, [clientId]);
@@ -181,6 +184,7 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
     setEndDate('');
     setTransactions([]);
     setStartingDebt(0);
+    setCredit(0);
   };
 
   return (
@@ -264,16 +268,28 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
               </div>
             </div>
 
-            {/* Starting Debt */}
-            <div className="space-y-2">
-              <Label>Starting Debt (Previous Balance)</Label>
-              <Input
-                type="number"
-                step="0.01"
-                value={startingDebt}
-                onChange={(e) => setStartingDebt(e.target.value)}
-                className="h-11 max-w-xs"
-              />
+            {/* Starting Debt and Credit */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Starting Debt (Previous Balance)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={startingDebt}
+                  onChange={(e) => setStartingDebt(e.target.value)}
+                  className="h-11"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Credit</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={credit}
+                  onChange={(e) => setCredit(e.target.value)}
+                  className="h-11"
+                />
+              </div>
             </div>
 
             {/* Transactions */}
