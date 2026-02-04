@@ -31,6 +31,8 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
   const [clientId, setClientId] = useState('');
   const [startingDebt, setStartingDebt] = useState(0);
   const [credit, setCredit] = useState(0);
+  const [includeDebt, setIncludeDebt] = useState(true);
+  const [includeCredit, setIncludeCredit] = useState(true);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [notes, setNotes] = useState('');
@@ -90,7 +92,7 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
       id: Date.now(),
       date: new Date().toISOString().split('T')[0],
       rentDue: client?.monthlyRent || 143.40,
-      tenantPayment: 40,
+      tenantPayment: client?.weeklyTenantPayment || 40,
       tenantPaid: true,
       rasPayment: client?.weeklyRasAmount || 103.40,
       rasReceived: true
@@ -118,7 +120,9 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
     .filter(t => t.rasReceived)
     .reduce((sum, t) => sum + (parseFloat(t.rasPayment) || 0), 0);
   const netTenantObligation = totalRentDue - totalTenantPayments - totalRasReceived;
-  const finalTenantBalance = (parseFloat(startingDebt) || 0) + netTenantObligation;
+  const debtAmount = includeDebt ? (parseFloat(startingDebt) || 0) : 0;
+  const creditAmount = includeCredit ? (parseFloat(credit) || 0) : 0;
+  const finalTenantBalance = debtAmount - creditAmount + netTenantObligation;
 
   const formatCurrency = (amount) => {
     const num = parseFloat(amount) || 0;
@@ -274,23 +278,43 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Starting Debt (Previous Balance)</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={startingDebt}
-                  onChange={(e) => setStartingDebt(e.target.value)}
-                  className="h-11"
-                />
+                <div className="flex gap-2 items-center">
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={startingDebt}
+                    onChange={(e) => setStartingDebt(e.target.value)}
+                    className="h-11"
+                  />
+                  <div className="flex items-center gap-2 whitespace-nowrap">
+                    <Checkbox
+                      id="includeDebt"
+                      checked={includeDebt}
+                      onCheckedChange={setIncludeDebt}
+                    />
+                    <Label htmlFor="includeDebt" className="cursor-pointer text-sm">Include</Label>
+                  </div>
+                </div>
               </div>
               <div className="space-y-2">
                 <Label>Credit</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={credit}
-                  onChange={(e) => setCredit(e.target.value)}
-                  className="h-11"
-                />
+                <div className="flex gap-2 items-center">
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={credit}
+                    onChange={(e) => setCredit(e.target.value)}
+                    className="h-11"
+                  />
+                  <div className="flex items-center gap-2 whitespace-nowrap">
+                    <Checkbox
+                      id="includeCredit"
+                      checked={includeCredit}
+                      onCheckedChange={setIncludeCredit}
+                    />
+                    <Label htmlFor="includeCredit" className="cursor-pointer text-sm">Include</Label>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -342,14 +366,18 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-slate-600">Previous Debt:</span>
-                      <span className="font-medium">{formatCurrency(startingDebt)}</span>
-                    </div>
-                    <div className="flex justify-between text-green-600">
-                      <span>– Credit:</span>
-                      <span className="font-medium">{formatCurrency(credit)}</span>
-                    </div>
+                    {includeDebt && (
+                      <div className="flex justify-between">
+                        <span className="text-slate-600">Previous Debt:</span>
+                        <span className="font-medium">{formatCurrency(startingDebt)}</span>
+                      </div>
+                    )}
+                    {includeCredit && (
+                      <div className="flex justify-between text-green-600">
+                        <span>– Credit:</span>
+                        <span className="font-medium">{formatCurrency(credit)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between">
                       <span className="text-slate-600">Total Rent Due:</span>
                       <span className="font-medium">{formatCurrency(totalRentDue)}</span>
