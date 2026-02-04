@@ -21,12 +21,12 @@ export function generateReceiptPDF(receiptData, settings) {
   
   // White box for logo
   doc.setFillColor(255, 255, 255);
-  doc.rect(margin, 5, 45, 20, 'F');
+  doc.rect(margin, 5, 35, 20, 'F');
   
   // Add SVP Logo
   const logoUrl = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/3aa602531_Logo-SVP-Vectorai-OFFICIAL.png';
   try {
-    doc.addImage(logoUrl, 'PNG', margin + 2.5, 7, 40, 16);
+    doc.addImage(logoUrl, 'PNG', margin + 2, 7, 30, 16);
   } catch (e) {
     console.log('Could not load logo');
   }
@@ -35,7 +35,7 @@ export function generateReceiptPDF(receiptData, settings) {
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
-  doc.text(settings.organizationName, pageWidth / 2, 18, { align: 'center' });
+  doc.text(settings.organizationName, pageWidth / 2 + 10, 18, { align: 'center' });
   
   // Receipt # and Date
   doc.setFontSize(9);
