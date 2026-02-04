@@ -72,7 +72,7 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
       id: Date.now(),
       date: new Date().toISOString().split('T')[0],
       rentDue: client?.monthlyRent || 143.40,
-      tenantPayment: 40,
+      tenantPayment: client?.weeklyTenantPayment || 40,
       tenantPaid: true,
       rasPayment: client?.weeklyRasAmount || 103.40,
       rasReceived: true

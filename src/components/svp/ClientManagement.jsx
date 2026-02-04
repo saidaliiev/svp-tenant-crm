@@ -476,7 +476,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="monthlyRent">Monthly Rent (€)</Label>
+                    <Label htmlFor="monthlyRent">Weekly Rent (€)</Label>
                     <Input
                       id="monthlyRent"
                       type="number"
