@@ -104,49 +104,57 @@ export function generateReceiptPDF(receiptData, settings) {
 
     // Transactions Table
     const tableData = [];
-    let runningBalance = parseFloat(receiptData.startingDebt) || 0;
+    const startDebt = parseFloat(receiptData.startingDebt);
+    let runningBalance = isNaN(startDebt) ? 0 : startDebt;
     
     // Starting balance
     tableData.push([
       '',
       'Previous Balance Carried Forward',
-      '-',
-      '-',
+      '',
+      '',
       formatCurrency(runningBalance)
     ]);
     
-    receiptData.transactions.forEach(t => {
-      const rentDue = parseFloat(t.rentDue) || 0;
-      const tenantPayment = parseFloat(t.tenantPayment) || 0;
-      const rasPayment = parseFloat(t.rasPayment) || 0;
-      const dateFormatted = formatDateShort(t.date);
-      
-      // Tenant Payment row
-      const tenantDesc = t.tenantPaid ? 'Tenant Payment' : 'Tenant Payment (NOT PAID)';
-      const newBalance = runningBalance + rentDue - (t.tenantPaid ? tenantPayment : 0);
-      
-      tableData.push([
-        dateFormatted,
-        tenantDesc,
-        formatCurrency(rentDue),
-        t.tenantPaid ? formatCurrency(tenantPayment) : '-',
-        formatCurrency(newBalance)
-      ]);
-      
-      runningBalance = newBalance;
-      
-      // RAS row 
-      if (rasPayment > 0) {
-        const rasDesc = t.rasReceived ? 'RAS Payment' : 'RAS Payment (NOT PAID)';
+    if (receiptData.transactions && receiptData.transactions.length > 0) {
+      receiptData.transactions.forEach(t => {
+        const rentDue = parseFloat(t.rentDue);
+        const tenantPayment = parseFloat(t.tenantPayment);
+        const rasPayment = parseFloat(t.rasPayment);
+        
+        const rentDueVal = isNaN(rentDue) ? 0 : rentDue;
+        const tenantPaymentVal = isNaN(tenantPayment) ? 0 : tenantPayment;
+        const rasPaymentVal = isNaN(rasPayment) ? 0 : rasPayment;
+        
+        const dateFormatted = formatDateShort(t.date) || '';
+        
+        // Tenant Payment row
+        const tenantDesc = t.tenantPaid ? 'Tenant Payment' : 'Tenant Payment (NOT PAID)';
+        const newBalance = runningBalance + rentDueVal - (t.tenantPaid ? tenantPaymentVal : 0);
+        
         tableData.push([
           dateFormatted,
-          rasDesc,
-          '-',
-          t.rasReceived ? formatCurrency(rasPayment) : '-',
-          '-'
+          tenantDesc,
+          formatCurrency(rentDueVal),
+          t.tenantPaid ? formatCurrency(tenantPaymentVal) : '',
+          formatCurrency(newBalance)
         ]);
-      }
-    });
+        
+        runningBalance = newBalance;
+        
+        // RAS row 
+        if (rasPaymentVal > 0) {
+          const rasDesc = t.rasReceived ? 'RAS Payment' : 'RAS Payment (NOT PAID)';
+          tableData.push([
+            dateFormatted,
+            rasDesc,
+            '',
+            t.rasReceived ? formatCurrency(rasPaymentVal) : '',
+            ''
+          ]);
+        }
+      });
+    }
 
     doc.autoTable({
       startY: yPos,
@@ -237,12 +245,18 @@ function formatDate(dateStr) {
 
 function formatDateShort(dateStr) {
   if (!dateStr) return '';
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+  try {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return '';
+    return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+  } catch (e) {
+    return '';
+  }
 }
 
 function formatCurrency(amount) {
-  const num = parseFloat(amount) || 0;
+  const num = parseFloat(amount);
+  if (isNaN(num)) return '€0.00';
   if (num < 0) {
     return '-€' + Math.abs(num).toFixed(2);
   }
