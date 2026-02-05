@@ -111,8 +111,8 @@ export function generateReceiptPDF(receiptData, settings) {
     tableData.push([
       '',
       'Previous Balance Carried Forward',
-      '',
-      '',
+      '-',
+      '-',
       formatCurrency(runningBalance)
     ]);
     
@@ -126,7 +126,7 @@ export function generateReceiptPDF(receiptData, settings) {
         const tenantPaymentVal = isNaN(tenantPayment) ? 0 : tenantPayment;
         const rasPaymentVal = isNaN(rasPayment) ? 0 : rasPayment;
         
-        const dateFormatted = formatDateShort(t.date) || '';
+        const dateFormatted = formatDateShort(t.date) || '-';
         
         // Tenant Payment row
         const tenantDesc = t.tenantPaid ? 'Tenant Payment' : 'Tenant Payment (NOT PAID)';
@@ -136,7 +136,7 @@ export function generateReceiptPDF(receiptData, settings) {
           dateFormatted,
           tenantDesc,
           formatCurrency(rentDueVal),
-          t.tenantPaid ? formatCurrency(tenantPaymentVal) : '',
+          t.tenantPaid ? formatCurrency(tenantPaymentVal) : '-',
           formatCurrency(newBalance)
         ]);
         
@@ -148,9 +148,9 @@ export function generateReceiptPDF(receiptData, settings) {
           tableData.push([
             dateFormatted,
             rasDesc,
-            '',
-            t.rasReceived ? formatCurrency(rasPaymentVal) : '',
-            ''
+            '-',
+            t.rasReceived ? formatCurrency(rasPaymentVal) : '-',
+            '-'
           ]);
         }
       });
