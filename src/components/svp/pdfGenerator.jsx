@@ -15,92 +15,92 @@ export function generateReceiptPDF(receiptData, settings) {
     
     let yPos = margin;
 
-  // Add SVP Logo
-  const logoUrl = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/3aa602531_Logo-SVP-Vectorai-OFFICIAL.png';
-  try {
-    doc.addImage(logoUrl, 'PNG', margin, yPos, 40, 25);
-  } catch (e) {
-    console.log('Could not load logo');
-  }
-  
-  yPos += 28;
-  
-  // Organization Name
-  doc.setTextColor(...primaryBlue);
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'normal');
-  doc.text('Society of St Vincent de Paul', margin, yPos);
-  
-  yPos += 10;
-  
-  // Horizontal line
-  doc.setDrawColor(200, 200, 200);
-  doc.line(margin, yPos, pageWidth - margin, yPos);
-  
-  yPos += 10;
-  
-  // RECEIPT STATEMENT title
-  doc.setTextColor(...primaryBlue);
-  doc.setFontSize(14);
-  doc.setFont('helvetica', 'bold');
-  doc.text('RECEIPT STATEMENT', margin, yPos);
-  
-  yPos += 12;
+    // Add SVP Logo
+    const logoUrl = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/3aa602531_Logo-SVP-Vectorai-OFFICIAL.png';
+    try {
+      doc.addImage(logoUrl, 'PNG', margin, yPos, 40, 25);
+    } catch (e) {
+      console.log('Could not load logo');
+    }
+    
+    yPos += 28;
+    
+    // Organization Name
+    doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Society of St Vincent de Paul', margin, yPos);
+    
+    yPos += 10;
+    
+    // Horizontal line
+    doc.setDrawColor(200, 200, 200);
+    doc.line(margin, yPos, pageWidth - margin, yPos);
+    
+    yPos += 10;
+    
+    // RECEIPT STATEMENT title
+    doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('RECEIPT STATEMENT', margin, yPos);
+    
+    yPos += 12;
 
-  // Left column: Tenant Info
-  const leftCol = margin;
-  const rightCol = pageWidth / 2 + 10;
-  
-  doc.setTextColor(...primaryBlue);
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'bold');
-  doc.text('Tenant', leftCol, yPos);
-  
-  doc.setTextColor(0, 0, 0);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  doc.text(receiptData.clientName, leftCol, yPos + 5);
-  
-  const addressLines = receiptData.clientAddress ? receiptData.clientAddress.split('\n') : [];
-  let addressY = yPos + 10;
-  addressLines.forEach(line => {
-    doc.text(line.trim(), leftCol, addressY);
-    addressY += 4;
-  });
-  
-  // Right column: Statement info
-  doc.setTextColor(...primaryBlue);
-  doc.setFontSize(9);
-  doc.setFont('helvetica', 'bold');
-  
-  doc.text('Statement Period:', rightCol, yPos);
-  doc.setTextColor(0, 0, 0);
-  doc.setFont('helvetica', 'normal');
-  doc.text(`${formatDate(receiptData.startDate)} – ${formatDate(receiptData.endDate)}`, rightCol + 40, yPos, { align: 'right', maxWidth: 55 });
-  
-  doc.setTextColor(...primaryBlue);
-  doc.setFont('helvetica', 'bold');
-  doc.text('Receipt No:', rightCol, yPos + 6);
-  doc.setTextColor(0, 0, 0);
-  doc.setFont('helvetica', 'normal');
-  doc.text(receiptNum, rightCol + 40, yPos + 6, { align: 'right', maxWidth: 55 });
-  
-  doc.setTextColor(...primaryBlue);
-  doc.setFont('helvetica', 'bold');
-  doc.text('Date Issued:', rightCol, yPos + 12);
-  doc.setTextColor(0, 0, 0);
-  doc.setFont('helvetica', 'normal');
-  doc.text(formatDate(receiptData.createdDate), rightCol + 40, yPos + 12, { align: 'right', maxWidth: 55 });
-  
-  yPos = Math.max(addressY, yPos + 18) + 8;
+    // Left column: Tenant Info
+    const leftCol = margin;
+    const rightCol = pageWidth / 2 + 10;
+    
+    doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Tenant', leftCol, yPos);
+    
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.text(receiptData.clientName || '', leftCol, yPos + 5);
+    
+    const addressLines = receiptData.clientAddress ? receiptData.clientAddress.split('\n') : [];
+    let addressY = yPos + 10;
+    addressLines.forEach(line => {
+      doc.text(line.trim(), leftCol, addressY);
+      addressY += 4;
+    });
+    
+    // Right column: Statement info
+    doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    
+    doc.text('Statement Period:', rightCol, yPos);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${formatDate(receiptData.startDate)} - ${formatDate(receiptData.endDate)}`, rightCol + 40, yPos, { align: 'right', maxWidth: 55 });
+    
+    doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Receipt No:', rightCol, yPos + 6);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'normal');
+    doc.text(receiptNum, rightCol + 40, yPos + 6, { align: 'right', maxWidth: 55 });
+    
+    doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Date Issued:', rightCol, yPos + 12);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'normal');
+    doc.text(formatDate(receiptData.createdDate), rightCol + 40, yPos + 12, { align: 'right', maxWidth: 55 });
+    
+    yPos = Math.max(addressY, yPos + 18) + 8;
 
-  // Charges & Payments section title
-  doc.setTextColor(...primaryBlue);
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'bold');
-  doc.text('Charges & Payments', margin, yPos);
-  
-  yPos += 8;
+    // Charges & Payments section title
+    doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Charges & Payments', margin, yPos);
+    
+    yPos += 8;
 
     // Transactions Table
     const tableData = [];
@@ -190,12 +190,12 @@ export function generateReceiptPDF(receiptData, settings) {
     
     yPos = doc.lastAutoTable.finalY + 3;
 
-    // Final Balance Box - directly in table
+    // Final Balance Box
     const finalBalanceBox = pageWidth - margin - 60;
-    doc.setFillColor(lightGray);
+    doc.setFillColor(lightGray[0], lightGray[1], lightGray[2]);
     doc.rect(finalBalanceBox, yPos, 60, 10, 'F');
     
-    doc.setTextColor(...primaryBlue);
+    doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.text('FINAL TENANT BALANCE:', finalBalanceBox + 3, yPos + 6.5);
@@ -204,13 +204,13 @@ export function generateReceiptPDF(receiptData, settings) {
     yPos += 20;
 
     // Notes/Contact info
-    if (receiptData.notes || settings.contactPhone) {
+    if (receiptData.notes || (settings && settings.contactPhone)) {
       doc.setTextColor(60, 60, 60);
       doc.setFontSize(8.5);
       doc.setFont('helvetica', 'normal');
       
-      if (settings.contactPhone) {
-        doc.text(`For assistance, please contact SVP: ${settings.contactPhone}`, margin, yPos);
+      if (settings && settings.contactPhone) {
+        doc.text('For assistance, please contact SVP: ' + settings.contactPhone, margin, yPos);
         yPos += 5;
       }
       
@@ -223,11 +223,11 @@ export function generateReceiptPDF(receiptData, settings) {
     // Footer
     doc.setFontSize(8);
     doc.setTextColor(100, 100, 100);
-    const footerLeft = `${settings.systemName} | Generated: ${formatDate(receiptData.createdDate)}`;
-    const footerRight = receiptNum;
+    const systemName = (settings && settings.systemName) || 'SVP System';
+    const footerLeft = systemName + ' | Generated: ' + formatDate(receiptData.createdDate);
     
     doc.text(footerLeft, margin, pageHeight - 10);
-    doc.text(footerRight, pageWidth - margin, pageHeight - 10, { align: 'right' });
+    doc.text(receiptNum, pageWidth - margin, pageHeight - 10, { align: 'right' });
 
     doc.autoPrint();
     window.open(doc.output('bloburl'), '_blank');
