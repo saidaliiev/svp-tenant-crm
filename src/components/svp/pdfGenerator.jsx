@@ -109,52 +109,38 @@ export function generateReceiptPDF(receiptData, settings) {
   tableData.push([
     '',
     'Previous Balance Carried Forward',
-    '—',
-    '—',
+    '-',
+    '-',
     formatCurrency(runningBalance)
   ]);
   
   receiptData.transactions.forEach(t => {
     const rentDue = parseFloat(t.rentDue) || 0;
     const tenantPayment = parseFloat(t.tenantPayment) || 0;
+    const rasPayment = parseFloat(t.rasPayment) || 0;
     const dateFormatted = formatDateShort(t.date);
     
     // Tenant Payment row
-    if (t.tenantPaid) {
-      runningBalance += rentDue;
-      const tenantDesc = 'Tenant Payment';
-      tableData.push([
-        dateFormatted,
-        tenantDesc,
-        formatCurrency(rentDue),
-        formatCurrency(tenantPayment),
-        formatCurrency(runningBalance)
-      ]);
-    } else {
-      runningBalance += rentDue;
-      const tenantDesc = 'Tenant Payment (NOT PAID)';
-      tableData.push([
-        dateFormatted,
-        tenantDesc,
-        formatCurrency(rentDue),
-        '—',
-        formatCurrency(runningBalance)
-      ]);
-    }
+    const tenantDesc = t.tenantPaid ? 'Tenant Payment' : 'Tenant Payment (NOT PAID)';
+    tableData.push([
+      dateFormatted,
+      tenantDesc,
+      formatCurrency(rentDue),
+      t.tenantPaid ? formatCurrency(tenantPayment) : '-',
+      formatCurrency(runningBalance + rentDue - (t.tenantPaid ? tenantPayment : 0))
+    ]);
+    
+    runningBalance = runningBalance + rentDue - (t.tenantPaid ? tenantPayment : 0);
     
     // RAS row 
-    const rasPayment = parseFloat(t.rasPayment) || 0;
     if (rasPayment > 0) {
-      if (t.rasReceived) {
-        runningBalance -= rasPayment;
-      }
       const rasDesc = t.rasReceived ? 'RAS Payment' : 'RAS Payment (NOT PAID)';
       tableData.push([
         dateFormatted,
         rasDesc,
-        t.rasReceived ? formatCurrency(rentDue) : formatCurrency(rentDue),
-        t.rasReceived ? formatCurrency(rasPayment) : '—',
-        formatCurrency(runningBalance)
+        '-',
+        t.rasReceived ? formatCurrency(rasPayment) : '-',
+        '-'
       ]);
     }
   });
@@ -178,11 +164,11 @@ export function generateReceiptPDF(receiptData, settings) {
       textColor: [60, 60, 60]
     },
     columnStyles: {
-      0: { cellWidth: 20 },
-      1: { cellWidth: 70 },
-      2: { cellWidth: 25, halign: 'right' },
-      3: { cellWidth: 25, halign: 'right' },
-      4: { cellWidth: 27, halign: 'right' }
+      0: { cellWidth: 18 },
+      1: { cellWidth: 72 },
+      2: { cellWidth: 24, halign: 'right' },
+      3: { cellWidth: 24, halign: 'right' },
+      4: { cellWidth: 28, halign: 'right' }
     },
     didParseCell: function(data) {
       if (data.row.index === 0 && data.section === 'body') {
