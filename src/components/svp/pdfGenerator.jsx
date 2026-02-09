@@ -176,8 +176,6 @@ export function generateReceiptPDF(receiptData, settings) {
     yPos = doc.lastAutoTable.finalY + 3;
 
     // Final Balance Box with detailed breakdown
-    const startDebt = receiptData.includeDebt ? parseFloat(receiptData.startingDebt || 0) : 0;
-    const creditAmount = receiptData.includeCredit ? parseFloat(receiptData.credit || 0) : 0;
     const totalRentDue = receiptData.totalRentDue || 0;
     const totalTenantPaid = receiptData.totalTenantPayments || 0;
     const totalRasReceived = receiptData.totalRasReceived || 0;
