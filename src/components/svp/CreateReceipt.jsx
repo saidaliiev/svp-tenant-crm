@@ -251,12 +251,19 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
     }
 
     const client = clients.find(c => c.id === clientId);
-    
+
     // Generate smart notes
     const smartNotes = generateSmartNotes();
-    
+
+    // Generate receipt ID with client initials
+    const nameParts = client.fullName.trim().split(' ');
+    const firstInitial = nameParts[0] ? nameParts[0][0].toUpperCase() : 'X';
+    const lastInitial = nameParts.length > 1 ? nameParts[nameParts.length - 1][0].toUpperCase() : 'X';
+    const randomDigits = Math.floor(10000 + Math.random() * 90000); // 5 digits
+    const receiptId = `${firstInitial}${lastInitial}${randomDigits}`;
+
     const receiptData = {
-      id: 'RCP-' + Date.now().toString(36).toUpperCase(),
+      id: receiptId,
       clientId,
       clientName: client.fullName,
       clientAddress: client.address,

@@ -203,7 +203,7 @@ export function generateReceiptPDF(receiptData, settings) {
     
     let breakdownParts = [];
     if (startDebt !== 0) {
-      breakdownParts.push(`Previous Balance: ${formatCurrency(startDebt)}`);
+      breakdownParts.push(`Previous Debt: ${formatCurrency(startDebt)}`);
     }
     if (creditAmount !== 0) {
       breakdownParts.push(`Credit: ${formatCurrency(creditAmount)}`);
