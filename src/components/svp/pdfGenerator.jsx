@@ -99,32 +99,10 @@ export function generateReceiptPDF(receiptData, settings) {
     
     yPos += 8;
 
-    // Transactions Table
+    // Transactions Table - without previous balance row
     const tableData = [];
     const startDebt = receiptData.includeDebt ? parseFloat(receiptData.startingDebt || 0) : 0;
     const creditAmount = receiptData.includeCredit ? parseFloat(receiptData.credit || 0) : 0;
-    let runningBalance = isNaN(startDebt) ? 0 : startDebt;
-    
-    // Starting balance
-    tableData.push([
-      '',
-      'Previous Balance Carried Forward',
-      '-',
-      '-',
-      formatCurrency(runningBalance)
-    ]);
-    
-    // Credit if included
-    if (creditAmount > 0) {
-      runningBalance -= creditAmount;
-      tableData.push([
-        '',
-        'Credit Applied',
-        '-',
-        formatCurrency(creditAmount),
-        formatCurrency(runningBalance)
-      ]);
-    }
     
     if (receiptData.transactions && receiptData.transactions.length > 0) {
       receiptData.transactions.forEach(t => {
@@ -140,17 +118,14 @@ export function generateReceiptPDF(receiptData, settings) {
         
         // Tenant Payment row
         const tenantDesc = t.tenantPaid ? 'Tenant Payment' : 'Tenant Payment (NOT PAID)';
-        const newBalance = runningBalance + rentDueVal - (t.tenantPaid ? tenantPaymentVal : 0);
         
         tableData.push([
           dateFormatted,
           tenantDesc,
           formatCurrency(rentDueVal),
           t.tenantPaid ? formatCurrency(tenantPaymentVal) : '-',
-          formatCurrency(newBalance)
+          '-'
         ]);
-        
-        runningBalance = newBalance;
         
         // RAS row 
         if (rasPaymentVal > 0) {
@@ -201,6 +176,12 @@ export function generateReceiptPDF(receiptData, settings) {
     yPos = doc.lastAutoTable.finalY + 3;
 
     // Final Balance Box with detailed breakdown
+    const startDebt = receiptData.includeDebt ? parseFloat(receiptData.startingDebt || 0) : 0;
+    const creditAmount = receiptData.includeCredit ? parseFloat(receiptData.credit || 0) : 0;
+    const totalRentDue = receiptData.totalRentDue || 0;
+    const totalTenantPaid = receiptData.totalTenantPayments || 0;
+    const totalRasReceived = receiptData.totalRasReceived || 0;
+    
     const boxWidth = pageWidth - (margin * 2);
     doc.setFillColor(lightGray[0], lightGray[1], lightGray[2]);
     doc.rect(margin, yPos, boxWidth, 22, 'F');
@@ -223,14 +204,17 @@ export function generateReceiptPDF(receiptData, settings) {
     doc.setTextColor(80, 80, 80);
     
     let breakdownParts = [];
-    if (receiptData.includeDebt && startDebt !== 0) {
+    if (startDebt !== 0) {
       breakdownParts.push(`Previous Balance: ${formatCurrency(startDebt)}`);
     }
-    if (receiptData.includeCredit && creditAmount !== 0) {
-      breakdownParts.push(`Credit Applied: ${formatCurrency(creditAmount)}`);
+    if (creditAmount !== 0) {
+      breakdownParts.push(`Credit: ${formatCurrency(creditAmount)}`);
     }
-    breakdownParts.push(`Rent Due: ${formatCurrency(receiptData.totalRentDue)}`);
-    breakdownParts.push(`Payments: ${formatCurrency(receiptData.totalTenantPayments)}`);
+    breakdownParts.push(`Rent Due: ${formatCurrency(totalRentDue)}`);
+    breakdownParts.push(`Tenant Paid: ${formatCurrency(totalTenantPaid)}`);
+    if (totalRasReceived > 0) {
+      breakdownParts.push(`RAS: ${formatCurrency(totalRasReceived)}`);
+    }
     
     const breakdownText = breakdownParts.join('  |  ');
     doc.text(breakdownText, margin + 3, yPos + 15);

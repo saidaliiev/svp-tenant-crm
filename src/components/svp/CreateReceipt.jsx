@@ -312,17 +312,18 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
           finalBalance: pendingReceiptData.finalBalance,
           notes: pendingReceiptData.notes
         });
+        
+        // Save to local history only if saved to cloud
+        onReceiptCreated(pendingReceiptData);
+        
         setSuccess('Receipt generated and saved to cloud!');
       } catch (err) {
         console.error('Error saving to cloud:', err);
         setError('Receipt generated but failed to save to cloud');
       }
     } else {
-      setSuccess('Receipt generated successfully!');
+      setSuccess('Receipt printed successfully!');
     }
-    
-    // Save to local history
-    onReceiptCreated(pendingReceiptData);
     
     setTimeout(() => setSuccess(''), 3000);
     setShowSaveDialog(false);

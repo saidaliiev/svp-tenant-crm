@@ -35,7 +35,7 @@ export default function ExportClientsPDF({ clients }) {
       doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
       doc.setFontSize(18);
       doc.setFont('helvetica', 'bold');
-      doc.text('CLIENT LIST', margin, yPos);
+      doc.text('TENANT LIST', margin, yPos);
       
       yPos += 5;
       doc.setDrawColor(200, 200, 200);
