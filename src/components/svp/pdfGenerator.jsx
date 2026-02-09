@@ -95,7 +95,7 @@ export function generateReceiptPDF(receiptData, settings) {
     doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text('Charges & Payments', margin, yPos);
+    doc.text('Charges & Payments', leftCol, yPos);
     
     yPos += 8;
 
@@ -225,8 +225,8 @@ export function generateReceiptPDF(receiptData, settings) {
       doc.setFontSize(8.5);
       doc.setFont('helvetica', 'normal');
 
-      // Remove special characters that jsPDF can't handle properly and replace with ASCII alternatives
-      const cleanedNotes = receiptData.notes.replace(/⚠️/g, '(!!)').replace(/[^\x00-\x7F]/g, '');
+      // Keep Euro signs but remove other special characters
+      const cleanedNotes = receiptData.notes.replace(/⚠️/g, '(!!)').replace(/[^\x00-\x7F€]/g, '');
 
       // Split by double newlines for paragraphs
       const paragraphs = cleanedNotes.split('\n\n');
