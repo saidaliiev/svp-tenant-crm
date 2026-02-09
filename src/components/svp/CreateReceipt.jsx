@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { base44 } from "@/api/base44Client";
 import {
   Select,
   SelectContent,
@@ -26,6 +27,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FileText, Plus, Trash2, Printer, AlertCircle, Calculator, User } from 'lucide-react';
 import TransactionRow from './TransactionRow';
 import { generateReceiptPDF } from './pdfGenerator';
+import { format } from 'date-fns';
 
 export default function CreateReceipt({ clients, statements, settings, selectedClientId, onReceiptCreated }) {
   const [clientId, setClientId] = useState('');
@@ -39,6 +41,11 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
   const [transactions, setTransactions] = useState([]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [pendingReceiptData, setPendingReceiptData] = useState(null);
+  const [showLoadDialog, setShowLoadDialog] = useState(false);
+  const [lastStatement, setLastStatement] = useState(null);
+  const [daysToLoad, setDaysToLoad] = useState(30);
 
   const selectedClient = clients.find(c => c.id === clientId);
 
@@ -49,17 +56,10 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
     }
   }, [selectedClientId]);
 
-  // When client is selected, automatically load previous balance and generate notes
+  // When client is selected, load last statement and ask if user wants to load data
   useEffect(() => {
     if (clientId && selectedClient) {
-      const clientStatements = statements.filter(s => s.clientId === clientId);
-      if (clientStatements.length > 0) {
-        const latest = clientStatements.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate))[0];
-        setStartingDebt(latest.finalBalance || 0);
-      } else {
-        setStartingDebt(selectedClient.currentBalance || 0);
-      }
-
+      loadLastStatement();
       setCredit(selectedClient.credit || 0);
 
       // Generate notes with payment info
@@ -70,6 +70,42 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
       initializeTransaction();
     }
   }, [clientId]);
+  
+  const loadLastStatement = async () => {
+    try {
+      const allStatements = await base44.entities.Statement.filter({ clientId }, '-created_date', 1);
+      if (allStatements.length > 0) {
+        setLastStatement(allStatements[0]);
+        setShowLoadDialog(true);
+      } else {
+        setStartingDebt(selectedClient.currentBalance || 0);
+      }
+    } catch (err) {
+      console.error('Error loading last statement:', err);
+      setStartingDebt(selectedClient.currentBalance || 0);
+    }
+  };
+  
+  const handleLoadStatementData = () => {
+    if (lastStatement) {
+      const endDate = new Date(lastStatement.endDate);
+      const newStartDate = new Date(endDate);
+      newStartDate.setDate(newStartDate.getDate() + 1);
+      
+      const newEndDate = new Date(newStartDate);
+      newEndDate.setDate(newEndDate.getDate() + daysToLoad - 1);
+      
+      setStartDate(newStartDate.toISOString().split('T')[0]);
+      setEndDate(newEndDate.toISOString().split('T')[0]);
+      setStartingDebt(lastStatement.finalBalance || 0);
+    }
+    setShowLoadDialog(false);
+  };
+  
+  const handleSkipLoadStatement = () => {
+    setStartingDebt(selectedClient.currentBalance || 0);
+    setShowLoadDialog(false);
+  };
 
   const initializeTransaction = () => {
     const client = clients.find(c => c.id === clientId);
@@ -160,6 +196,9 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
       startDate,
       endDate,
       startingDebt: parseFloat(startingDebt) || 0,
+      credit: parseFloat(credit) || 0,
+      includeDebt,
+      includeCredit,
       transactions: transactions.map(t => ({
         ...t,
         rentDue: parseFloat(t.rentDue) || 0,
@@ -175,14 +214,52 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
       createdDate: new Date().toISOString()
     };
 
+    setPendingReceiptData(receiptData);
+    setShowSaveDialog(true);
+  };
+  
+  const handleConfirmGenerate = async (shouldSave) => {
+    if (!pendingReceiptData) return;
+    
     // Generate PDF
-    generateReceiptPDF(receiptData, settings);
+    generateReceiptPDF(pendingReceiptData, settings);
     
-    // Save to history
-    onReceiptCreated(receiptData);
+    // Save to cloud if requested
+    if (shouldSave) {
+      try {
+        await base44.entities.Statement.create({
+          receiptId: pendingReceiptData.id,
+          clientId: pendingReceiptData.clientId,
+          clientName: pendingReceiptData.clientName,
+          clientAddress: pendingReceiptData.clientAddress,
+          startDate: pendingReceiptData.startDate,
+          endDate: pendingReceiptData.endDate,
+          startingDebt: pendingReceiptData.startingDebt,
+          credit: pendingReceiptData.credit,
+          includeDebt: pendingReceiptData.includeDebt,
+          includeCredit: pendingReceiptData.includeCredit,
+          transactions: pendingReceiptData.transactions,
+          totalRentDue: pendingReceiptData.totalRentDue,
+          totalTenantPayments: pendingReceiptData.totalTenantPayments,
+          totalRasReceived: pendingReceiptData.totalRasReceived,
+          finalBalance: pendingReceiptData.finalBalance,
+          notes: pendingReceiptData.notes
+        });
+        setSuccess('Receipt generated and saved to cloud!');
+      } catch (err) {
+        console.error('Error saving to cloud:', err);
+        setError('Receipt generated but failed to save to cloud');
+      }
+    } else {
+      setSuccess('Receipt generated successfully!');
+    }
     
-    setSuccess('Receipt generated successfully!');
+    // Save to local history
+    onReceiptCreated(pendingReceiptData);
+    
     setTimeout(() => setSuccess(''), 3000);
+    setShowSaveDialog(false);
+    setPendingReceiptData(null);
     
     // Reset form
     setClientId('');
@@ -412,6 +489,54 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
           </>
         )}
 
+        {/* Load Statement Dialog */}
+        <AlertDialog open={showLoadDialog} onOpenChange={setShowLoadDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Load Previous Statement Data?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Found previous statement ending on {lastStatement ? format(new Date(lastStatement.endDate), 'dd MMM yyyy') : ''}. 
+                Would you like to load data from the last statement?
+                <div className="mt-4 space-y-2">
+                  <Label>Period Duration (days)</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="365"
+                    value={daysToLoad}
+                    onChange={(e) => setDaysToLoad(parseInt(e.target.value) || 30)}
+                  />
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={handleSkipLoadStatement}>Start Fresh</AlertDialogCancel>
+              <AlertDialogAction onClick={handleLoadStatementData}>
+                Load Data
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Save Confirmation Dialog */}
+        <AlertDialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Save Statement to Cloud?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Do you want to save this statement period to the cloud database? This will allow you to access it later and track history.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => handleConfirmGenerate(false)}>
+                Just Print
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={() => handleConfirmGenerate(true)}>
+                Save & Print
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
       </CardContent>
     </Card>

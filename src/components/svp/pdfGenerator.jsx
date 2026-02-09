@@ -99,7 +99,8 @@ export function generateReceiptPDF(receiptData, settings) {
 
     // Transactions Table
     const tableData = [];
-    const startDebt = parseFloat(receiptData.startingDebt);
+    const startDebt = receiptData.includeDebt ? parseFloat(receiptData.startingDebt || 0) : 0;
+    const creditAmount = receiptData.includeCredit ? parseFloat(receiptData.credit || 0) : 0;
     let runningBalance = isNaN(startDebt) ? 0 : startDebt;
     
     // Starting balance
@@ -110,6 +111,18 @@ export function generateReceiptPDF(receiptData, settings) {
       '-',
       formatCurrency(runningBalance)
     ]);
+    
+    // Credit if included
+    if (creditAmount > 0) {
+      runningBalance -= creditAmount;
+      tableData.push([
+        '',
+        'Credit Applied',
+        '-',
+        formatCurrency(creditAmount),
+        formatCurrency(runningBalance)
+      ]);
+    }
     
     if (receiptData.transactions && receiptData.transactions.length > 0) {
       receiptData.transactions.forEach(t => {
