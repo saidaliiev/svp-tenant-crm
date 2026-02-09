@@ -226,7 +226,7 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
 
       // If large arrears (> 200)
       if (finalTenantBalance > 200) {
-        smartNote += `⚠️ Your arrears are €${finalTenantBalance.toFixed(2)}. You have a repayment plan in place to pay €50 each week.\n\nIt is important to stick to the agreement you signed up to, otherwise your arrears will increase again and your tenancy will be affected.`;
+        smartNote += `(!!) Your arrears are €${finalTenantBalance.toFixed(2)}. You have a repayment plan in place to pay €50 each week.\n\nIt is important to stick to the agreement you signed up to, otherwise your arrears will increase again and your tenancy will be affected.`;
       }
     }
 

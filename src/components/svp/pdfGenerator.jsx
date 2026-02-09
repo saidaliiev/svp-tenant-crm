@@ -225,8 +225,11 @@ export function generateReceiptPDF(receiptData, settings) {
       doc.setFontSize(8.5);
       doc.setFont('helvetica', 'normal');
 
+      // Remove special characters that jsPDF can't handle properly and replace with ASCII alternatives
+      const cleanedNotes = receiptData.notes.replace(/⚠️/g, '(!!)').replace(/[^\x00-\x7F]/g, '');
+
       // Split by double newlines for paragraphs
-      const paragraphs = receiptData.notes.split('\n\n');
+      const paragraphs = cleanedNotes.split('\n\n');
       paragraphs.forEach((para, idx) => {
         const splitText = doc.splitTextToSize(para, pageWidth - (margin * 2));
         doc.text(splitText, margin, yPos);
