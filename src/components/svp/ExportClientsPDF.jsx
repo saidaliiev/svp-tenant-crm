@@ -24,12 +24,12 @@ export default function ExportClientsPDF({ clients }) {
       // Add SVP Logo
       const logoUrl = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/7a1906beb_SVP-1200x675-Photoroom.png';
       try {
-        doc.addImage(logoUrl, 'PNG', margin, yPos, 60, 20);
+        doc.addImage(logoUrl, 'PNG', margin, yPos, 80, 27);
       } catch (e) {
         console.log('Could not load logo');
       }
       
-      yPos += 25;
+      yPos += 32;
       
       // Title
       doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
@@ -77,7 +77,7 @@ export default function ExportClientsPDF({ clients }) {
           'Address', 
           'Balance', 
           'Credit',
-          'Monthly Rent',
+          'Weekly Rent',
           'Weekly Tenant',
           'Weekly RAS'
         ]],
@@ -92,8 +92,8 @@ export default function ExportClientsPDF({ clients }) {
           cellPadding: { top: 3, right: 3, bottom: 3, left: 3 }
         },
         bodyStyles: {
-          fontSize: 8,
-          cellPadding: { top: 2.5, right: 3, bottom: 2.5, left: 3 },
+          fontSize: 9,
+          cellPadding: { top: 3, right: 3, bottom: 3, left: 3 },
           textColor: [60, 60, 60]
         },
         columnStyles: {

@@ -45,7 +45,7 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
   const [pendingReceiptData, setPendingReceiptData] = useState(null);
   const [showLoadDialog, setShowLoadDialog] = useState(false);
   const [lastStatement, setLastStatement] = useState(null);
-  const [daysToLoad, setDaysToLoad] = useState(30);
+  const [selectedMonth, setSelectedMonth] = useState('');
 
   const selectedClient = clients.find(c => c.id === clientId);
 
@@ -87,20 +87,23 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
   };
   
   const handleLoadStatementData = () => {
-    if (lastStatement) {
-      const endDate = new Date(lastStatement.endDate);
-      const newStartDate = new Date(endDate);
-      newStartDate.setDate(newStartDate.getDate() + 1);
-
-      const newEndDate = new Date(newStartDate);
-      newEndDate.setDate(newEndDate.getDate() + daysToLoad - 1);
-
+    if (lastStatement && selectedMonth) {
+      const [year, month] = selectedMonth.split('-').map(Number);
+      
+      // Start from first day of selected month
+      const newStartDate = new Date(year, month - 1, 1);
+      
+      // End on last day of selected month
+      const newEndDate = new Date(year, month, 0);
+      
       setStartDate(newStartDate.toISOString().split('T')[0]);
       setEndDate(newEndDate.toISOString().split('T')[0]);
       setStartingDebt(lastStatement.finalBalance || 0);
 
-      // Auto-generate transactions based on weeks in period
-      const weeks = Math.ceil(daysToLoad / 7);
+      // Calculate weeks in the month
+      const daysInMonth = newEndDate.getDate();
+      const weeks = Math.ceil(daysInMonth / 7);
+      
       const client = clients.find(c => c.id === clientId);
       const newTransactions = [];
 
@@ -520,20 +523,21 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
                 Found previous statement ending on {lastStatement ? format(new Date(lastStatement.endDate), 'dd MMM yyyy') : ''}. 
                 Would you like to load data from the last statement?
                 <div className="mt-4 space-y-2">
-                  <Label>Period Duration (days)</Label>
+                  <Label>Select Month for New Statement</Label>
                   <Input
-                    type="number"
-                    min="1"
-                    max="365"
-                    value={daysToLoad}
-                    onChange={(e) => setDaysToLoad(parseInt(e.target.value) || 30)}
+                    type="month"
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
                   />
                 </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel onClick={handleSkipLoadStatement}>Start Fresh</AlertDialogCancel>
-              <AlertDialogAction onClick={handleLoadStatementData}>
+              <AlertDialogAction 
+                onClick={handleLoadStatementData}
+                disabled={!selectedMonth}
+              >
                 Load Data
               </AlertDialogAction>
             </AlertDialogFooter>

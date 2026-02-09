@@ -16,14 +16,14 @@ export function generateReceiptPDF(receiptData, settings) {
     let yPos = margin;
 
     // Add SVP Logo
-    const logoUrl = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/3aa602531_Logo-SVP-Vectorai-OFFICIAL.png';
+    const logoUrl = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/7a1906beb_SVP-1200x675-Photoroom.png';
     try {
-      doc.addImage(logoUrl, 'PNG', margin, yPos, 40, 25);
+      doc.addImage(logoUrl, 'PNG', margin, yPos, 60, 20);
     } catch (e) {
       console.log('Could not load logo');
     }
     
-    yPos += 30;
+    yPos += 25;
     
     // Horizontal line (removed duplicate organization name)
     doc.setDrawColor(200, 200, 200);
@@ -198,36 +198,53 @@ export function generateReceiptPDF(receiptData, settings) {
     
     yPos = doc.lastAutoTable.finalY + 3;
 
-    // Final Balance Box
-    const boxWidth = 80;
+    // Final Balance Box with Debt/Credit Info
+    const boxWidth = 90;
     const finalBalanceBox = pageWidth - margin - boxWidth;
+    
+    // Build debt/credit info text
+    let balanceInfo = '';
+    if (receiptData.includeDebt && startDebt !== 0) {
+      balanceInfo = `(Prev: ${formatCurrency(startDebt)}`;
+      if (receiptData.includeCredit && creditAmount !== 0) {
+        balanceInfo += `, Credit: ${formatCurrency(creditAmount)})`;
+      } else {
+        balanceInfo += ')';
+      }
+    } else if (receiptData.includeCredit && creditAmount !== 0) {
+      balanceInfo = `(Credit: ${formatCurrency(creditAmount)})`;
+    }
+    
+    // Draw box
+    const boxHeight = balanceInfo ? 16 : 12;
     doc.setFillColor(lightGray[0], lightGray[1], lightGray[2]);
-    doc.rect(finalBalanceBox, yPos, boxWidth, 12, 'F');
+    doc.rect(finalBalanceBox, yPos, boxWidth, boxHeight, 'F');
     
     doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.text('FINAL TENANT BALANCE:', finalBalanceBox + 2, yPos + 5);
+    
     doc.setFontSize(11);
     doc.text(formatCurrency(receiptData.finalBalance), finalBalanceBox + boxWidth - 2, yPos + 9, { align: 'right' });
     
-    yPos += 20;
+    // Add debt/credit info if exists
+    if (balanceInfo) {
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(80, 80, 80);
+      doc.text(balanceInfo, finalBalanceBox + boxWidth - 2, yPos + 13, { align: 'right' });
+    }
+    
+    yPos += boxHeight + 8;
 
-    // Notes/Contact info
-    if (receiptData.notes || (settings && settings.contactPhone)) {
+    // Notes only (removed duplicate contact info)
+    if (receiptData.notes) {
       doc.setTextColor(60, 60, 60);
       doc.setFontSize(8.5);
       doc.setFont('helvetica', 'normal');
-      
-      if (settings && settings.contactPhone) {
-        doc.text('For assistance, please contact SVP: ' + settings.contactPhone, margin, yPos);
-        yPos += 5;
-      }
-      
-      if (receiptData.notes) {
-        const splitNotes = doc.splitTextToSize(receiptData.notes, pageWidth - (margin * 2));
-        doc.text(splitNotes, margin, yPos);
-      }
+      const splitNotes = doc.splitTextToSize(receiptData.notes, pageWidth - (margin * 2));
+      doc.text(splitNotes, margin, yPos);
     }
 
     // Footer
