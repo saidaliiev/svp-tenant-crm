@@ -24,6 +24,7 @@ import {
 import { Plus, Upload, Pencil, Trash2, UserCheck, Users, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Papa from 'papaparse';
+import ExportClients from './ExportClients';
 
 export default function ClientManagement({ clients, setClients, statements, onSelectClient }) {
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -331,6 +332,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
               <Upload className="w-4 h-4 mr-2" />
               Import CSV/Excel
             </Button>
+            <ExportClients clients={clients} />
             <input
               ref={fileInputRef}
               type="file"
