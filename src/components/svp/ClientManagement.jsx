@@ -25,6 +25,7 @@ import { Plus, Upload, Pencil, Trash2, UserCheck, Users, AlertCircle } from 'luc
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Papa from 'papaparse';
 import ExportClients from './ExportClients';
+import ExportClientsPDF from './ExportClientsPDF';
 
 export default function ClientManagement({ clients, setClients, statements, onSelectClient }) {
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -333,6 +334,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
               Import CSV/Excel
             </Button>
             <ExportClients clients={clients} />
+            <ExportClientsPDF clients={clients} />
             <input
               ref={fileInputRef}
               type="file"
