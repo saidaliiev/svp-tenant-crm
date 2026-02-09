@@ -219,13 +219,19 @@ export function generateReceiptPDF(receiptData, settings) {
     
     yPos += 28;
 
-    // Notes only (removed duplicate contact info)
+    // Notes with paragraph breaks
     if (receiptData.notes) {
       doc.setTextColor(60, 60, 60);
       doc.setFontSize(8.5);
       doc.setFont('helvetica', 'normal');
-      const splitNotes = doc.splitTextToSize(receiptData.notes, pageWidth - (margin * 2));
-      doc.text(splitNotes, margin, yPos);
+
+      // Split by double newlines for paragraphs
+      const paragraphs = receiptData.notes.split('\n\n');
+      paragraphs.forEach((para, idx) => {
+        const splitText = doc.splitTextToSize(para, pageWidth - (margin * 2));
+        doc.text(splitText, margin, yPos);
+        yPos += (splitText.length * 4) + 4; // Add extra space between paragraphs
+      });
     }
 
     // Footer

@@ -203,33 +203,33 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
     const client = clients.find(c => c.id === clientId);
     const weeklyTenant = client?.weeklyTenantPayment || 40;
     const weeklyRas = client?.weeklyRasAmount || 103.40;
-    
+
     // Get month name from end date
     const endDateObj = new Date(endDate);
     const monthName = endDateObj.toLocaleDateString('en-US', { month: 'long' });
     const nextMonth = new Date(endDateObj);
     nextMonth.setMonth(nextMonth.getMonth() + 1);
     const nextMonthName = nextMonth.toLocaleDateString('en-US', { month: 'long' });
-    
+
     const debtAmt = includeDebt ? (parseFloat(startingDebt) || 0) : 0;
-    
-    let smartNote = `Your monthly rent statement is shown above. You should pay €${weeklyTenant.toFixed(2)} per week (RAS covers €${weeklyRas.toFixed(2)} per week). Contact SVP at 086 7856869 if you need assistance.\n`;
-    
-    // If positive balance (credit)
+
+    let smartNote = `Your monthly rent statement is shown above. You should pay €${weeklyTenant.toFixed(2)} per week (RAS covers €${weeklyRas.toFixed(2)} per week). Contact SVP at 086 7856869 if you need assistance.\n\n`;
+
+    // If negative balance (credit)
     if (finalTenantBalance < 0) {
       const creditAmt = Math.abs(finalTenantBalance);
       smartNote += `Your credit balance is now €${creditAmt.toFixed(2)}, this amount will be carried forward to ${nextMonthName}.`;
     } 
-    // If negative balance (arrears)
+    // If positive balance (arrears)
     else if (finalTenantBalance > 0) {
-      smartNote += `You have paid €${totalTenantPayments.toFixed(2)} this month, your rent for the month of ${monthName} is €${totalRentDue.toFixed(2)}. Your arrears at the start of ${monthName} is €${debtAmt.toFixed(2)}.`;
-      
-      // If large arrears (> 400)
-      if (finalTenantBalance > 400) {
-        smartNote += `\nYour arrears are €${finalTenantBalance.toFixed(2)}. You have a repayment plan in place to pay €50 each week.\nIt is important to stick to the agreement you signed up to, otherwise your arrears will increase again and your tenancy will be affected.`;
+      smartNote += `You have paid €${totalTenantPayments.toFixed(2)} this month, your rent for the month of ${monthName} is €${totalRentDue.toFixed(2)}. Your arrears at the start of ${monthName} is €${debtAmt.toFixed(2)}.\n\n`;
+
+      // If large arrears (> 200)
+      if (finalTenantBalance > 200) {
+        smartNote += `⚠️ Your arrears are €${finalTenantBalance.toFixed(2)}. You have a repayment plan in place to pay €50 each week.\n\nIt is important to stick to the agreement you signed up to, otherwise your arrears will increase again and your tenancy will be affected.`;
       }
     }
-    
+
     return smartNote;
   };
 
