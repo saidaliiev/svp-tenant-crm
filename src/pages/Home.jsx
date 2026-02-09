@@ -68,7 +68,7 @@ export default function HomePage() {
             <img 
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/7a1906beb_SVP-1200x675-Photoroom.png" 
               alt="SVP Logo" 
-              className="h-24 object-contain"
+              className="h-32 md:h-40 object-contain w-full max-w-2xl px-4"
             />
           </div>
         </div>

@@ -91,13 +91,35 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
       const endDate = new Date(lastStatement.endDate);
       const newStartDate = new Date(endDate);
       newStartDate.setDate(newStartDate.getDate() + 1);
-      
+
       const newEndDate = new Date(newStartDate);
       newEndDate.setDate(newEndDate.getDate() + daysToLoad - 1);
-      
+
       setStartDate(newStartDate.toISOString().split('T')[0]);
       setEndDate(newEndDate.toISOString().split('T')[0]);
       setStartingDebt(lastStatement.finalBalance || 0);
+
+      // Auto-generate transactions based on weeks in period
+      const weeks = Math.ceil(daysToLoad / 7);
+      const client = clients.find(c => c.id === clientId);
+      const newTransactions = [];
+
+      for (let i = 0; i < weeks; i++) {
+        const transactionDate = new Date(newStartDate);
+        transactionDate.setDate(transactionDate.getDate() + (i * 7));
+
+        newTransactions.push({
+          id: Date.now() + i,
+          date: transactionDate.toISOString().split('T')[0],
+          rentDue: client?.monthlyRent || 143.40,
+          tenantPayment: client?.weeklyTenantPayment || 40,
+          tenantPaid: true,
+          rasPayment: client?.weeklyRasAmount || 103.40,
+          rasReceived: true
+        });
+      }
+
+      setTransactions(newTransactions);
     }
     setShowLoadDialog(false);
   };
