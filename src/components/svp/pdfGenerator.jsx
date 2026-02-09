@@ -208,10 +208,10 @@ export function generateReceiptPDF(receiptData, settings) {
     if (creditAmount !== 0) {
       breakdownParts.push(`Credit: ${formatCurrency(creditAmount)}`);
     }
-    breakdownParts.push(`Rent Due: ${formatCurrency(totalRentDue)}`);
+    breakdownParts.push(`Rent Due: ${formatCurrency(totalTenantPaid)}`);
     breakdownParts.push(`Tenant Paid: ${formatCurrency(totalTenantPaid)}`);
     if (totalRasReceived > 0) {
-      breakdownParts.push(`RAS: ${formatCurrency(totalRasReceived)}`);
+      breakdownParts.push(`Rent Assistance Support: ${formatCurrency(totalRasReceived)}`);
     }
     
     const breakdownText = breakdownParts.join('  |  ');
