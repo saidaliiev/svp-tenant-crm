@@ -12,7 +12,7 @@ export default function ExportClientsPDF({ clients }) {
     }
 
     try {
-      const doc = new jsPDF('landscape');
+      const doc = new jsPDF('landscape', 'mm', 'a4');
       const pageWidth = doc.internal.pageSize.getWidth();
       const margin = 20;
       
@@ -21,27 +21,27 @@ export default function ExportClientsPDF({ clients }) {
       
       let yPos = margin;
 
-      // Add SVP Logo - better sizing
+      // Add SVP Logo - aligned left with proper spacing
       const logoUrl = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/36ae01103_SVP-1200x675-Photoroom.png';
       try {
-        doc.addImage(logoUrl, 'PNG', margin, yPos, 90, 30);
+        doc.addImage(logoUrl, 'PNG', margin, yPos, 80, 27);
       } catch (e) {
         console.log('Could not load logo');
       }
       
-      yPos += 35;
+      yPos += 32;
       
-      // Title
+      // Title with spacing
       doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
       doc.text('CLIENT LIST', margin, yPos);
       
-      yPos += 3;
+      yPos += 4;
       doc.setDrawColor(200, 200, 200);
       doc.line(margin, yPos, pageWidth - margin, yPos);
       
-      yPos += 10;
+      yPos += 12;
       
       // Date
       doc.setFontSize(9);
@@ -56,17 +56,24 @@ export default function ExportClientsPDF({ clients }) {
       
       yPos += 5;
 
-      // Prepare table data
-      const tableData = clients.map(client => [
-        client.id || '-',
-        client.fullName || '-',
-        client.address || '-',
-        formatCurrency(client.currentBalance),
-        formatCurrency(client.credit),
-        formatCurrency(client.monthlyRent),
-        formatCurrency(client.weeklyTenantPayment),
-        formatCurrency(client.weeklyRasAmount)
-      ]);
+      // Prepare table data with debt column
+      const tableData = clients.map(client => {
+        const balance = parseFloat(client.currentBalance) || 0;
+        const credit = parseFloat(client.credit) || 0;
+        const debt = balance > 0 ? balance : 0;
+        
+        return [
+          client.id || '-',
+          client.fullName || '-',
+          client.address || '-',
+          formatCurrency(balance),
+          debt > 0 ? formatCurrency(debt) : '-',
+          credit > 0 ? formatCurrency(credit) : '-',
+          formatCurrency(client.monthlyRent),
+          formatCurrency(client.weeklyTenantPayment),
+          formatCurrency(client.weeklyRasAmount)
+        ];
+      });
 
       // Create table
       doc.autoTable({
@@ -75,7 +82,8 @@ export default function ExportClientsPDF({ clients }) {
           'Client ID', 
           'Full Name', 
           'Address', 
-          'Balance', 
+          'Balance',
+          'Debt',
           'Credit',
           'Weekly Rent',
           'Weekly Tenant',
@@ -97,22 +105,32 @@ export default function ExportClientsPDF({ clients }) {
           textColor: [60, 60, 60]
         },
         columnStyles: {
-          0: { cellWidth: 22 },
-          1: { cellWidth: 45 },
-          2: { cellWidth: 60 },
+          0: { cellWidth: 20 },
+          1: { cellWidth: 40 },
+          2: { cellWidth: 55 },
           3: { cellWidth: 22, halign: 'right' },
-          4: { cellWidth: 22, halign: 'right' },
-          5: { cellWidth: 25, halign: 'right' },
-          6: { cellWidth: 25, halign: 'right' },
-          7: { cellWidth: 25, halign: 'right' }
+          4: { cellWidth: 20, halign: 'right' },
+          5: { cellWidth: 20, halign: 'right' },
+          6: { cellWidth: 23, halign: 'right' },
+          7: { cellWidth: 23, halign: 'right' },
+          8: { cellWidth: 23, halign: 'right' }
         },
         didParseCell: function(data) {
-          if (data.column.index >= 3 && data.section === 'body') {
-            const value = parseFloat(data.cell.text[0].replace('€', '').replace(',', ''));
-            if (value < 0) {
-              data.cell.styles.textColor = [220, 38, 38]; // red
-            } else if (value > 0 && data.column.index === 3) {
-              data.cell.styles.textColor = [220, 38, 38]; // red for positive balance (debt)
+          if (data.section === 'body') {
+            // Balance column (index 3) - red if debt
+            if (data.column.index === 3) {
+              const value = parseFloat(data.cell.text[0].replace('€', '').replace(',', '').replace('-', ''));
+              if (value > 0) {
+                data.cell.styles.textColor = [220, 38, 38];
+              }
+            }
+            // Debt column (index 4) - red
+            if (data.column.index === 4 && data.cell.text[0] !== '-') {
+              data.cell.styles.textColor = [220, 38, 38];
+            }
+            // Credit column (index 5) - green
+            if (data.column.index === 5 && data.cell.text[0] !== '-') {
+              data.cell.styles.textColor = [34, 139, 34];
             }
           }
         }

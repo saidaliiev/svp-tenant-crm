@@ -3,7 +3,7 @@ import 'jspdf-autotable';
 
 export function generateReceiptPDF(receiptData, settings) {
   try {
-    const doc = new jsPDF('portrait');
+    const doc = new jsPDF('portrait', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 20;
@@ -15,18 +15,17 @@ export function generateReceiptPDF(receiptData, settings) {
     
     let yPos = margin;
 
-    // Add SVP Logo - centered and larger
+    // Add SVP Logo - aligned left
     const logoUrl = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/36ae01103_SVP-1200x675-Photoroom.png';
     try {
-      const logoWidth = 80;
-      const logoHeight = 26;
-      const logoX = (pageWidth - logoWidth) / 2;
-      doc.addImage(logoUrl, 'PNG', logoX, yPos, logoWidth, logoHeight);
+      const logoWidth = 70;
+      const logoHeight = 23;
+      doc.addImage(logoUrl, 'PNG', margin, yPos, logoWidth, logoHeight);
     } catch (e) {
       console.log('Could not load logo');
     }
     
-    yPos += 32;
+    yPos += 28;
     
     // Horizontal line (removed duplicate organization name)
     doc.setDrawColor(200, 200, 200);
@@ -201,45 +200,42 @@ export function generateReceiptPDF(receiptData, settings) {
     
     yPos = doc.lastAutoTable.finalY + 3;
 
-    // Final Balance Box with Debt/Credit Info
-    const boxWidth = 90;
-    const finalBalanceBox = pageWidth - margin - boxWidth;
-    
-    // Build debt/credit info text
-    let balanceInfo = '';
-    if (receiptData.includeDebt && startDebt !== 0) {
-      balanceInfo = `(Prev: ${formatCurrency(startDebt)}`;
-      if (receiptData.includeCredit && creditAmount !== 0) {
-        balanceInfo += `, Credit: ${formatCurrency(creditAmount)})`;
-      } else {
-        balanceInfo += ')';
-      }
-    } else if (receiptData.includeCredit && creditAmount !== 0) {
-      balanceInfo = `(Credit: ${formatCurrency(creditAmount)})`;
-    }
-    
-    // Draw box
-    const boxHeight = balanceInfo ? 16 : 12;
+    // Final Balance Box with detailed breakdown
+    const boxWidth = pageWidth - (margin * 2);
     doc.setFillColor(lightGray[0], lightGray[1], lightGray[2]);
-    doc.rect(finalBalanceBox, yPos, boxWidth, boxHeight, 'F');
+    doc.rect(margin, yPos, boxWidth, 22, 'F');
     
+    // Title
     doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
-    doc.setFontSize(9);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    doc.text('FINAL TENANT BALANCE:', finalBalanceBox + 2, yPos + 5);
+    doc.text('FINAL TENANT BALANCE:', margin + 3, yPos + 6);
     
-    doc.setFontSize(11);
-    doc.text(formatCurrency(receiptData.finalBalance), finalBalanceBox + boxWidth - 2, yPos + 9, { align: 'right' });
+    // Main balance - large and prominent
+    doc.setFontSize(14);
+    const balanceColor = receiptData.finalBalance > 0 ? [220, 38, 38] : [34, 139, 34];
+    doc.setTextColor(balanceColor[0], balanceColor[1], balanceColor[2]);
+    doc.text(formatCurrency(receiptData.finalBalance), pageWidth - margin - 3, yPos + 8, { align: 'right' });
     
-    // Add debt/credit info if exists
-    if (balanceInfo) {
-      doc.setFontSize(7);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(80, 80, 80);
-      doc.text(balanceInfo, finalBalanceBox + boxWidth - 2, yPos + 13, { align: 'right' });
+    // Breakdown line
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(80, 80, 80);
+    
+    let breakdownParts = [];
+    if (receiptData.includeDebt && startDebt !== 0) {
+      breakdownParts.push(`Previous Balance: ${formatCurrency(startDebt)}`);
     }
+    if (receiptData.includeCredit && creditAmount !== 0) {
+      breakdownParts.push(`Credit Applied: ${formatCurrency(creditAmount)}`);
+    }
+    breakdownParts.push(`Rent Due: ${formatCurrency(receiptData.totalRentDue)}`);
+    breakdownParts.push(`Payments: ${formatCurrency(receiptData.totalTenantPayments)}`);
     
-    yPos += boxHeight + 8;
+    const breakdownText = breakdownParts.join('  |  ');
+    doc.text(breakdownText, margin + 3, yPos + 15);
+    
+    yPos += 28;
 
     // Notes only (removed duplicate contact info)
     if (receiptData.notes) {
