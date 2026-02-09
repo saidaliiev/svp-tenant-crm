@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Home, FileText, History, Settings } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import ClientManagement from '@/components/svp/ClientManagement';
 import CreateReceipt from '@/components/svp/CreateReceipt';
 import ReceiptHistory from '@/components/svp/ReceiptHistory';
@@ -14,49 +16,54 @@ const DEFAULT_SETTINGS = {
 };
 
 export default function HomePage() {
-  const [activeTab, setActiveTab] = useState("clients");
-  const [clients, setClients] = useState([]);
-  const [statements, setStatements] = useState([]);
+  const [activeTab, setActiveTab] = useState("tenants");
+  const [selectedTenantId, setSelectedTenantId] = useState(null);
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
-  const [selectedClientId, setSelectedClientId] = useState(null);
+  
+  const queryClient = useQueryClient();
 
-  // Load data from localStorage on mount
+  // Fetch tenants from cloud
+  const { data: tenants = [], isLoading: tenantsLoading } = useQuery({
+    queryKey: ['tenants'],
+    queryFn: () => base44.entities.Tenant.list('-created_date'),
+  });
+
+  // Fetch statements from cloud
+  const { data: statements = [], isLoading: statementsLoading } = useQuery({
+    queryKey: ['statements'],
+    queryFn: () => base44.entities.Statement.list('-created_date'),
+  });
+
+  // Load settings from localStorage (can be migrated later if needed)
   useEffect(() => {
-    const savedClients = localStorage.getItem('svp_clients');
-    const savedStatements = localStorage.getItem('svp_statements');
     const savedSettings = localStorage.getItem('svp_settings');
-    
-    if (savedClients) setClients(JSON.parse(savedClients));
-    if (savedStatements) setStatements(JSON.parse(savedStatements));
     if (savedSettings) setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(savedSettings) });
   }, []);
-
-  // Save to localStorage whenever data changes
-  useEffect(() => {
-    localStorage.setItem('svp_clients', JSON.stringify(clients));
-  }, [clients]);
-
-  useEffect(() => {
-    localStorage.setItem('svp_statements', JSON.stringify(statements));
-  }, [statements]);
 
   useEffect(() => {
     localStorage.setItem('svp_settings', JSON.stringify(settings));
   }, [settings]);
 
-  const handleSelectClient = (clientId) => {
-    setSelectedClientId(clientId);
+  const handleSelectTenant = (tenantId) => {
+    setSelectedTenantId(tenantId);
     setActiveTab("receipt");
   };
 
-  const handleReceiptCreated = (receipt) => {
-    setStatements(prev => [receipt, ...prev]);
-    // Update client's last receipt date
-    setClients(prev => prev.map(c => 
-      c.id === receipt.clientId 
-        ? { ...c, lastReceiptDate: receipt.createdDate, currentBalance: receipt.finalBalance }
-        : c
-    ));
+  const handleReceiptCreated = async (receipt) => {
+    // Refresh statements
+    queryClient.invalidateQueries(['statements']);
+    // Update tenant's balance in cloud
+    try {
+      const tenant = tenants.find(t => t.id === receipt.clientId);
+      if (tenant) {
+        await base44.entities.Tenant.update(tenant.id, {
+          currentBalance: receipt.finalBalance
+        });
+        queryClient.invalidateQueries(['tenants']);
+      }
+    } catch (err) {
+      console.error('Error updating tenant balance:', err);
+    }
   };
 
   return (
@@ -77,12 +84,12 @@ export default function HomePage() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-4 mb-6 bg-white/80 backdrop-blur-sm shadow-lg rounded-xl p-1 h-auto">
             <TabsTrigger 
-              value="clients" 
+              value="tenants" 
               className="flex items-center gap-2 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all"
             >
               <Home className="w-4 h-4" />
-              <span className="hidden sm:inline">Client Management</span>
-              <span className="sm:hidden">Clients</span>
+              <span className="hidden sm:inline">Tenant Management</span>
+              <span className="sm:hidden">Tenants</span>
             </TabsTrigger>
             <TabsTrigger 
               value="receipt" 
@@ -110,30 +117,29 @@ export default function HomePage() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="clients">
+          <TabsContent value="tenants">
             <ClientManagement 
-              clients={clients}
-              setClients={setClients}
+              tenants={tenants}
+              tenantsLoading={tenantsLoading}
               statements={statements}
-              onSelectClient={handleSelectClient}
+              onSelectTenant={handleSelectTenant}
             />
           </TabsContent>
 
           <TabsContent value="receipt">
             <CreateReceipt 
-              clients={clients}
+              tenants={tenants}
               statements={statements}
               settings={settings}
-              selectedClientId={selectedClientId}
+              selectedTenantId={selectedTenantId}
               onReceiptCreated={handleReceiptCreated}
             />
           </TabsContent>
 
           <TabsContent value="history">
             <ReceiptHistory 
-              clients={clients}
+              tenants={tenants}
               statements={statements}
-              setStatements={setStatements}
               settings={settings}
             />
           </TabsContent>
