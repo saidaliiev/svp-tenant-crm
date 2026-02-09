@@ -7,8 +7,8 @@ export default function Layout({ children, currentPageName }) {
         {children}
       </div>
       <footer className="py-3 px-4 text-center text-xs text-gray-400 border-t border-gray-100">
-        <p>Developed by Said Aliiev | Contact: <a href="mailto:saidaliiev@hotmail.com" className="hover:text-gray-600 transition-colors">saidaliiev@hotmail.com</a></p>
+        <p className="">Developed by Iskan | Contact: saidaliiev@hotmail.com</p>
       </footer>
-    </div>
-  );
+    </div>);
+
 }
