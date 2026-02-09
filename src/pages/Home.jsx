@@ -63,12 +63,12 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-2">
+        <div className="text-center mb-12">
+          <div className="flex justify-center mb-4">
             <img 
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/7a1906beb_SVP-1200x675-Photoroom.png" 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/36ae01103_SVP-1200x675-Photoroom.png" 
               alt="SVP Logo" 
-              className="h-32 md:h-40 object-contain w-full max-w-2xl px-4"
+              className="h-24 md:h-28 object-contain w-full max-w-xl"
             />
           </div>
         </div>
