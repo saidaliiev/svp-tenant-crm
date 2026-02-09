@@ -384,7 +384,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
             <SelectContent>
               {tenants.map(tenant => (
                 <SelectItem key={tenant.id} value={tenant.id}>
-                  {tenant.fullName} ({tenant.id})
+                  {tenant.fullName}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -400,7 +400,6 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
               </div>
               <div>
                 <h3 className="font-semibold text-slate-800">{selectedTenant.fullName}</h3>
-                <p className="text-sm text-slate-600">ID: {selectedTenant.id}</p>
                 <p className="text-sm text-slate-600">{selectedTenant.address}</p>
               </div>
             </div>

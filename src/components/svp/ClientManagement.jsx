@@ -115,7 +115,6 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
     const tenantId = formData.id.trim() || generateId();
     
     const tenantData = {
-      id: tenantId,
       fullName: formData.fullName.trim(),
       address: formData.address.trim(),
       currentBalance: parseFloat(formData.previousDebt) || 0,
@@ -130,10 +129,6 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
         await updateTenantMutation.mutateAsync({ id: editingTenant.id, data: tenantData });
         setSuccess('Tenant updated successfully');
       } else {
-        if (tenants.some(t => t.id === tenantId)) {
-          setError('A tenant with this ID already exists');
-          return;
-        }
         await createTenantMutation.mutateAsync(tenantData);
         setSuccess('Tenant added successfully');
       }
@@ -252,7 +247,6 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
           } else {
             // Create new tenant
             const newTenant = {
-              id: value.id || generateId(),
               fullName: value.fullName,
               address: value.address,
               currentBalance: -value.totalPayments,
@@ -448,16 +442,7 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-              <div className="space-y-2">
-                <Label htmlFor="id">Tenant ID (auto-generated if empty)</Label>
-                <Input
-                  id="id"
-                  value={formData.id}
-                  onChange={(e) => setFormData(prev => ({ ...prev, id: e.target.value }))}
-                  placeholder="SVP-XXXXX"
-                  className="font-mono"
-                />
-              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name *</Label>
                 <Input
