@@ -64,19 +64,13 @@ export default function HomePage() {
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg p-1">
-              <img 
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/3aa602531_Logo-SVP-Vectorai-OFFICIAL.png" 
-                alt="SVP Logo" 
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent">
-              {settings.systemName}
-            </h1>
+          <div className="flex justify-center mb-2">
+            <img 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/7a1906beb_SVP-1200x675-Photoroom.png" 
+              alt="SVP Logo" 
+              className="h-24 object-contain"
+            />
           </div>
-          <p className="text-slate-600">{settings.organizationName}</p>
         </div>
 
         {/* Tab Navigation */}
