@@ -3,16 +3,34 @@ import { Button } from "@/components/ui/button";
 import { FileDown } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function ExportClientsPDF({ clients }) {
+  const [showDialog, setShowDialog] = React.useState(false);
+  const [orientation, setOrientation] = React.useState('landscape');
+
   const handleExportPDF = () => {
     if (!clients || clients.length === 0) {
       alert('No clients to export');
       return;
     }
+    setShowDialog(true);
+  };
 
+  const generatePDF = () => {
     try {
-      const doc = new jsPDF('landscape', 'mm', 'a4');
+      const doc = new jsPDF(orientation, 'mm', 'a4');
       const pageWidth = doc.internal.pageSize.getWidth();
       const margin = 20;
       
@@ -145,9 +163,11 @@ export default function ExportClientsPDF({ clients }) {
 
       // Save
       doc.save('SVP_Clients_' + new Date().toISOString().split('T')[0] + '.pdf');
+      setShowDialog(false);
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('Error generating PDF: ' + error.message);
+      setShowDialog(false);
     }
   };
 
@@ -160,13 +180,51 @@ export default function ExportClientsPDF({ clients }) {
   }
 
   return (
-    <Button
-      onClick={handleExportPDF}
-      variant="outline"
-      className="bg-white hover:bg-slate-50"
-    >
-      <FileDown className="w-4 h-4 mr-2" />
-      Export to PDF
-    </Button>
+    <>
+      <Button
+        onClick={handleExportPDF}
+        variant="outline"
+        className="bg-white hover:bg-slate-50"
+      >
+        <FileDown className="w-4 h-4 mr-2" />
+        Export to PDF
+      </Button>
+
+      <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Choose PDF Orientation</AlertDialogTitle>
+            <AlertDialogDescription>
+              Select how you want the tenant list to be displayed:
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          
+          <RadioGroup value={orientation} onValueChange={setOrientation} className="gap-4 py-4">
+            <div className="flex items-center space-x-3 border rounded-lg p-4 cursor-pointer hover:bg-slate-50" onClick={() => setOrientation('landscape')}>
+              <RadioGroupItem value="landscape" id="landscape" />
+              <Label htmlFor="landscape" className="cursor-pointer flex-1">
+                <div className="font-semibold">Landscape</div>
+                <div className="text-sm text-slate-500">Horizontal layout - fits more columns</div>
+              </Label>
+            </div>
+            
+            <div className="flex items-center space-x-3 border rounded-lg p-4 cursor-pointer hover:bg-slate-50" onClick={() => setOrientation('portrait')}>
+              <RadioGroupItem value="portrait" id="portrait" />
+              <Label htmlFor="portrait" className="cursor-pointer flex-1">
+                <div className="font-semibold">Portrait</div>
+                <div className="text-sm text-slate-500">Vertical layout - standard format</div>
+              </Label>
+            </div>
+          </RadioGroup>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={generatePDF}>
+              Generate PDF
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
