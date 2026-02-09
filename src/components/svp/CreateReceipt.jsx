@@ -61,12 +61,6 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
     if (clientId && selectedClient) {
       loadLastStatement();
       setCredit(selectedClient.credit || 0);
-
-      // Generate notes with payment info
-      const weeklyTenant = selectedClient.weeklyTenantPayment || 40;
-      const weeklyRas = selectedClient.weeklyRasAmount || 103.40;
-      setNotes(`Your monthly rent statement is shown above. You should pay €${weeklyTenant.toFixed(2)} per week (RAS covers €${weeklyRas.toFixed(2)} per week). Contact SVP at 086 7856869 if you need assistance.`);
-
       initializeTransaction();
     }
   }, [clientId]);
@@ -75,7 +69,18 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
     try {
       const allStatements = await base44.entities.Statement.filter({ clientId }, '-created_date', 1);
       if (allStatements.length > 0) {
-        setLastStatement(allStatements[0]);
+        const lastStmt = allStatements[0];
+        setLastStatement(lastStmt);
+        
+        // Auto-suggest next month
+        const lastEndDate = new Date(lastStmt.endDate);
+        const nextMonth = new Date(lastEndDate);
+        nextMonth.setMonth(nextMonth.getMonth() + 1);
+        nextMonth.setDate(1); // First day of next month
+        
+        const yearMonth = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, '0')}`;
+        setSelectedMonth(yearMonth);
+        
         setShowLoadDialog(true);
       } else {
         setStartingDebt(selectedClient.currentBalance || 0);
@@ -194,6 +199,40 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
     return num < 0 ? '-' + formatted : formatted;
   };
 
+  const generateSmartNotes = () => {
+    const client = clients.find(c => c.id === clientId);
+    const weeklyTenant = client?.weeklyTenantPayment || 40;
+    const weeklyRas = client?.weeklyRasAmount || 103.40;
+    
+    // Get month name from end date
+    const endDateObj = new Date(endDate);
+    const monthName = endDateObj.toLocaleDateString('en-US', { month: 'long' });
+    const nextMonth = new Date(endDateObj);
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+    const nextMonthName = nextMonth.toLocaleDateString('en-US', { month: 'long' });
+    
+    const debtAmt = includeDebt ? (parseFloat(startingDebt) || 0) : 0;
+    
+    let smartNote = `Your monthly rent statement is shown above. You should pay €${weeklyTenant.toFixed(2)} per week (RAS covers €${weeklyRas.toFixed(2)} per week). Contact SVP at 086 7856869 if you need assistance.\n`;
+    
+    // If positive balance (credit)
+    if (finalTenantBalance < 0) {
+      const creditAmt = Math.abs(finalTenantBalance);
+      smartNote += `Your credit balance is now €${creditAmt.toFixed(2)}, this amount will be carried forward to ${nextMonthName}.`;
+    } 
+    // If negative balance (arrears)
+    else if (finalTenantBalance > 0) {
+      smartNote += `You have paid €${totalTenantPayments.toFixed(2)} this month, your rent for the month of ${monthName} is €${totalRentDue.toFixed(2)}. Your arrears at the start of ${monthName} is €${debtAmt.toFixed(2)}.`;
+      
+      // If large arrears (> 400)
+      if (finalTenantBalance > 400) {
+        smartNote += `\nYour arrears are €${finalTenantBalance.toFixed(2)}. You have a repayment plan in place to pay €50 each week.\nIt is important to stick to the agreement you signed up to, otherwise your arrears will increase again and your tenancy will be affected.`;
+      }
+    }
+    
+    return smartNote;
+  };
+
   const handleGenerateReceipt = async () => {
     setError('');
     
@@ -212,6 +251,9 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
     }
 
     const client = clients.find(c => c.id === clientId);
+    
+    // Generate smart notes
+    const smartNotes = generateSmartNotes();
     
     const receiptData = {
       id: 'RCP-' + Date.now().toString(36).toUpperCase(),
@@ -235,7 +277,7 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
       totalRasReceived,
       netTenantObligation,
       finalBalance: finalTenantBalance,
-      notes,
+      notes: smartNotes,
       createdDate: new Date().toISOString()
     };
 
@@ -520,15 +562,17 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
             <AlertDialogHeader>
               <AlertDialogTitle>Load Previous Statement Data?</AlertDialogTitle>
               <AlertDialogDescription>
-                Found previous statement ending on {lastStatement ? format(new Date(lastStatement.endDate), 'dd MMM yyyy') : ''}. 
-                Would you like to load data from the last statement?
+                Previous statement ended on {lastStatement ? format(new Date(lastStatement.endDate), 'dd MMM yyyy') : ''}. 
                 <div className="mt-4 space-y-2">
-                  <Label>Select Month for New Statement</Label>
+                  <Label>Create statement for which month?</Label>
                   <Input
                     type="month"
                     value={selectedMonth}
                     onChange={(e) => setSelectedMonth(e.target.value)}
                   />
+                  <p className="text-xs text-slate-500">
+                    The new statement will start from the day after the previous one ended and will automatically include all weeks in the selected month.
+                  </p>
                 </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
@@ -538,7 +582,7 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
                 onClick={handleLoadStatementData}
                 disabled={!selectedMonth}
               >
-                Load Data
+                Create Statement for {selectedMonth ? new Date(selectedMonth + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'Selected Month'}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

@@ -15,15 +15,18 @@ export function generateReceiptPDF(receiptData, settings) {
     
     let yPos = margin;
 
-    // Add SVP Logo
-    const logoUrl = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/7a1906beb_SVP-1200x675-Photoroom.png';
+    // Add SVP Logo - centered and larger
+    const logoUrl = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/36ae01103_SVP-1200x675-Photoroom.png';
     try {
-      doc.addImage(logoUrl, 'PNG', margin, yPos, 60, 20);
+      const logoWidth = 80;
+      const logoHeight = 26;
+      const logoX = (pageWidth - logoWidth) / 2;
+      doc.addImage(logoUrl, 'PNG', logoX, yPos, logoWidth, logoHeight);
     } catch (e) {
       console.log('Could not load logo');
     }
     
-    yPos += 25;
+    yPos += 32;
     
     // Horizontal line (removed duplicate organization name)
     doc.setDrawColor(200, 200, 200);
