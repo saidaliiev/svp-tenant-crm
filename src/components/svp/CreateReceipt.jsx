@@ -203,6 +203,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
     const tenant = tenants.find(t => t.id === clientId);
     const weeklyTenant = tenant?.weeklyTenantPayment || 40;
     const weeklyRas = tenant?.weeklyRasAmount || 103.40;
+    const totalWeeklyWithRas = weeklyTenant + weeklyRas;
 
     // Get month name from end date
     const endDateObj = new Date(endDate);
@@ -222,11 +223,15 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
     } 
     // If positive balance (arrears)
     else if (finalTenantBalance > 0) {
-      smartNote += `You have paid €${totalTenantPayments.toFixed(2)} this month, your rent for the month of ${monthName} is €${totalRentDue.toFixed(2)}. Your arrears at the start of ${monthName} is €${debtAmt.toFixed(2)}.\n\n`;
+      smartNote += `You have paid €${totalTenantPayments.toFixed(2)} this month, your rent for the month of ${monthName} is €${totalRentDue.toFixed(2)} (with RAS €${totalWeeklyWithRas.toFixed(2)} per week). Your arrears at the start of ${monthName} is €${debtAmt.toFixed(2)}.\n\n`;
 
       // If large arrears (> 200)
       if (finalTenantBalance > 200) {
-        smartNote += `(!!) Your arrears are €${finalTenantBalance.toFixed(2)}. You have a repayment plan in place to pay €50 each week.\n\nIt is important to stick to the agreement you signed up to, otherwise your arrears will increase again and your tenancy will be affected.`;
+        // Calculate repayment: standard payment + 15% rounded
+        const extraPayment = Math.round(weeklyTenant * 0.15);
+        const repaymentAmount = weeklyTenant + extraPayment;
+
+        smartNote += `(!!) Your arrears are €${finalTenantBalance.toFixed(2)}. You have a repayment plan in place to pay €${repaymentAmount.toFixed(2)} each week.\n\nIt is important to stick to the agreement you signed up to, otherwise your arrears will increase again and your tenancy will be affected.`;
       }
     }
 
@@ -257,10 +262,10 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
 
       // Generate receipt ID with tenant initials
       const nameParts = tenant.fullName.trim().split(' ');
-    const firstInitial = nameParts[0] ? nameParts[0][0].toUpperCase() : 'X';
-    const lastInitial = nameParts.length > 1 ? nameParts[nameParts.length - 1][0].toUpperCase() : 'X';
-    const randomDigits = Math.floor(10000 + Math.random() * 90000); // 5 digits
-    const receiptId = `${firstInitial}${lastInitial}${randomDigits}`;
+      const firstInitial = nameParts[0] ? nameParts[0][0].toUpperCase() : 'X';
+      const lastInitial = nameParts.length > 1 ? nameParts[nameParts.length - 1][0].toUpperCase() : 'X';
+      const randomDigits = Math.floor(10000 + Math.random() * 90000); // 5 digits
+      const receiptId = `${firstInitial}${lastInitial}${randomDigits}`;
 
     const receiptData = {
       id: receiptId,
