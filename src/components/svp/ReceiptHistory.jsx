@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { base44 } from '@/api/base44Client';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +23,8 @@ import {
 import { History, Printer, Trash2, FileText } from 'lucide-react';
 import { generateReceiptPDF } from './pdfGenerator';
 
-export default function ReceiptHistory({ clients, statements, setStatements, settings }) {
+export default function ReceiptHistory({ tenants = [], statements, settings }) {
+  const queryClient = useQueryClient();
   const [filterClientId, setFilterClientId] = useState('all');
   const [deleteReceipt, setDeleteReceipt] = useState(null);
 
@@ -37,10 +40,19 @@ export default function ReceiptHistory({ clients, statements, setStatements, set
     generateReceiptPDF(receipt, settings);
   };
 
-  const handleDeleteReceipt = () => {
+  const deleteStatementMutation = useMutation({
+    mutationFn: (id) => base44.entities.Statement.delete(id),
+    onSuccess: () => queryClient.invalidateQueries(['statements'])
+  });
+
+  const handleDeleteReceipt = async () => {
     if (deleteReceipt) {
-      setStatements(prev => prev.filter(s => s.id !== deleteReceipt.id));
-      setDeleteReceipt(null);
+      try {
+        await deleteStatementMutation.mutateAsync(deleteReceipt.id);
+        setDeleteReceipt(null);
+      } catch (err) {
+        console.error('Error deleting statement:', err);
+      }
     }
   };
 

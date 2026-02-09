@@ -16,13 +16,13 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-export default function ExportClientsPDF({ clients }) {
+export default function ExportClientsPDF({ tenants = [] }) {
   const [showDialog, setShowDialog] = React.useState(false);
   const [orientation, setOrientation] = React.useState('landscape');
 
   const handleExportPDF = () => {
-    if (!clients || clients.length === 0) {
-      alert('No clients to export');
+    if (!tenants || tenants.length === 0) {
+      alert('No tenants to export');
       return;
     }
     setShowDialog(true);
@@ -75,21 +75,21 @@ export default function ExportClientsPDF({ clients }) {
       yPos += 6;
 
       // Prepare table data with debt column
-      const tableData = clients.map(client => {
-        const balance = parseFloat(client.currentBalance) || 0;
-        const credit = parseFloat(client.credit) || 0;
+      const tableData = tenants.map(tenant => {
+        const balance = parseFloat(tenant.currentBalance) || 0;
+        const credit = parseFloat(tenant.credit) || 0;
         const debt = balance > 0 ? balance : 0;
         
         return [
-          client.id || '-',
-          client.fullName || '-',
-          client.address || '-',
+          tenant.id || '-',
+          tenant.fullName || '-',
+          tenant.address || '-',
           formatCurrency(balance),
           debt > 0 ? formatCurrency(debt) : '-',
           credit > 0 ? formatCurrency(credit) : '-',
-          formatCurrency(client.monthlyRent),
-          formatCurrency(client.weeklyTenantPayment),
-          formatCurrency(client.weeklyRasAmount)
+          formatCurrency(tenant.monthlyRent),
+          formatCurrency(tenant.weeklyTenantPayment),
+          formatCurrency(tenant.weeklyRasAmount)
         ];
       });
 
@@ -159,7 +159,7 @@ export default function ExportClientsPDF({ clients }) {
       doc.setFontSize(9);
       doc.setTextColor(100, 100, 100);
       doc.text('SVP Housing Support System', margin, pageHeight - 10);
-      doc.text('Total Clients: ' + clients.length, pageWidth - margin, pageHeight - 10, { align: 'right' });
+      doc.text('Total Tenants: ' + tenants.length, pageWidth - margin, pageHeight - 10, { align: 'right' });
 
       // Save
       doc.save('SVP_Clients_' + new Date().toISOString().split('T')[0] + '.pdf');

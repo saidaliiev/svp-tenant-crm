@@ -29,7 +29,7 @@ import TransactionRow from './TransactionRow';
 import { generateReceiptPDF } from './pdfGenerator';
 import { format } from 'date-fns';
 
-export default function CreateReceipt({ clients, statements, settings, selectedClientId, onReceiptCreated }) {
+export default function CreateReceipt({ tenants = [], statements, settings, selectedTenantId, onReceiptCreated }) {
   const [clientId, setClientId] = useState('');
   const [startingDebt, setStartingDebt] = useState(0);
   const [credit, setCredit] = useState(0);
@@ -47,20 +47,20 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
   const [lastStatement, setLastStatement] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState('');
 
-  const selectedClient = clients.find(c => c.id === clientId);
+  const selectedTenant = tenants.find(t => t.id === clientId);
 
-  // When selectedClientId prop changes (from client management)
+  // When selectedTenantId prop changes (from tenant management)
   useEffect(() => {
-    if (selectedClientId) {
-      setClientId(selectedClientId);
+    if (selectedTenantId) {
+      setClientId(selectedTenantId);
     }
-  }, [selectedClientId]);
+  }, [selectedTenantId]);
 
-  // When client is selected, load last statement and ask if user wants to load data
+  // When tenant is selected, load last statement and ask if user wants to load data
   useEffect(() => {
-    if (clientId && selectedClient) {
+    if (clientId && selectedTenant) {
       loadLastStatement();
-      setCredit(selectedClient.credit || 0);
+      setCredit(selectedTenant.credit || 0);
       initializeTransaction();
     }
   }, [clientId]);
@@ -82,14 +82,14 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
         setSelectedMonth(yearMonth);
         
         setShowLoadDialog(true);
-      } else {
-        setStartingDebt(selectedClient.currentBalance || 0);
-      }
-    } catch (err) {
-      console.error('Error loading last statement:', err);
-      setStartingDebt(selectedClient.currentBalance || 0);
-    }
-  };
+        } else {
+        setStartingDebt(selectedTenant.currentBalance || 0);
+        }
+        } catch (err) {
+        console.error('Error loading last statement:', err);
+        setStartingDebt(selectedTenant.currentBalance || 0);
+        }
+        };
   
   const handleLoadStatementData = () => {
     if (lastStatement && selectedMonth) {
@@ -109,7 +109,7 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
       const daysInMonth = newEndDate.getDate();
       const weeks = Math.ceil(daysInMonth / 7);
       
-      const client = clients.find(c => c.id === clientId);
+      const tenant = tenants.find(t => t.id === clientId);
       const newTransactions = [];
 
       for (let i = 0; i < weeks; i++) {
@@ -119,10 +119,10 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
         newTransactions.push({
           id: Date.now() + i,
           date: transactionDate.toISOString().split('T')[0],
-          rentDue: client?.monthlyRent || 143.40,
-          tenantPayment: client?.weeklyTenantPayment || 40,
+          rentDue: tenant?.monthlyRent || 143.40,
+          tenantPayment: tenant?.weeklyTenantPayment || 40,
           tenantPaid: true,
-          rasPayment: client?.weeklyRasAmount || 103.40,
+          rasPayment: tenant?.weeklyRasAmount || 103.40,
           rasReceived: true
         });
       }
@@ -130,40 +130,40 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
       setTransactions(newTransactions);
     }
     setShowLoadDialog(false);
-  };
-  
-  const handleSkipLoadStatement = () => {
-    setStartingDebt(selectedClient.currentBalance || 0);
-    setShowLoadDialog(false);
-  };
+    };
 
-  const initializeTransaction = () => {
-    const client = clients.find(c => c.id === clientId);
+    const handleSkipLoadStatement = () => {
+    setStartingDebt(selectedTenant.currentBalance || 0);
+    setShowLoadDialog(false);
+    };
+
+    const initializeTransaction = () => {
+    const tenant = tenants.find(t => t.id === clientId);
     setTransactions([{
       id: Date.now(),
       date: new Date().toISOString().split('T')[0],
-      rentDue: client?.monthlyRent || 143.40,
-      tenantPayment: client?.weeklyTenantPayment || 40,
+      rentDue: tenant?.monthlyRent || 143.40,
+      tenantPayment: tenant?.weeklyTenantPayment || 40,
       tenantPaid: true,
-      rasPayment: client?.weeklyRasAmount || 103.40,
+      rasPayment: tenant?.weeklyRasAmount || 103.40,
       rasReceived: true
     }]);
-  };
+    };
 
 
 
-  const addTransaction = () => {
-    const client = clients.find(c => c.id === clientId);
+    const addTransaction = () => {
+    const tenant = tenants.find(t => t.id === clientId);
     setTransactions(prev => [...prev, {
       id: Date.now(),
       date: new Date().toISOString().split('T')[0],
-      rentDue: client?.monthlyRent || 143.40,
-      tenantPayment: client?.weeklyTenantPayment || 40,
+      rentDue: tenant?.monthlyRent || 143.40,
+      tenantPayment: tenant?.weeklyTenantPayment || 40,
       tenantPaid: true,
-      rasPayment: client?.weeklyRasAmount || 103.40,
+      rasPayment: tenant?.weeklyRasAmount || 103.40,
       rasReceived: true
     }]);
-  };
+    };
 
   const updateTransaction = (id, field, value) => {
     setTransactions(prev => prev.map(t => 
@@ -200,9 +200,9 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
   };
 
   const generateSmartNotes = () => {
-    const client = clients.find(c => c.id === clientId);
-    const weeklyTenant = client?.weeklyTenantPayment || 40;
-    const weeklyRas = client?.weeklyRasAmount || 103.40;
+    const tenant = tenants.find(t => t.id === clientId);
+    const weeklyTenant = tenant?.weeklyTenantPayment || 40;
+    const weeklyRas = tenant?.weeklyRasAmount || 103.40;
 
     // Get month name from end date
     const endDateObj = new Date(endDate);
@@ -248,15 +248,15 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
     if (transactions.length === 0) {
       setError('Please add at least one transaction');
       return;
-    }
+      }
 
-    const client = clients.find(c => c.id === clientId);
+      const tenant = tenants.find(t => t.id === clientId);
 
-    // Generate smart notes
-    const smartNotes = generateSmartNotes();
+      // Generate smart notes
+      const smartNotes = generateSmartNotes();
 
-    // Generate receipt ID with client initials
-    const nameParts = client.fullName.trim().split(' ');
+      // Generate receipt ID with tenant initials
+      const nameParts = tenant.fullName.trim().split(' ');
     const firstInitial = nameParts[0] ? nameParts[0][0].toUpperCase() : 'X';
     const lastInitial = nameParts.length > 1 ? nameParts[nameParts.length - 1][0].toUpperCase() : 'X';
     const randomDigits = Math.floor(10000 + Math.random() * 90000); // 5 digits
@@ -265,8 +265,8 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
     const receiptData = {
       id: receiptId,
       clientId,
-      clientName: client.fullName,
-      clientAddress: client.address,
+      clientName: tenant.fullName,
+      clientAddress: tenant.address,
       startDate,
       endDate,
       startingDebt: parseFloat(startingDebt) || 0,
@@ -371,39 +371,39 @@ export default function CreateReceipt({ clients, statements, settings, selectedC
 
         {/* Client Selection */}
         <div className="space-y-2">
-          <Label className="text-base font-semibold">Select Client</Label>
+          <Label className="text-base font-semibold">Select Tenant</Label>
           <Select value={clientId} onValueChange={setClientId}>
             <SelectTrigger className="h-12">
-              <SelectValue placeholder="Choose a client..." />
+              <SelectValue placeholder="Choose a tenant..." />
             </SelectTrigger>
             <SelectContent>
-              {clients.map(client => (
-                <SelectItem key={client.id} value={client.id}>
-                  {client.fullName} ({client.id})
+              {tenants.map(tenant => (
+                <SelectItem key={tenant.id} value={tenant.id}>
+                  {tenant.fullName} ({tenant.id})
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
 
-        {/* Client Info Display */}
-        {selectedClient && (
+        {/* Tenant Info Display */}
+        {selectedTenant && (
           <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 border border-blue-100">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
                 <User className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-slate-800">{selectedClient.fullName}</h3>
-                <p className="text-sm text-slate-600">ID: {selectedClient.id}</p>
-                <p className="text-sm text-slate-600">{selectedClient.address}</p>
+                <h3 className="font-semibold text-slate-800">{selectedTenant.fullName}</h3>
+                <p className="text-sm text-slate-600">ID: {selectedTenant.id}</p>
+                <p className="text-sm text-slate-600">{selectedTenant.address}</p>
               </div>
             </div>
           </div>
         )}
 
         {/* Period Selection */}
-        {selectedClient && (
+        {selectedTenant && (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">

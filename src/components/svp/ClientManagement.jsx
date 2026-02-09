@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { base44 } from '@/api/base44Client';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Dialog,
   DialogContent,
@@ -26,13 +28,29 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import Papa from 'papaparse';
 import ExportClientsPDF from './ExportClientsPDF';
 
-export default function ClientManagement({ clients, setClients, statements, onSelectClient }) {
+export default function ClientManagement({ tenants = [], tenantsLoading, statements, onSelectTenant }) {
   const [showAddDialog, setShowAddDialog] = useState(false);
-  const [editingClient, setEditingClient] = useState(null);
-  const [deleteClient, setDeleteClient] = useState(null);
+  const [editingTenant, setEditingTenant] = useState(null);
+  const [deleteTenant, setDeleteTenant] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const fileInputRef = useRef(null);
+  const queryClient = useQueryClient();
+
+  const createTenantMutation = useMutation({
+    mutationFn: (data) => base44.entities.Tenant.create(data),
+    onSuccess: () => queryClient.invalidateQueries(['tenants'])
+  });
+
+  const updateTenantMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.Tenant.update(id, data),
+    onSuccess: () => queryClient.invalidateQueries(['tenants'])
+  });
+
+  const deleteTenantMutation = useMutation({
+    mutationFn: (id) => base44.entities.Tenant.delete(id),
+    onSuccess: () => queryClient.invalidateQueries(['tenants'])
+  });
 
   const [formData, setFormData] = useState({
     id: '',
@@ -60,7 +78,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
       weeklyRasAmount: 103.40,
       weeklyTenantPayment: 40
     });
-    setEditingClient(null);
+    setEditingTenant(null);
     setError('');
   };
 
@@ -69,22 +87,22 @@ export default function ClientManagement({ clients, setClients, statements, onSe
     setShowAddDialog(true);
   };
 
-  const handleOpenEdit = (client) => {
+  const handleOpenEdit = (tenant) => {
     setFormData({
-      id: client.id,
-      fullName: client.fullName,
-      address: client.address,
-      previousDebt: client.currentBalance || 0,
-      credit: client.credit || 0,
-      monthlyRent: client.monthlyRent || 143.40,
-      weeklyRasAmount: client.weeklyRasAmount || 103.40,
-      weeklyTenantPayment: client.weeklyTenantPayment || 40
+      id: tenant.id,
+      fullName: tenant.fullName,
+      address: tenant.address,
+      previousDebt: tenant.currentBalance || 0,
+      credit: tenant.credit || 0,
+      monthlyRent: tenant.monthlyRent || 143.40,
+      weeklyRasAmount: tenant.weeklyRasAmount || 103.40,
+      weeklyTenantPayment: tenant.weeklyTenantPayment || 40
     });
-    setEditingClient(client);
+    setEditingTenant(tenant);
     setShowAddDialog(true);
   };
 
-  const handleSaveClient = () => {
+  const handleSaveTenant = async () => {
     if (!formData.fullName.trim()) {
       setError('Full Name is required');
       return;
@@ -94,59 +112,49 @@ export default function ClientManagement({ clients, setClients, statements, onSe
       return;
     }
 
-    const clientId = formData.id.trim() || generateId();
+    const tenantId = formData.id.trim() || generateId();
     
-    if (editingClient) {
-      setClients(prev => prev.map(c => 
-        c.id === editingClient.id 
-          ? { 
-              ...c, 
-              id: clientId,
-              fullName: formData.fullName.trim(),
-              address: formData.address.trim(),
-              currentBalance: parseFloat(formData.previousDebt) || 0,
-              credit: parseFloat(formData.credit) || 0,
-              monthlyRent: parseFloat(formData.monthlyRent) || 143.40,
-              weeklyRasAmount: parseFloat(formData.weeklyRasAmount) || 103.40,
-              weeklyTenantPayment: parseFloat(formData.weeklyTenantPayment) || 40
-            }
-          : c
-      ));
-      setSuccess('Client updated successfully');
-    } else {
-      // Check for duplicate ID
-      if (clients.some(c => c.id === clientId)) {
-        setError('A client with this ID already exists');
-        return;
+    const tenantData = {
+      id: tenantId,
+      fullName: formData.fullName.trim(),
+      address: formData.address.trim(),
+      currentBalance: parseFloat(formData.previousDebt) || 0,
+      credit: parseFloat(formData.credit) || 0,
+      monthlyRent: parseFloat(formData.monthlyRent) || 143.40,
+      weeklyRasAmount: parseFloat(formData.weeklyRasAmount) || 103.40,
+      weeklyTenantPayment: parseFloat(formData.weeklyTenantPayment) || 40
+    };
+    
+    try {
+      if (editingTenant) {
+        await updateTenantMutation.mutateAsync({ id: editingTenant.id, data: tenantData });
+        setSuccess('Tenant updated successfully');
+      } else {
+        if (tenants.some(t => t.id === tenantId)) {
+          setError('A tenant with this ID already exists');
+          return;
+        }
+        await createTenantMutation.mutateAsync(tenantData);
+        setSuccess('Tenant added successfully');
       }
-      
-      const newClient = {
-        id: clientId,
-        fullName: formData.fullName.trim(),
-        address: formData.address.trim(),
-        currentBalance: parseFloat(formData.previousDebt) || 0,
-        credit: parseFloat(formData.credit) || 0,
-        monthlyRent: parseFloat(formData.monthlyRent) || 143.40,
-        weeklyRasAmount: parseFloat(formData.weeklyRasAmount) || 103.40,
-        weeklyTenantPayment: parseFloat(formData.weeklyTenantPayment) || 40,
-        createdDate: new Date().toISOString(),
-        lastReceiptDate: null
-      };
-      setClients(prev => [...prev, newClient]);
-      setSuccess('Client added successfully');
+      setShowAddDialog(false);
+      resetForm();
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError('Error saving tenant: ' + err.message);
     }
-
-    setShowAddDialog(false);
-    resetForm();
-    setTimeout(() => setSuccess(''), 3000);
   };
 
-  const handleDeleteClient = () => {
-    if (deleteClient) {
-      setClients(prev => prev.filter(c => c.id !== deleteClient.id));
-      setDeleteClient(null);
-      setSuccess('Client deleted successfully');
-      setTimeout(() => setSuccess(''), 3000);
+  const handleDeleteTenant = async () => {
+    if (deleteTenant) {
+      try {
+        await deleteTenantMutation.mutateAsync(deleteTenant.id);
+        setDeleteTenant(null);
+        setSuccess('Tenant deleted successfully');
+        setTimeout(() => setSuccess(''), 3000);
+      } catch (err) {
+        setError('Error deleting tenant: ' + err.message);
+      }
     }
   };
 
@@ -160,6 +168,9 @@ export default function ClientManagement({ clients, setClients, statements, onSe
       setError('Please upload a CSV or Excel file');
       return;
     }
+
+    setError('');
+    setSuccess('');
 
     Papa.parse(file, {
       header: true,
@@ -227,36 +238,29 @@ export default function ClientManagement({ clients, setClients, statements, onSe
 
         clientsMap.forEach((value) => {
           // Check if client already exists by ID or normalized name
-          const existingClient = clients.find(c => 
-            (value.id && c.id === value.id) || 
-            c.fullName.toLowerCase() === value.normalizedName
+          const existingTenant = tenants.find(t => 
+            (value.id && t.id === value.id) || 
+            t.fullName.toLowerCase() === value.normalizedName
           );
 
-          if (existingClient) {
-            // Update existing client - add payment as credit (reduce debt)
-            setClients(prev => prev.map(c => {
-              if (c.id === existingClient.id) {
-                const newBalance = (c.currentBalance || 0) - value.totalPayments;
-                return { ...c, currentBalance: newBalance };
-              }
-              return c;
-            }));
+          if (existingTenant) {
+            // Update existing tenant - add payment as credit (reduce debt)
+            const newBalance = (existingTenant.currentBalance || 0) - value.totalPayments;
+            updateTenantMutation.mutate({ id: existingTenant.id, data: { currentBalance: newBalance } });
             updatedCount++;
             totalCreditAdded += value.totalPayments;
           } else {
-            // Create new client
-            const newClient = {
+            // Create new tenant
+            const newTenant = {
               id: value.id || generateId(),
               fullName: value.fullName,
               address: value.address,
-              currentBalance: -value.totalPayments, // Negative = credit
+              currentBalance: -value.totalPayments,
               monthlyRent: 143.40,
               weeklyRasAmount: 103.40,
-              weeklyTenantPayment: 40,
-              createdDate: new Date().toISOString(),
-              lastReceiptDate: null
+              weeklyTenantPayment: 40
             };
-            setClients(prev => [...prev, newClient]);
+            createTenantMutation.mutate(newTenant);
             newCount++;
             totalCreditAdded += value.totalPayments;
           }
@@ -264,9 +268,9 @@ export default function ClientManagement({ clients, setClients, statements, onSe
 
         if (newCount > 0 || updatedCount > 0) {
           const creditMsg = totalCreditAdded > 0 ? ` (+€${totalCreditAdded.toFixed(2)} credit added total)` : '';
-          setSuccess(`Processed ${totalRows} rows: ${newCount} new clients created, ${updatedCount} updated${creditMsg}`);
+          setSuccess(`Processed ${totalRows} rows: ${newCount} new tenants created, ${updatedCount} updated${creditMsg}`);
         } else {
-          setError('No valid client data found in file');
+          setError('No valid tenant data found in file');
         }
         
         setTimeout(() => {
@@ -314,7 +318,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
               <Users className="w-5 h-5 text-white" />
             </div>
-            <CardTitle className="text-xl">Client Management</CardTitle>
+            <CardTitle className="text-xl">Tenant Management</CardTitle>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button 
@@ -322,7 +326,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
               className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Add Client
+              Add Tenant
             </Button>
             <Button 
               variant="outline"
@@ -332,7 +336,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
               <Upload className="w-4 h-4 mr-2" />
               Import CSV/Excel
             </Button>
-            <ExportClientsPDF clients={clients} />
+            <ExportClientsPDF tenants={tenants} />
             <input
               ref={fileInputRef}
               type="file"
@@ -357,11 +361,13 @@ export default function ClientManagement({ clients, setClients, statements, onSe
           </Alert>
         )}
 
-        {clients.length === 0 ? (
+        {tenantsLoading ? (
+          <div className="text-center py-12 text-slate-500">Loading tenants...</div>
+        ) : tenants.length === 0 ? (
           <div className="text-center py-12 text-slate-500">
             <Users className="w-16 h-16 mx-auto mb-4 opacity-30" />
-            <p className="text-lg">No clients yet</p>
-            <p className="text-sm">Add your first client or import from a file</p>
+            <p className="text-lg">No tenants yet</p>
+            <p className="text-sm">Add your first tenant or import from a file</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -377,25 +383,25 @@ export default function ClientManagement({ clients, setClients, statements, onSe
                 </tr>
               </thead>
               <tbody>
-                {clients.map((client, index) => (
+                {tenants.map((tenant, index) => (
                   <tr 
-                    key={client.id} 
+                    key={tenant.id} 
                     className={`border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
                   >
-                    <td className="py-3 px-4 font-mono text-sm text-slate-600">{client.id}</td>
-                    <td className="py-3 px-4 font-medium text-slate-800">{client.fullName}</td>
-                    <td className="py-3 px-4 text-slate-600 text-sm max-w-xs truncate">{client.address}</td>
-                    <td className={`py-3 px-4 text-right font-semibold ${(client.currentBalance || 0) > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                      {formatCurrency(client.currentBalance || 0)}
+                    <td className="py-3 px-4 font-mono text-sm text-slate-600">{tenant.id}</td>
+                    <td className="py-3 px-4 font-medium text-slate-800">{tenant.fullName}</td>
+                    <td className="py-3 px-4 text-slate-600 text-sm max-w-xs truncate">{tenant.address}</td>
+                    <td className={`py-3 px-4 text-right font-semibold ${(tenant.currentBalance || 0) > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                      {formatCurrency(tenant.currentBalance || 0)}
                     </td>
                     <td className="py-3 px-4 text-slate-600 hidden sm:table-cell">
-                      {formatDate(getLastReceiptDate(client.id) || client.lastReceiptDate)}
+                      {formatDate(getLastReceiptDate(tenant.id))}
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex justify-end gap-1">
                         <Button
                           size="sm"
-                          onClick={() => onSelectClient(client.id)}
+                          onClick={() => onSelectTenant(tenant.id)}
                           className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
                         >
                           <UserCheck className="w-4 h-4" />
@@ -404,7 +410,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => handleOpenEdit(client)}
+                          onClick={() => handleOpenEdit(tenant)}
                           className="border-blue-300 text-blue-600 hover:bg-blue-50"
                         >
                           <Pencil className="w-4 h-4" />
@@ -412,7 +418,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => setDeleteClient(client)}
+                          onClick={() => setDeleteTenant(tenant)}
                           className="border-red-300 text-red-600 hover:bg-red-50"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -430,9 +436,9 @@ export default function ClientManagement({ clients, setClients, statements, onSe
         <Dialog open={showAddDialog} onOpenChange={(open) => { if (!open) resetForm(); setShowAddDialog(open); }}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>{editingClient ? 'Edit Client' : 'Add New Client'}</DialogTitle>
+              <DialogTitle>{editingTenant ? 'Edit Tenant' : 'Add New Tenant'}</DialogTitle>
               <DialogDescription>
-                {editingClient ? 'Update the client information below.' : 'Enter the client details below.'}
+                {editingTenant ? 'Update the tenant information below.' : 'Enter the tenant details below.'}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
@@ -443,7 +449,7 @@ export default function ClientManagement({ clients, setClients, statements, onSe
                 </Alert>
               )}
               <div className="space-y-2">
-                <Label htmlFor="id">Client ID (auto-generated if empty)</Label>
+                <Label htmlFor="id">Tenant ID (auto-generated if empty)</Label>
                 <Input
                   id="id"
                   value={formData.id}
@@ -532,28 +538,28 @@ export default function ClientManagement({ clients, setClients, statements, onSe
                 Cancel
               </Button>
               <Button 
-                onClick={handleSaveClient}
+                onClick={handleSaveTenant}
                 className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
               >
-                {editingClient ? 'Update' : 'Add'} Client
+                {editingTenant ? 'Update' : 'Add'} Tenant
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
 
         {/* Delete Confirmation Dialog */}
-        <AlertDialog open={!!deleteClient} onOpenChange={(open) => !open && setDeleteClient(null)}>
+        <AlertDialog open={!!deleteTenant} onOpenChange={(open) => !open && setDeleteTenant(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete Client</AlertDialogTitle>
+              <AlertDialogTitle>Delete Tenant</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to delete <strong>{deleteClient?.fullName}</strong>? This action cannot be undone.
+                Are you sure you want to delete <strong>{deleteTenant?.fullName}</strong>? This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction 
-                onClick={handleDeleteClient}
+                onClick={handleDeleteTenant}
                 className="bg-red-500 hover:bg-red-600"
               >
                 Delete
