@@ -29,22 +29,22 @@ export default function ExportClientsPDF({ clients }) {
         console.log('Could not load logo');
       }
       
-      yPos += 32;
+      yPos += 38;
       
       // Title with spacing
       doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
-      doc.setFontSize(16);
+      doc.setFontSize(18);
       doc.setFont('helvetica', 'bold');
       doc.text('CLIENT LIST', margin, yPos);
       
-      yPos += 4;
+      yPos += 5;
       doc.setDrawColor(200, 200, 200);
       doc.line(margin, yPos, pageWidth - margin, yPos);
       
-      yPos += 12;
+      yPos += 14;
       
       // Date
-      doc.setFontSize(9);
+      doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(100, 100, 100);
       const currentDate = new Date().toLocaleDateString('en-GB', { 
@@ -54,7 +54,7 @@ export default function ExportClientsPDF({ clients }) {
       });
       doc.text('Generated: ' + currentDate, pageWidth - margin, yPos, { align: 'right' });
       
-      yPos += 5;
+      yPos += 6;
 
       // Prepare table data with debt column
       const tableData = clients.map(client => {
@@ -94,14 +94,14 @@ export default function ExportClientsPDF({ clients }) {
         headStyles: {
           fillColor: lightGray,
           textColor: [60, 60, 60],
-          fontSize: 9,
+          fontSize: 10,
           fontStyle: 'bold',
           halign: 'left',
-          cellPadding: { top: 3, right: 3, bottom: 3, left: 3 }
+          cellPadding: { top: 4, right: 4, bottom: 4, left: 4 }
         },
         bodyStyles: {
-          fontSize: 9,
-          cellPadding: { top: 3, right: 3, bottom: 3, left: 3 },
+          fontSize: 10,
+          cellPadding: { top: 3.5, right: 4, bottom: 3.5, left: 4 },
           textColor: [60, 60, 60]
         },
         columnStyles: {
@@ -138,7 +138,7 @@ export default function ExportClientsPDF({ clients }) {
 
       // Footer
       const pageHeight = doc.internal.pageSize.getHeight();
-      doc.setFontSize(8);
+      doc.setFontSize(9);
       doc.setTextColor(100, 100, 100);
       doc.text('SVP Housing Support System', margin, pageHeight - 10);
       doc.text('Total Clients: ' + clients.length, pageWidth - margin, pageHeight - 10, { align: 'right' });
