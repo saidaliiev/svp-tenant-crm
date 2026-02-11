@@ -10,7 +10,7 @@ const DEFAULT_SETTINGS = {
   organizationName: "Society of Saint Vincent de Paul",
   receiptTitle: "Monthly Rent Statement",
   contactPhone: "086 7856869",
-  systemName: "SVP Housing Support System"
+  systemName: "Society of Saint Vincent de Paul, Carndonagh"
 };
 
 // Note: Receipt title should always contain "Monthly" for monthly rent statements
