@@ -11,8 +11,8 @@ import SettingsTab from '@/components/svp/SettingsTab';
 const DEFAULT_SETTINGS = {
   organizationName: "Society of Saint Vincent de Paul",
   receiptTitle: "Monthly Rent Statement",
-  contactPhone: "084 7834665",
-  systemName: "SVP Housing Support System"
+  contactPhone: "086 7856869",
+  systemName: "Society of Saint Vincent de Paul, Carndonagh"
 };
 
 export default function HomePage() {
