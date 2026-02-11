@@ -16,7 +16,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-export default function ExportClientsPDF({ tenants = [] }) {
+export default function ExportClientsPDF({ tenants = [], settings }) {
   const [showDialog, setShowDialog] = React.useState(false);
   const [orientation, setOrientation] = React.useState('landscape');
 
@@ -96,6 +96,10 @@ export default function ExportClientsPDF({ tenants = [] }) {
       // Create table with dynamic column widths based on orientation
       const isLandscape = orientation === 'landscape';
       
+      // Calculate total table width for centering in landscape
+      const totalTableWidth = isLandscape ? 256 : 209;
+      const leftMargin = isLandscape ? (pageWidth - totalTableWidth) / 2 : margin;
+      
       doc.autoTable({
         startY: yPos,
         head: [[
@@ -111,7 +115,7 @@ export default function ExportClientsPDF({ tenants = [] }) {
         ]],
         body: tableData,
         theme: 'plain',
-        margin: { left: margin, right: margin },
+        margin: { left: leftMargin, right: leftMargin },
         tableWidth: 'auto',
         headStyles: {
           fillColor: lightGray,
@@ -172,7 +176,8 @@ export default function ExportClientsPDF({ tenants = [] }) {
       const pageHeight = doc.internal.pageSize.getHeight();
       doc.setFontSize(9);
       doc.setTextColor(100, 100, 100);
-      doc.text('SVP Housing Support System', margin, pageHeight - 10);
+      const systemName = (settings && settings.systemName) || 'Society of Saint Vincent de Paul, Carndonagh';
+      doc.text(systemName, margin, pageHeight - 10);
       doc.text('Total Tenants: ' + tenants.length, pageWidth - margin, pageHeight - 10, { align: 'right' });
 
       // Save
