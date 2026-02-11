@@ -15,17 +15,17 @@ export function generateReceiptPDF(receiptData, settings) {
     
     let yPos = margin;
 
-    // Add SVP Logo - aligned left
+    // Add SVP Logo - full width
     const logoUrl = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/36ae01103_SVP-1200x675-Photoroom.png';
     try {
-      const logoWidth = 70;
-      const logoHeight = 23;
+      const logoWidth = pageWidth - (margin * 2);
+      const logoHeight = 30;
       doc.addImage(logoUrl, 'PNG', margin, yPos, logoWidth, logoHeight);
     } catch (e) {
       console.log('Could not load logo');
     }
     
-    yPos += 28;
+    yPos += 35;
     
     // Horizontal line (removed duplicate organization name)
     doc.setDrawColor(200, 200, 200);
@@ -143,6 +143,7 @@ export function generateReceiptPDF(receiptData, settings) {
 
     doc.autoTable({
       startY: yPos,
+      margin: { left: margin, right: margin },
       head: [['Date', 'Description', 'Rent Due', 'Payment', 'Balance']],
       body: tableData,
       theme: 'plain',
@@ -184,13 +185,13 @@ export function generateReceiptPDF(receiptData, settings) {
     doc.setFillColor(lightGray[0], lightGray[1], lightGray[2]);
     doc.rect(margin, yPos, boxWidth, 22, 'F');
     
-    // Title
+    // Title and balance on same line
     doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    doc.text('FINAL TENANT BALANCE:', margin + 3, yPos + 6);
+    doc.text('FINAL TENANT BALANCE:', margin + 3, yPos + 7);
     
-    // Main balance - large and prominent
+    // Main balance - large and prominent, closer to title
     doc.setFontSize(14);
     const balanceColor = receiptData.finalBalance > 0 ? [220, 38, 38] : [34, 139, 34];
     doc.setTextColor(balanceColor[0], balanceColor[1], balanceColor[2]);

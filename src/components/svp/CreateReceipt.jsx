@@ -268,7 +268,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       const nameParts = tenant.fullName.trim().split(' ');
       const firstInitial = nameParts[0] ? nameParts[0][0].toUpperCase() : 'X';
       const lastInitial = nameParts.length > 1 ? nameParts[nameParts.length - 1][0].toUpperCase() : 'X';
-      const randomDigits = Math.floor(10000 + Math.random() * 90000); // 5 digits
+      const randomDigits = Math.floor(1000 + Math.random() * 9000); // 4 digits
       const receiptId = `${firstInitial}${lastInitial}${randomDigits}`;
 
     const receiptData = {
