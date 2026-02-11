@@ -96,6 +96,10 @@ export default function ExportClientsPDF({ tenants = [], settings }) {
       // Create table with dynamic column widths based on orientation
       const isLandscape = orientation === 'landscape';
       
+      // Calculate centering for landscape
+      const landscapeTableWidth = 256;
+      const landscapeLeftMargin = (pageWidth - landscapeTableWidth) / 2;
+      
       doc.autoTable({
         startY: yPos,
         head: [[
@@ -111,20 +115,25 @@ export default function ExportClientsPDF({ tenants = [], settings }) {
         ]],
         body: tableData,
         theme: 'plain',
-        margin: { left: margin, right: margin },
+        margin: isLandscape ? 
+          { left: landscapeLeftMargin, right: landscapeLeftMargin } : 
+          { left: margin, right: margin },
         tableWidth: 'auto',
-        halign: isLandscape ? 'center' : 'left',
         headStyles: {
           fillColor: lightGray,
           textColor: [60, 60, 60],
-          fontSize: isLandscape ? 9 : 8.5,
+          fontSize: isLandscape ? 9 : 7,
           fontStyle: 'bold',
           halign: 'left',
-          cellPadding: { top: 3, right: 2.5, bottom: 3, left: 2.5 }
+          cellPadding: isLandscape ? 
+            { top: 3, right: 2.5, bottom: 3, left: 2.5 } :
+            { top: 2, right: 1.5, bottom: 2, left: 1.5 }
         },
         bodyStyles: {
-          fontSize: isLandscape ? 8.5 : 8,
-          cellPadding: { top: 2.5, right: 2.5, bottom: 2.5, left: 2.5 },
+          fontSize: isLandscape ? 8.5 : 6.5,
+          cellPadding: isLandscape ? 
+            { top: 2.5, right: 2.5, bottom: 2.5, left: 2.5 } :
+            { top: 2, right: 1.5, bottom: 2, left: 1.5 },
           textColor: [60, 60, 60]
         },
         columnStyles: isLandscape ? {
@@ -138,15 +147,15 @@ export default function ExportClientsPDF({ tenants = [], settings }) {
           7: { cellWidth: 24, halign: 'right' },
           8: { cellWidth: 24, halign: 'right' }
         } : {
-          0: { cellWidth: 16 },
-          1: { cellWidth: 32 },
-          2: { cellWidth: 42 },
-          3: { cellWidth: 20, halign: 'right' },
-          4: { cellWidth: 18, halign: 'right' },
-          5: { cellWidth: 18, halign: 'right' },
-          6: { cellWidth: 21, halign: 'right' },
-          7: { cellWidth: 21, halign: 'right' },
-          8: { cellWidth: 21, halign: 'right' }
+          0: { cellWidth: 13 },
+          1: { cellWidth: 25 },
+          2: { cellWidth: 35 },
+          3: { cellWidth: 16, halign: 'right' },
+          4: { cellWidth: 14, halign: 'right' },
+          5: { cellWidth: 14, halign: 'right' },
+          6: { cellWidth: 17, halign: 'right' },
+          7: { cellWidth: 17, halign: 'right' },
+          8: { cellWidth: 18, halign: 'right' }
         },
         didParseCell: function(data) {
           if (data.section === 'body') {
