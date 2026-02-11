@@ -9,7 +9,7 @@ import { Settings, Save, RotateCcw } from 'lucide-react';
 const DEFAULT_SETTINGS = {
   organizationName: "Society of Saint Vincent de Paul",
   receiptTitle: "Monthly Rent Statement",
-  contactPhone: "084 7834665",
+  contactPhone: "086 7856869",
   systemName: "SVP Housing Support System"
 };
 
