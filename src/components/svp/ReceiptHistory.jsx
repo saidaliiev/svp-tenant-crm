@@ -89,10 +89,10 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
                 <SelectValue placeholder="Filter by client" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Clients</SelectItem>
-                {clients.map(client => (
-                  <SelectItem key={client.id} value={client.id}>
-                    {client.fullName}
+                <SelectItem value="all">All Tenants</SelectItem>
+                {tenants.map(tenant => (
+                  <SelectItem key={tenant.id} value={tenant.id}>
+                    {tenant.fullName}
                   </SelectItem>
                 ))}
               </SelectContent>
