@@ -189,17 +189,13 @@ export function generateReceiptPDF(receiptData, settings) {
     doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    const titleText = 'FINAL TENANT BALANCE:';
-    doc.text(titleText, margin + 3, yPos + 7);
+    doc.text('FINAL TENANT BALANCE:', margin + 3, yPos + 7);
     
-    // Calculate title width to position balance right after it
-    const titleWidth = doc.getTextWidth(titleText);
-    
-    // Main balance - positioned immediately after title
+    // Main balance - large and prominent, aligned right
     doc.setFontSize(14);
     const balanceColor = receiptData.finalBalance > 0 ? [220, 38, 38] : [34, 139, 34];
     doc.setTextColor(balanceColor[0], balanceColor[1], balanceColor[2]);
-    doc.text(formatCurrency(receiptData.finalBalance), margin + 3 + titleWidth + 10, yPos + 8);
+    doc.text(formatCurrency(receiptData.finalBalance), pageWidth - margin - 3, yPos + 8, { align: 'right' });
     
     // Breakdown line
     doc.setFontSize(7.5);
