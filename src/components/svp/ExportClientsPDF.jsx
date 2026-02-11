@@ -96,10 +96,6 @@ export default function ExportClientsPDF({ tenants = [], settings }) {
       // Create table with dynamic column widths based on orientation
       const isLandscape = orientation === 'landscape';
       
-      // Calculate total table width for centering in landscape
-      const totalTableWidth = isLandscape ? 256 : 209;
-      const leftMargin = isLandscape ? (pageWidth - totalTableWidth) / 2 : margin;
-      
       doc.autoTable({
         startY: yPos,
         head: [[
@@ -115,8 +111,9 @@ export default function ExportClientsPDF({ tenants = [], settings }) {
         ]],
         body: tableData,
         theme: 'plain',
-        margin: { left: leftMargin, right: leftMargin },
+        margin: { left: margin, right: margin },
         tableWidth: 'auto',
+        halign: isLandscape ? 'center' : 'left',
         headStyles: {
           fillColor: lightGray,
           textColor: [60, 60, 60],
