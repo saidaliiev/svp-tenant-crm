@@ -242,7 +242,8 @@ export function generateReceiptPDF(receiptData, settings) {
     doc.setFontSize(8);
     doc.setTextColor(100, 100, 100);
     const systemName = (settings && settings.systemName) || 'SVP System';
-    const footerLeft = systemName + ' | Generated: ' + formatDate(receiptData.createdDate);
+    const currentDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const footerLeft = systemName + ' | Generated: ' + currentDate;
     
     doc.text(footerLeft, margin, pageHeight - 10);
     doc.text(receiptNum, pageWidth - margin, pageHeight - 10, { align: 'right' });
