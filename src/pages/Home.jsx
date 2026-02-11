@@ -123,6 +123,7 @@ export default function HomePage() {
               tenantsLoading={tenantsLoading}
               statements={statements}
               onSelectTenant={handleSelectTenant}
+              settings={settings}
             />
           </TabsContent>
 

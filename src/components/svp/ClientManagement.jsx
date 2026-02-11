@@ -28,7 +28,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import Papa from 'papaparse';
 import ExportClientsPDF from './ExportClientsPDF';
 
-export default function ClientManagement({ tenants = [], tenantsLoading, statements, onSelectTenant }) {
+export default function ClientManagement({ tenants = [], tenantsLoading, statements, onSelectTenant, settings }) {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingTenant, setEditingTenant] = useState(null);
   const [deleteTenant, setDeleteTenant] = useState(null);
@@ -330,7 +330,7 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
               <Upload className="w-4 h-4 mr-2" />
               Import CSV/Excel
             </Button>
-            <ExportClientsPDF tenants={tenants} />
+            <ExportClientsPDF tenants={tenants} settings={settings} />
             <input
               ref={fileInputRef}
               type="file"
