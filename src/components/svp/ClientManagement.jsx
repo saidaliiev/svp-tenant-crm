@@ -63,8 +63,8 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
     weeklyTenantPayment: 40
   });
 
-  const generateId = () => {
-    return 'SVP-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+  const generateDisplayId = () => {
+    return Math.floor(1000 + Math.random() * 9000).toString();
   };
 
   const resetForm = () => {
@@ -112,9 +112,8 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
       return;
     }
 
-    const tenantId = formData.id.trim() || generateId();
-    
     const tenantData = {
+      displayId: editingTenant ? editingTenant.displayId : generateDisplayId(),
       fullName: formData.fullName.trim(),
       address: formData.address.trim(),
       currentBalance: parseFloat(formData.previousDebt) || 0,
@@ -247,6 +246,7 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
           } else {
             // Create new tenant
             const newTenant = {
+              displayId: generateDisplayId(),
               fullName: value.fullName,
               address: value.address,
               currentBalance: -value.totalPayments,
@@ -382,7 +382,7 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                     key={tenant.id} 
                     className={`border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
                   >
-                    <td className="py-3 px-4 font-mono text-sm text-slate-600">{tenant.id}</td>
+                    <td className="py-3 px-4 font-mono text-sm text-slate-600">{tenant.displayId || tenant.id}</td>
                     <td className="py-3 px-4 font-medium text-slate-800">{tenant.fullName}</td>
                     <td className="py-3 px-4 text-slate-600 text-sm max-w-xs truncate">{tenant.address}</td>
                     <td className={`py-3 px-4 text-right font-semibold ${(tenant.currentBalance || 0) > 0 ? 'text-red-600' : 'text-green-600'}`}>
