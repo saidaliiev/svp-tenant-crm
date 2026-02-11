@@ -199,8 +199,8 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
 
         data.forEach(row => {
           totalRows++;
-          const tenantName = findColumn(row, ['name', 'tenant', 'client', 'full_name', 'fullname']);
-          const accountNumber = findColumn(row, ['id', 'account', 'number', 'acc']);
+          const tenantName = findColumn(row, ['full name', 'full_name', 'fullname', 'name', 'tenant']);
+          const accountNumber = findColumn(row, ['client id', 'client_id', 'id', 'account', 'number']);
           const paymentAmount = parseFloat(findColumn(row, ['amount', 'payment', 'sum', 'total']) || 0);
 
           if (!tenantName && !accountNumber) return;
