@@ -128,7 +128,7 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
                     <td className="py-3 px-4">
                       <div>
                         <p className="font-medium text-slate-800">{receipt.clientName}</p>
-                        <p className="text-xs text-slate-500">{receipt.id}</p>
+                        <p className="text-xs text-slate-500">{receipt.receiptId}</p>
                       </div>
                     </td>
                     <td className="py-3 px-4 text-slate-600">
@@ -173,7 +173,7 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
             <AlertDialogHeader>
               <AlertDialogTitle>Delete Receipt</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to delete receipt <strong>{deleteReceipt?.id}</strong> for {deleteReceipt?.clientName}? This action cannot be undone.
+                Are you sure you want to delete receipt <strong>{deleteReceipt?.receiptId}</strong> for {deleteReceipt?.clientName}? This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
