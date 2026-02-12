@@ -14,7 +14,7 @@ export default function Layout({ children, currentPageName }) {
           <div style={{ textAlign: 'center' }}>
             Custom CRM for Society St. Vincent de Paul, Carndonagh
             <br />
-            Developed with ❤️ by Iskan (<a href="mailto:saidaliiev@hotmail.com" style={{ color: '#666', textDecoration: 'underline' }}>saidaliiev@hotmail.com</a>)
+            Developed with ❤️ by Iskan
           </div>
           <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
             <DialogTrigger asChild>
@@ -23,11 +23,11 @@ export default function Layout({ children, currentPageName }) {
                 className="text-gray-600 hover:text-gray-800 text-xs underline"
                 style={{ fontSize: '0.8rem', padding: 0 }}
               >
-                Профиль разработчика
+                Developer Profile
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-xs p-8 flex flex-col items-center justify-center">
-              <h2 className="text-lg font-semibold mb-4 text-center">Профиль разработчика</h2>
+              <h2 className="text-lg font-semibold mb-4 text-center">Developer Profile</h2>
               <a href="https://linktr.ee/saidaliiev" target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-105">
                 <img
                   src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/f687d31df_saidaliiev1.png"
@@ -35,7 +35,7 @@ export default function Layout({ children, currentPageName }) {
                   style={{ width: '128px', height: '128px', border: '2px solid #666', borderRadius: '8px' }}
                 />
               </a>
-              <p className="mt-4 text-sm text-gray-500 text-center">Нажмите на QR-код, чтобы открыть Linktree</p>
+              <p className="mt-4 text-sm text-gray-500 text-center">Click the QR code to open Linktree</p>
             </DialogContent>
           </Dialog>
         </div>
