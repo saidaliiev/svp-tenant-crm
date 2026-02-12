@@ -10,7 +10,7 @@ export default function Layout({ children, currentPageName }) {
         {children}
       </div>
       <footer style={{ marginTop: '50px', padding: '20px', fontSize: '0.8rem', color: '#666', borderTop: '1px solid #ddd' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
           <div style={{ textAlign: 'center' }}>
             Custom CRM for Society St. Vincent de Paul, Carndonagh
             <br />
@@ -35,7 +35,7 @@ export default function Layout({ children, currentPageName }) {
                   style={{ width: '128px', height: '128px', border: '2px solid #666', borderRadius: '8px' }}
                 />
               </a>
-              <p className="mt-4 text-sm text-gray-500 text-center">Click the QR code to open Linktree</p>
+              <p className="mt-4 text-sm text-gray-500 text-center">Click or Scan the QR code to open profile</p>
             </DialogContent>
           </Dialog>
         </div>
