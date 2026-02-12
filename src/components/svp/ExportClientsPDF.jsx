@@ -158,6 +158,11 @@ export default function ExportClientsPDF({ tenants = [], settings }) {
           8: { cellWidth: 18, halign: 'right' }
         },
         didParseCell: function(data) {
+          // Right-align numeric column headers
+          if (data.section === 'head' && data.column.index >= 3) {
+            data.cell.styles.halign = 'right';
+          }
+          
           if (data.section === 'body') {
             // Balance column (index 3) - red if debt
             if (data.column.index === 3) {
