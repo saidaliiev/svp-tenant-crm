@@ -6,8 +6,8 @@ export default function Layout({ children, currentPageName }) {
       <div className="flex-1">
         {children}
       </div>
-      <footer className="py-3 px-4 text-center text-xs text-gray-400 border-t border-gray-100">
-        <p className="">Developed by Iskan | Contact: saidaliiev@hotmail.com</p>
+      <footer style={{ marginTop: '50px', padding: '20px', textAlign: 'center', fontSize: '0.8rem', color: '#666', borderTop: '1px solid #ddd' }}>
+        Developed with ❤️ by Iskan - Custom offline rent management system for Society of Saint Vincent de Paul • 2026
       </footer>
     </div>);
 
