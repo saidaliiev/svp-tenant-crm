@@ -15,7 +15,7 @@ export default function Layout({ children, currentPageName }) {
           </div>
           <a href="https://linktr.ee/saidaliiev" target="_blank" rel="noopener noreferrer" title="Linktree QR Code">
             <img 
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/20cf5b746_saidaliiev.png" 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/f687d31df_saidaliiev1.png" 
               alt="Linktree QR Code" 
               style={{ width: '50px', height: '50px', border: '2px solid #666', borderRadius: '8px', cursor: 'pointer' }} 
             />
