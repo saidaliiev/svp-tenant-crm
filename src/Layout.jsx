@@ -17,7 +17,7 @@ export default function Layout({ children, currentPageName }) {
             <img 
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/20cf5b746_saidaliiev.png" 
               alt="Linktree QR Code" 
-              style={{ width: '64px', height: '64px', border: '2px solid #666', borderRadius: '8px', cursor: 'pointer' }} 
+              style={{ width: '50px', height: '50px', border: '2px solid #666', borderRadius: '8px', cursor: 'pointer' }} 
             />
           </a>
         </div>
