@@ -96,10 +96,6 @@ export default function ExportClientsPDF({ tenants = [], settings }) {
       // Create table with dynamic column widths based on orientation
       const isLandscape = orientation === 'landscape';
       
-      // Calculate centering for landscape
-      const landscapeTableWidth = 256;
-      const landscapeLeftMargin = (pageWidth - landscapeTableWidth) / 2;
-      
       doc.autoTable({
         startY: yPos,
         head: [[
@@ -115,47 +111,45 @@ export default function ExportClientsPDF({ tenants = [], settings }) {
         ]],
         body: tableData,
         theme: 'plain',
-        margin: isLandscape ? 
-          { left: landscapeLeftMargin, right: landscapeLeftMargin } : 
-          { left: margin, right: margin },
+        margin: { left: 10, right: 10 },
         tableWidth: 'auto',
         headStyles: {
           fillColor: lightGray,
           textColor: [60, 60, 60],
-          fontSize: isLandscape ? 9 : 7,
+          fontSize: isLandscape ? 11 : 9,
           fontStyle: 'bold',
           halign: 'left',
           cellPadding: isLandscape ? 
-            { top: 3, right: 2.5, bottom: 3, left: 2.5 } :
-            { top: 2, right: 1.5, bottom: 2, left: 1.5 }
+            { top: 4, right: 3, bottom: 4, left: 3 } :
+            { top: 3, right: 2, bottom: 3, left: 2 }
         },
         bodyStyles: {
-          fontSize: isLandscape ? 8.5 : 6.5,
+          fontSize: isLandscape ? 10 : 8,
           cellPadding: isLandscape ? 
-            { top: 2.5, right: 2.5, bottom: 2.5, left: 2.5 } :
-            { top: 2, right: 1.5, bottom: 2, left: 1.5 },
+            { top: 3.5, right: 3, bottom: 3.5, left: 3 } :
+            { top: 3, right: 2, bottom: 3, left: 2 },
           textColor: [60, 60, 60]
         },
         columnStyles: isLandscape ? {
-          0: { cellWidth: 19 },
-          1: { cellWidth: 42 },
-          2: { cellWidth: 58 },
-          3: { cellWidth: 23, halign: 'right' },
-          4: { cellWidth: 21, halign: 'right' },
-          5: { cellWidth: 21, halign: 'right' },
-          6: { cellWidth: 24, halign: 'right' },
-          7: { cellWidth: 24, halign: 'right' },
-          8: { cellWidth: 24, halign: 'right' }
+          0: { cellWidth: 22 },
+          1: { cellWidth: 50 },
+          2: { cellWidth: 72 },
+          3: { cellWidth: 26, halign: 'right' },
+          4: { cellWidth: 24, halign: 'right' },
+          5: { cellWidth: 24, halign: 'right' },
+          6: { cellWidth: 26, halign: 'right' },
+          7: { cellWidth: 26, halign: 'right' },
+          8: { cellWidth: 26, halign: 'right' }
         } : {
-          0: { cellWidth: 13 },
-          1: { cellWidth: 25 },
-          2: { cellWidth: 35 },
-          3: { cellWidth: 16, halign: 'right' },
-          4: { cellWidth: 14, halign: 'right' },
-          5: { cellWidth: 14, halign: 'right' },
-          6: { cellWidth: 17, halign: 'right' },
-          7: { cellWidth: 17, halign: 'right' },
-          8: { cellWidth: 18, halign: 'right' }
+          0: { cellWidth: 16 },
+          1: { cellWidth: 32 },
+          2: { cellWidth: 46 },
+          3: { cellWidth: 20, halign: 'right' },
+          4: { cellWidth: 18, halign: 'right' },
+          5: { cellWidth: 18, halign: 'right' },
+          6: { cellWidth: 20, halign: 'right' },
+          7: { cellWidth: 20, halign: 'right' },
+          8: { cellWidth: 20, halign: 'right' }
         },
         didParseCell: function(data) {
           // Right-align numeric column headers
