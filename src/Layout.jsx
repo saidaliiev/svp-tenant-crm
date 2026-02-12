@@ -7,7 +7,7 @@ export default function Layout({ children, currentPageName }) {
         {children}
       </div>
       <footer style={{ marginTop: '50px', padding: '20px', textAlign: 'center', fontSize: '0.8rem', color: '#666', borderTop: '1px solid #ddd' }}>
-        Developed with ❤️ by Iskan - Custom offline rent management system for Society of Saint Vincent de Paul • 2026
+        Developed with ❤️ by Iskan (saidaliiev@hotmail.com) — Custom CRM for Society St. Vincent de Paul, Carndonagh
       </footer>
     </div>);
 
