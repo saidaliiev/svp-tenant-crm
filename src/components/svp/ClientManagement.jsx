@@ -92,11 +92,11 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
       id: tenant.id,
       fullName: tenant.fullName,
       address: tenant.address,
-      previousDebt: tenant.currentBalance || 0,
-      credit: tenant.credit || 0,
-      monthlyRent: tenant.monthlyRent || 143.40,
-      weeklyRasAmount: tenant.weeklyRasAmount || 103.40,
-      weeklyTenantPayment: tenant.weeklyTenantPayment || 40
+      previousDebt: tenant.currentBalance ?? 0,
+      credit: tenant.credit ?? 0,
+      monthlyRent: tenant.monthlyRent ?? 143.40,
+      weeklyRasAmount: tenant.weeklyRasAmount ?? 103.40,
+      weeklyTenantPayment: tenant.weeklyTenantPayment ?? 40
     });
     setEditingTenant(tenant);
     setShowAddDialog(true);
