@@ -119,11 +119,11 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
         newTransactions.push({
           id: Date.now() + i,
           date: transactionDate.toISOString().split('T')[0],
-          rentDue: tenant?.monthlyRent || 143.40,
-          tenantPayment: tenant?.weeklyTenantPayment || 40,
+          rentDue: tenant?.monthlyRent || 0,
+          tenantPayment: tenant?.weeklyTenantPayment || 0,
           tenantPaid: true,
-          rasPayment: tenant?.weeklyRasAmount || 103.40,
-          rasReceived: true
+          rasPayment: tenant?.weeklyRasAmount || 0,
+          rasReceived: (tenant?.weeklyRasAmount || 0) > 0
         });
       }
 
@@ -142,11 +142,11 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
     setTransactions([{
       id: Date.now(),
       date: new Date().toISOString().split('T')[0],
-      rentDue: tenant?.monthlyRent || 143.40,
-      tenantPayment: tenant?.weeklyTenantPayment || 40,
+      rentDue: tenant?.monthlyRent || 0,
+      tenantPayment: tenant?.weeklyTenantPayment || 0,
       tenantPaid: true,
-      rasPayment: tenant?.weeklyRasAmount || 103.40,
-      rasReceived: true
+      rasPayment: tenant?.weeklyRasAmount || 0,
+      rasReceived: (tenant?.weeklyRasAmount || 0) > 0
     }]);
     };
 
@@ -157,11 +157,11 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
     setTransactions(prev => [...prev, {
       id: Date.now(),
       date: new Date().toISOString().split('T')[0],
-      rentDue: tenant?.monthlyRent || 143.40,
-      tenantPayment: tenant?.weeklyTenantPayment || 40,
+      rentDue: tenant?.monthlyRent || 0,
+      tenantPayment: tenant?.weeklyTenantPayment || 0,
       tenantPaid: true,
-      rasPayment: tenant?.weeklyRasAmount || 103.40,
-      rasReceived: true
+      rasPayment: tenant?.weeklyRasAmount || 0,
+      rasReceived: (tenant?.weeklyRasAmount || 0) > 0
     }]);
     };
 
@@ -214,7 +214,11 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
 
     const debtAmt = includeDebt ? (parseFloat(startingDebt) || 0) : 0;
 
-    let smartNote = `Your monthly rent statement is shown above. You should pay €${weeklyTenant.toFixed(2)} per week (RAS covers €${weeklyRas.toFixed(2)} per week). Contact SVP at 086 7856869 if you need assistance.\n\n`;
+    let smartNote = `Your monthly rent statement is shown above. You should pay €${weeklyTenant.toFixed(2)} per week`;
+    if (weeklyRas > 0) {
+      smartNote += ` (RAS covers €${weeklyRas.toFixed(2)} per week)`;
+    }
+    smartNote += `. Contact SVP at 086 7856869 if you need assistance.\n\n`;
 
     // If negative balance (credit)
     if (finalTenantBalance < 0) {
