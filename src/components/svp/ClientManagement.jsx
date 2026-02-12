@@ -118,9 +118,9 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
       address: formData.address.trim(),
       currentBalance: parseFloat(formData.previousDebt) || 0,
       credit: parseFloat(formData.credit) || 0,
-      monthlyRent: parseFloat(formData.monthlyRent) || 143.40,
-      weeklyRasAmount: parseFloat(formData.weeklyRasAmount) || 103.40,
-      weeklyTenantPayment: parseFloat(formData.weeklyTenantPayment) || 40
+      monthlyRent: parseFloat(formData.monthlyRent) || 0,
+      weeklyRasAmount: formData.weeklyRasAmount === '' ? 0 : parseFloat(formData.weeklyRasAmount),
+      weeklyTenantPayment: parseFloat(formData.weeklyTenantPayment) || 0
     };
     
     try {
@@ -250,9 +250,9 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
               fullName: value.fullName,
               address: value.address,
               currentBalance: -value.totalPayments,
-              monthlyRent: 143.40,
-              weeklyRasAmount: 103.40,
-              weeklyTenantPayment: 40
+              monthlyRent: 0,
+              weeklyRasAmount: 0,
+              weeklyTenantPayment: 0
             };
             createTenantMutation.mutate(newTenant);
             newCount++;
