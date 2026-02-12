@@ -131,25 +131,25 @@ export default function ExportClientsPDF({ tenants = [], settings }) {
           textColor: [60, 60, 60]
         },
         columnStyles: isLandscape ? {
-          0: { cellWidth: 22 },
-          1: { cellWidth: 50 },
-          2: { cellWidth: 72 },
-          3: { cellWidth: 26, halign: 'right' },
-          4: { cellWidth: 24, halign: 'right' },
-          5: { cellWidth: 24, halign: 'right' },
-          6: { cellWidth: 26, halign: 'right' },
-          7: { cellWidth: 26, halign: 'right' },
-          8: { cellWidth: 26, halign: 'right' }
+          0: { cellWidth: 20 },
+          1: { cellWidth: 42 },
+          2: { cellWidth: 65 },
+          3: { cellWidth: 24, halign: 'right' },
+          4: { cellWidth: 22, halign: 'right' },
+          5: { cellWidth: 22, halign: 'right' },
+          6: { cellWidth: 24, halign: 'right' },
+          7: { cellWidth: 24, halign: 'right' },
+          8: { cellWidth: 24, halign: 'right' }
         } : {
-          0: { cellWidth: 16 },
-          1: { cellWidth: 32 },
-          2: { cellWidth: 46 },
-          3: { cellWidth: 20, halign: 'right' },
-          4: { cellWidth: 18, halign: 'right' },
-          5: { cellWidth: 18, halign: 'right' },
-          6: { cellWidth: 20, halign: 'right' },
-          7: { cellWidth: 20, halign: 'right' },
-          8: { cellWidth: 20, halign: 'right' }
+          0: { cellWidth: 14 },
+          1: { cellWidth: 28 },
+          2: { cellWidth: 40 },
+          3: { cellWidth: 18, halign: 'right' },
+          4: { cellWidth: 16, halign: 'right' },
+          5: { cellWidth: 16, halign: 'right' },
+          6: { cellWidth: 18, halign: 'right' },
+          7: { cellWidth: 18, halign: 'right' },
+          8: { cellWidth: 18, halign: 'right' }
         },
         didParseCell: function(data) {
           // Right-align numeric column headers
