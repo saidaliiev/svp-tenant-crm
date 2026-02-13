@@ -6,7 +6,7 @@ export function generateReceiptPDF(receiptData, settings) {
     const doc = new jsPDF('portrait', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 20;
+    const margin = 15; // Reduced margin for more width
     
     const primaryBlue = [14, 86, 167];
     const lightGray = [240, 242, 245];
@@ -176,31 +176,39 @@ export function generateReceiptPDF(receiptData, settings) {
     
     yPos = doc.lastAutoTable.finalY + 3;
 
-    // Final Balance Box with detailed breakdown
+    // Final Balance Box - Rounded pill shape like screenshot
     const totalRentDue = receiptData.totalRentDue || 0;
     const totalTenantPaid = receiptData.totalTenantPayments || 0;
     const totalRasReceived = receiptData.totalRasReceived || 0;
     
     const boxWidth = pageWidth - (margin * 2);
-    doc.setFillColor(lightGray[0], lightGray[1], lightGray[2]);
-    doc.rect(margin, yPos, boxWidth, 22, 'F');
+    const boxHeight = 20;
+    const radius = 10;
     
-    // Title and balance on same line
-    doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
-    doc.setFontSize(10);
+    // Determine color based on balance
+    const isDebt = receiptData.finalBalance > 0;
+    const balanceColor = isDebt ? [220, 53, 69] : [40, 167, 69]; // Red or Green
+    
+    // Draw rounded rectangle
+    doc.setFillColor(balanceColor[0], balanceColor[1], balanceColor[2]);
+    doc.roundedRect(margin, yPos, boxWidth, boxHeight, radius, radius, 'F');
+    
+    // White text inside
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text('FINAL TENANT BALANCE:', margin + 3, yPos + 7);
+    doc.text('FINAL TENANT BALANCE:', margin + 5, yPos + 12);
     
-    // Main balance - large and prominent, aligned right
-    doc.setFontSize(14);
-    const balanceColor = receiptData.finalBalance > 0 ? [220, 38, 38] : [34, 139, 34];
-    doc.setTextColor(balanceColor[0], balanceColor[1], balanceColor[2]);
-    doc.text(formatCurrency(receiptData.finalBalance), pageWidth - margin - 3, yPos + 8, { align: 'right' });
+    // Balance amount - large and white, aligned right
+    doc.setFontSize(16);
+    doc.text(formatCurrency(receiptData.finalBalance), pageWidth - margin - 5, yPos + 13, { align: 'right' });
     
-    // Breakdown line
-    doc.setFontSize(7.5);
+    yPos += boxHeight + 5;
+    
+    // Breakdown below the box (optional, smaller)
+    doc.setFontSize(7);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(80, 80, 80);
+    doc.setTextColor(100, 100, 100);
     
     let breakdownParts = [];
     if (startDebt !== 0) {
@@ -209,16 +217,16 @@ export function generateReceiptPDF(receiptData, settings) {
     if (creditAmount !== 0) {
       breakdownParts.push(`Credit: ${formatCurrency(creditAmount)}`);
     }
-    breakdownParts.push(`Rent Due: ${formatCurrency(totalTenantPaid)}`);
+    breakdownParts.push(`Rent Due: ${formatCurrency(totalRentDue)}`);
     breakdownParts.push(`Tenant Paid: ${formatCurrency(totalTenantPaid)}`);
     if (totalRasReceived > 0) {
-      breakdownParts.push(`Rent Assistance Support: ${formatCurrency(totalRasReceived)}`);
+      breakdownParts.push(`RAS: ${formatCurrency(totalRasReceived)}`);
     }
     
     const breakdownText = breakdownParts.join('  |  ');
-    doc.text(breakdownText, margin + 3, yPos + 15);
+    doc.text(breakdownText, margin, yPos + 3);
     
-    yPos += 28;
+    yPos += 10;
 
     // Notes with paragraph breaks
     if (receiptData.notes) {

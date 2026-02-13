@@ -380,34 +380,31 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
             <p className="text-sm">Add your first tenant or import from a file</p>
           </div>
         ) : (
-          <div className="overflow-x-auto -mx-3 sm:mx-0">
-            <table className="w-full min-w-[640px]">
+          <div className="overflow-x-auto">
+            <table className="w-full">
               <thead>
                 <tr className="border-b-2 border-slate-200">
-                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm">ID</th>
-                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm">Full Name</th>
-                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm hidden md:table-cell">Address</th>
-                  <th className="text-right py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm">Balance</th>
-                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm hidden lg:table-cell">Last Receipt</th>
-                  <th className="text-right py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm">Actions</th>
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm whitespace-nowrap">ID</th>
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm whitespace-nowrap">Full Name</th>
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm whitespace-nowrap">Address</th>
+                  <th className="text-right py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm whitespace-nowrap">Balance</th>
+                  <th className="text-right py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {tenants.map((tenant, index) => (
                   <tr 
                     key={tenant.id} 
-                    className={`border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
+                    className={`border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-colors cursor-pointer ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
+                    onClick={() => handleOpenEdit(tenant)}
                   >
-                    <td className="py-2 sm:py-3 px-2 sm:px-4 font-mono text-xs sm:text-sm text-slate-600">{tenant.displayId || tenant.id}</td>
-                    <td className="py-2 sm:py-3 px-2 sm:px-4 font-medium text-slate-800 text-xs sm:text-sm">{tenant.fullName}</td>
-                    <td className="py-2 sm:py-3 px-2 sm:px-4 text-slate-600 text-xs sm:text-sm max-w-xs truncate hidden md:table-cell">{tenant.address}</td>
-                    <td className={`py-2 sm:py-3 px-2 sm:px-4 text-right font-semibold text-xs sm:text-sm ${(tenant.currentBalance || 0) > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 font-mono text-xs sm:text-sm text-slate-600 whitespace-nowrap">{tenant.displayId || tenant.id}</td>
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 font-medium text-slate-800 text-xs sm:text-sm whitespace-nowrap">{tenant.fullName}</td>
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 text-slate-600 text-xs sm:text-sm whitespace-nowrap">{tenant.address}</td>
+                    <td className={`py-2 sm:py-3 px-2 sm:px-4 text-right font-semibold text-xs sm:text-sm whitespace-nowrap ${(tenant.currentBalance || 0) > 0 ? 'text-red-600' : 'text-green-600'}`}>
                       {formatCurrency(tenant.currentBalance || 0)}
                     </td>
-                    <td className="py-2 sm:py-3 px-2 sm:px-4 text-slate-600 text-xs sm:text-sm hidden lg:table-cell">
-                      {formatDate(getLastReceiptDate(tenant.id))}
-                    </td>
-                    <td className="py-2 sm:py-3 px-2 sm:px-4">
+                    <td className="py-2 sm:py-3 px-2 sm:px-4" onClick={(e) => e.stopPropagation()}>
                       <div className="flex justify-end gap-0.5 sm:gap-1">
                         <Button
                           size="sm"
@@ -444,7 +441,7 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
 
         {/* Add/Edit Dialog */}
         <Dialog open={showAddDialog} onOpenChange={(open) => { if (!open) resetForm(); setShowAddDialog(open); }}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingTenant ? 'Edit Tenant' : 'Add New Tenant'}</DialogTitle>
               <DialogDescription>

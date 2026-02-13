@@ -30,98 +30,121 @@ export async function parseBOIStatement(file) {
 
 /**
  * Extract payment transactions from BOI statement text
+ * Improved parsing for real-world BOI formats
  */
 function extractPayments(text) {
   const payments = [];
   const lines = text.split('\n');
   
   // BOI statement patterns
-  const datePattern = /(\d{2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{4})/i;
+  const datePattern = /^(\d{2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{4})/i;
+  
+  // Build a full line by joining consecutive non-date lines
+  let currentTransaction = '';
   
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i].trim();
     
-    // Skip unwanted lines
+    // Skip headers and footers
     if (!line || 
         line.includes('Transaction details') || 
         line.includes('BALANCE FORWARD') || 
         line.includes('SUBTOTAL') ||
         line.includes('All Business') ||
         line.includes('Page ') ||
-        line.includes('Balance') ||
         line.includes('Payments - out') ||
         line.includes('Payments - in') ||
         line.includes('Your Current Account Statement') ||
         line.includes('CARNDONAGH') ||
         line.includes('Bank of Ireland') ||
         line.includes('IBAN') ||
-        line.includes('Account number')) {
+        line.includes('Account number') ||
+        line.includes('Date') ||
+        line.includes('eligible deposit')) {
       continue;
     }
     
-    // Look for date at start of line (transaction line)
+    // Check if line starts with a date
     const dateMatch = line.match(datePattern);
-    if (!dateMatch) continue;
     
-    const [_, day, month, year] = dateMatch;
-    const date = `${day} ${month} ${year}`;
-    
-    // Everything after date is description + amounts + balance
-    let afterDate = line.substring(dateMatch.index + dateMatch[0].length).trim();
-    
-    // Extract all amounts (format: 12,345.67 or 123.45)
-    const amountPattern = /\d{1,3}(?:,\d{3})*\.\d{2}/g;
-    const amounts = [];
-    let match;
-    while ((match = amountPattern.exec(afterDate)) !== null) {
-      amounts.push({
-        value: parseFloat(match[0].replace(/,/g, '')),
-        index: match.index,
-        text: match[0]
-      });
+    if (dateMatch) {
+      // Process previous transaction if exists
+      if (currentTransaction) {
+        const payment = parseTransaction(currentTransaction);
+        if (payment) payments.push(payment);
+      }
+      // Start new transaction
+      currentTransaction = line;
+    } else if (currentTransaction) {
+      // Continue building current transaction
+      currentTransaction += ' ' + line;
     }
-    
-    if (amounts.length === 0) continue;
-    
-    // In BOI statements: description, then payment-out (if any), then payment-in (if any), then balance
-    // We want payments-in (positive, second or third from end typically)
-    // Balance is always last
-    // Look for payment-in: typically second from last if there are 2+ amounts
-    
-    let paymentAmount = null;
-    let description = afterDate;
-    
-    if (amounts.length >= 2) {
-      // Try second-to-last as payment-in
-      paymentAmount = amounts[amounts.length - 2].value;
-      // Description is everything before the payment amount
-      const paymentIndex = amounts[amounts.length - 2].index;
-      description = afterDate.substring(0, paymentIndex).trim();
-    } else if (amounts.length === 1) {
-      // Single amount could be payment or balance - skip if unsure
-      continue;
-    }
-    
-    // Skip if no valid payment amount or no description
-    if (!paymentAmount || paymentAmount <= 0 || !description) continue;
-    
-    // Clean up description - remove trailing spaces and amounts
-    description = description.replace(/\s+/g, ' ').trim();
-    
-    // Skip cheque out lines (negative amounts column)
-    if (description.includes('CHEQUE') && line.includes('Payments - out')) {
-      continue;
-    }
-    
-    payments.push({
-      date,
-      description,
-      amount: paymentAmount,
-      rawLine: line
-    });
+  }
+  
+  // Process last transaction
+  if (currentTransaction) {
+    const payment = parseTransaction(currentTransaction);
+    if (payment) payments.push(payment);
   }
   
   return payments;
+}
+
+/**
+ * Parse a single transaction line
+ */
+function parseTransaction(line) {
+  // Extract date
+  const datePattern = /^(\d{2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{4})/i;
+  const dateMatch = line.match(datePattern);
+  if (!dateMatch) return null;
+  
+  const [_, day, month, year] = dateMatch;
+  const date = `${day} ${month} ${year}`;
+  
+  // Everything after date
+  let rest = line.substring(dateMatch[0].length).trim();
+  
+  // Extract all amounts from the line
+  const amountPattern = /\d{1,3}(?:,\d{3})*\.\d{2}/g;
+  const amounts = [];
+  let match;
+  while ((match = amountPattern.exec(rest)) !== null) {
+    amounts.push({
+      value: parseFloat(match[0].replace(/,/g, '')),
+      index: match.index,
+      text: match[0]
+    });
+  }
+  
+  if (amounts.length < 2) return null; // Need at least payment + balance
+  
+  // In BOI format: description [payment-out] [payment-in] balance
+  // Payment-in is typically second-to-last, balance is last
+  const paymentAmount = amounts[amounts.length - 2].value;
+  const paymentIndex = amounts[amounts.length - 2].index;
+  
+  // Description is everything before the payment amount
+  let description = rest.substring(0, paymentIndex).trim();
+  
+  // Clean description
+  description = description.replace(/\s+/g, ' ').trim();
+  
+  // Skip if no description or payment amount <= 0
+  if (!description || paymentAmount <= 0) return null;
+  
+  // Skip obvious outgoings (CHEQUE lines typically)
+  if (description.toUpperCase().startsWith('CHEQUE') && amounts.length >= 3) {
+    // If first amount (payment-out) exists and is larger, this is an outgoing
+    if (amounts[0].value > paymentAmount) return null;
+  }
+  
+  return {
+    date,
+    description,
+    amount: paymentAmount,
+    rawLine: line
+  };
 }
 
 /**
