@@ -177,32 +177,36 @@ export function generateReceiptPDF(receiptData, settings) {
     
     yPos = doc.lastAutoTable.finalY + 3;
 
-    // Final Balance Box - Rounded pill shape like screenshot
+    // Final Balance Box - Rectangular without rounding, smaller
     const totalRentDue = receiptData.totalRentDue || 0;
     const totalTenantPaid = receiptData.totalTenantPayments || 0;
     const totalRasReceived = receiptData.totalRasReceived || 0;
     
     const boxWidth = pageWidth - (margin * 2);
-    const boxHeight = 20;
-    const radius = 10;
+    const boxHeight = 14;
     
     // Determine color based on balance
     const isDebt = receiptData.finalBalance > 0;
     const balanceColor = isDebt ? [220, 53, 69] : [40, 167, 69]; // Red or Green
     
-    // Draw rounded rectangle
+    // Draw rectangle (no rounding)
     doc.setFillColor(balanceColor[0], balanceColor[1], balanceColor[2]);
-    doc.roundedRect(margin, yPos, boxWidth, boxHeight, radius, radius, 'F');
+    doc.rect(margin, yPos, boxWidth, boxHeight, 'F');
     
-    // White text inside
+    // White text inside - properly aligned
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(11);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    doc.text('FINAL TENANT BALANCE:', margin + 5, yPos + 12);
     
-    // Balance amount - large and white, aligned right
-    doc.setFontSize(16);
-    doc.text(formatCurrency(receiptData.finalBalance), pageWidth - margin - 5, yPos + 13, { align: 'right' });
+    // Center vertically in the box
+    const textY = yPos + (boxHeight / 2) + 3;
+    
+    // Left side - label
+    doc.text('FINAL TENANT BALANCE:', margin + 4, textY);
+    
+    // Right side - amount
+    doc.setFontSize(12);
+    doc.text(formatCurrency(receiptData.finalBalance), pageWidth - margin - 4, textY, { align: 'right' });
     
     yPos += boxHeight + 5;
     

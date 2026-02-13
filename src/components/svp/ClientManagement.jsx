@@ -23,15 +23,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Plus, Upload, Pencil, Trash2, UserCheck, Users, AlertCircle } from 'lucide-react';
+import { Plus, Upload, Pencil, Trash2, UserCheck, Users, AlertCircle, User } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Papa from 'papaparse';
 import ExportClientsPDF from './ExportClientsPDF';
+import TenantProfile from './TenantProfile';
 
 export default function ClientManagement({ tenants = [], tenantsLoading, statements, onSelectTenant, settings }) {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingTenant, setEditingTenant] = useState(null);
   const [deleteTenant, setDeleteTenant] = useState(null);
+  const [profileTenant, setProfileTenant] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const fileInputRef = useRef(null);
@@ -396,7 +398,7 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                   <tr 
                     key={tenant.id} 
                     className={`border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-colors cursor-pointer ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
-                    onClick={() => handleOpenEdit(tenant)}
+                    onClick={() => setProfileTenant(tenant)}
                   >
                     <td className="py-2 sm:py-3 px-2 sm:px-4 font-mono text-xs sm:text-sm text-slate-600 whitespace-nowrap">{tenant.displayId || tenant.id}</td>
                     <td className="py-2 sm:py-3 px-2 sm:px-4 font-medium text-slate-800 text-xs sm:text-sm whitespace-nowrap">{tenant.fullName}</td>
@@ -406,6 +408,14 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                     </td>
                     <td className="py-2 sm:py-3 px-2 sm:px-4" onClick={(e) => e.stopPropagation()}>
                       <div className="flex justify-end gap-0.5 sm:gap-1">
+                        <Button
+                          size="sm"
+                          onClick={() => setProfileTenant(tenant)}
+                          className="bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white h-7 sm:h-8 px-2 sm:px-3 text-xs"
+                        >
+                          <User className="w-3 h-3 sm:w-4 sm:h-4" />
+                          <span className="hidden lg:inline ml-1">Profile</span>
+                        </Button>
                         <Button
                           size="sm"
                           onClick={() => onSelectTenant(tenant.id)}
@@ -606,6 +616,14 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* Tenant Profile Modal */}
+        <TenantProfile
+          tenant={profileTenant}
+          statements={statements}
+          isOpen={!!profileTenant}
+          onClose={() => setProfileTenant(null)}
+        />
       </CardContent>
     </Card>
   );
