@@ -5,7 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { base44 } from "@/api/base44Client";
+import AutomaticPaymentDetection from './AutomaticPaymentDetection';
 import {
   Select,
   SelectContent,
@@ -30,6 +32,7 @@ import { generateReceiptPDF } from './pdfGenerator';
 import { format } from 'date-fns';
 
 export default function CreateReceipt({ tenants = [], statements, settings, selectedTenantId, onReceiptCreated }) {
+  const [mode, setMode] = useState('manual');
   const [clientId, setClientId] = useState('');
   const [startingDebt, setStartingDebt] = useState(0);
   const [credit, setCredit] = useState(0);
@@ -358,6 +361,46 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
     setCredit(0);
   };
 
+  const handleApplyAutomatic = (data) => {
+    const { primaryTenantId, tenantPayments, rasPayments, statementDateRange } = data;
+    
+    // Set primary tenant
+    setClientId(primaryTenantId);
+    
+    // Set date range from statement if available
+    if (statementDateRange) {
+      setStartDate(statementDateRange.startDate.toISOString().split('T')[0]);
+      setEndDate(statementDateRange.endDate.toISOString().split('T')[0]);
+    }
+    
+    // Build transactions from detected payments
+    const newTransactions = [];
+    const allPayments = { ...tenantPayments, ...rasPayments };
+    
+    Object.keys(allPayments).forEach(tenantId => {
+      const payments = allPayments[tenantId];
+      
+      payments.forEach(payment => {
+        const dateObj = new Date(payment.date);
+        
+        newTransactions.push({
+          id: Date.now() + Math.random(),
+          date: dateObj.toISOString().split('T')[0],
+          rentDue: 0, // Will be filled manually if needed
+          tenantPayment: payment.type === 'Tenant Payment' ? payment.amount : 0,
+          tenantPaid: payment.type === 'Tenant Payment',
+          rasPayment: payment.type === 'RAS' ? payment.amount : 0,
+          rasReceived: payment.type === 'RAS'
+        });
+      });
+    });
+    
+    setTransactions(newTransactions);
+    
+    // Switch to manual mode to review
+    setMode('manual');
+  };
+
   return (
     <Card className="bg-white/90 backdrop-blur-sm shadow-xl border-0">
       <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-purple-50 p-4 sm:p-6">
@@ -369,6 +412,14 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
         </div>
       </CardHeader>
       <CardContent className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+        
+        <Tabs value={mode} onValueChange={setMode} className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="manual">Manual Mode</TabsTrigger>
+            <TabsTrigger value="automatic">Automatic Mode</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="manual" className="space-y-4 sm:space-y-6 mt-6">
         {error && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
@@ -576,6 +627,16 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
             </Button>
           </>
         )}
+
+          </TabsContent>
+
+          <TabsContent value="automatic" className="space-y-6 mt-6">
+            <AutomaticPaymentDetection 
+              tenants={tenants}
+              onApply={handleApplyAutomatic}
+            />
+          </TabsContent>
+        </Tabs>
 
         {/* Load Statement Dialog */}
         <AlertDialog open={showLoadDialog} onOpenChange={setShowLoadDialog}>

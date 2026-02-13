@@ -60,7 +60,10 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
     credit: 0,
     monthlyRent: 143.40,
     weeklyRasAmount: 103.40,
-    weeklyTenantPayment: 40
+    weeklyTenantPayment: 40,
+    lodgmentRange: '',
+    paymentKeywords: '',
+    expectedMonthlyTenantPayment: 0
   });
 
   const generateDisplayId = () => {
@@ -76,7 +79,10 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
       credit: 0,
       monthlyRent: 143.40,
       weeklyRasAmount: 103.40,
-      weeklyTenantPayment: 40
+      weeklyTenantPayment: 40,
+      lodgmentRange: '',
+      paymentKeywords: '',
+      expectedMonthlyTenantPayment: 0
     });
     setEditingTenant(null);
     setError('');
@@ -96,7 +102,10 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
       credit: tenant.credit ?? 0,
       monthlyRent: tenant.monthlyRent ?? 143.40,
       weeklyRasAmount: tenant.weeklyRasAmount ?? 103.40,
-      weeklyTenantPayment: tenant.weeklyTenantPayment ?? 40
+      weeklyTenantPayment: tenant.weeklyTenantPayment ?? 40,
+      lodgmentRange: tenant.lodgmentRange ?? '',
+      paymentKeywords: (tenant.paymentKeywords || []).join(', '),
+      expectedMonthlyTenantPayment: tenant.expectedMonthlyTenantPayment ?? (tenant.weeklyTenantPayment * 4.3) ?? 0
     });
     setEditingTenant(tenant);
     setShowAddDialog(true);
@@ -120,7 +129,10 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
       credit: parseFloat(formData.credit) || 0,
       monthlyRent: parseFloat(formData.monthlyRent) || 0,
       weeklyRasAmount: formData.weeklyRasAmount === '' ? 0 : parseFloat(formData.weeklyRasAmount),
-      weeklyTenantPayment: parseFloat(formData.weeklyTenantPayment) || 0
+      weeklyTenantPayment: parseFloat(formData.weeklyTenantPayment) || 0,
+      lodgmentRange: formData.lodgmentRange.trim() || null,
+      paymentKeywords: formData.paymentKeywords ? formData.paymentKeywords.split(',').map(k => k.trim()).filter(k => k) : [],
+      expectedMonthlyTenantPayment: parseFloat(formData.expectedMonthlyTenantPayment) || 0
     };
     
     try {
@@ -519,6 +531,47 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                     value={formData.weeklyRasAmount}
                     onChange={(e) => setFormData(prev => ({ ...prev, weeklyRasAmount: e.target.value }))}
                   />
+                </div>
+              </div>
+              
+              {/* Automatic Payment Detection Fields */}
+              <div className="pt-4 border-t">
+                <h4 className="font-semibold text-sm text-slate-700 mb-3">Automatic Payment Detection</h4>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="lodgmentRange">Lodgment Range (for cash payments)</Label>
+                    <Input
+                      id="lodgmentRange"
+                      value={formData.lodgmentRange}
+                      onChange={(e) => setFormData(prev => ({ ...prev, lodgmentRange: e.target.value }))}
+                      placeholder="e.g., 3251-3300 or 3563"
+                    />
+                    <p className="text-xs text-slate-500">Enter single number or range (e.g., "3251-3300")</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="paymentKeywords">Payment Keywords (for Direct Debit/Bank Transfer)</Label>
+                    <Input
+                      id="paymentKeywords"
+                      value={formData.paymentKeywords}
+                      onChange={(e) => setFormData(prev => ({ ...prev, paymentKeywords: e.target.value }))}
+                      placeholder="e.g., MARGARET BARR, BARR SP, MARGARET B"
+                    />
+                    <p className="text-xs text-slate-500">Comma-separated keywords for matching bank descriptions</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="expectedMonthlyTenantPayment">Expected Monthly Tenant Payment (€)</Label>
+                    <Input
+                      id="expectedMonthlyTenantPayment"
+                      type="number"
+                      step="0.01"
+                      value={formData.expectedMonthlyTenantPayment}
+                      onChange={(e) => setFormData(prev => ({ ...prev, expectedMonthlyTenantPayment: e.target.value }))}
+                      placeholder="Auto-calculated from weekly payment"
+                    />
+                    <p className="text-xs text-slate-500">
+                      {formData.weeklyTenantPayment > 0 && `Default: €${(formData.weeklyTenantPayment * 4.3).toFixed(2)}`}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
