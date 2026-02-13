@@ -6,7 +6,7 @@ export function generateReceiptPDF(receiptData, settings) {
     const doc = new jsPDF('portrait', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 15; // Reduced margin for more width
+    const margin = 10; // Minimal margin for full-width table
     
     const primaryBlue = [14, 86, 167];
     const lightGray = [240, 242, 245];
@@ -147,6 +147,7 @@ export function generateReceiptPDF(receiptData, settings) {
       head: [['Date', 'Description', 'Rent Due', 'Payment', 'Balance']],
       body: tableData,
       theme: 'plain',
+      tableWidth: 'auto',
       headStyles: {
         fillColor: lightGray,
         textColor: [60, 60, 60],
@@ -161,11 +162,11 @@ export function generateReceiptPDF(receiptData, settings) {
         textColor: [60, 60, 60]
       },
       columnStyles: {
-        0: { cellWidth: 18 },
-        1: { cellWidth: 72 },
-        2: { cellWidth: 24, halign: 'right' },
-        3: { cellWidth: 24, halign: 'right' },
-        4: { cellWidth: 28, halign: 'right' }
+        0: { cellWidth: 25 },
+        1: { cellWidth: 'auto' },
+        2: { cellWidth: 30, halign: 'right' },
+        3: { cellWidth: 30, halign: 'right' },
+        4: { cellWidth: 30, halign: 'right' }
       },
       didParseCell: function(data) {
         if (data.row.index === 0 && data.section === 'body') {
