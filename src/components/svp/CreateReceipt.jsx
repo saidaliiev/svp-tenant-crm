@@ -360,15 +360,15 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
 
   return (
     <Card className="bg-white/90 backdrop-blur-sm shadow-xl border-0">
-      <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-purple-50">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-            <FileText className="w-5 h-5 text-white" />
+      <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-purple-50 p-4 sm:p-6">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+            <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
           </div>
-          <CardTitle className="text-xl">Create Receipt</CardTitle>
+          <CardTitle className="text-lg sm:text-xl">Create Receipt</CardTitle>
         </div>
       </CardHeader>
-      <CardContent className="p-6 space-y-6">
+      <CardContent className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
         {error && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
@@ -522,14 +522,14 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
             </div>
 
             {/* Balance Preview */}
-            <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-6 border">
-              <div className="flex items-center gap-2 mb-4">
-                <Calculator className="w-5 h-5 text-blue-600" />
-                <h3 className="font-semibold text-lg">Balance Preview</h3>
+            <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg sm:rounded-xl p-4 sm:p-6 border">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                <Calculator className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                <h3 className="font-semibold text-base sm:text-lg">Balance Preview</h3>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-3">
+              <div className="grid grid-cols-1 gap-4 sm:gap-6">
+                <div className="space-y-2 sm:space-y-3 text-sm sm:text-base">
                     {includeDebt && (
                       <div className="flex justify-between">
                         <span className="text-slate-600">Previous Debt:</span>
@@ -568,10 +568,11 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
             <Button
               onClick={handleGenerateReceipt}
               size="lg"
-              className="w-full h-14 text-lg bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 shadow-lg"
+              className="w-full h-12 sm:h-14 text-base sm:text-lg bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 shadow-lg"
             >
-              <Printer className="w-5 h-5 mr-2" />
-              Generate and Print Receipt
+              <Printer className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+              <span className="hidden sm:inline">Generate and Print Receipt</span>
+              <span className="sm:hidden">Generate Receipt</span>
             </Button>
           </>
         )}

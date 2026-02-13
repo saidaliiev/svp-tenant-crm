@@ -68,52 +68,52 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="flex justify-center mb-4">
+        <div className="text-center mb-6 sm:mb-8 md:mb-12">
+          <div className="flex justify-center mb-3 sm:mb-4">
             <img 
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/36ae01103_SVP-1200x675-Photoroom.png" 
               alt="SVP Logo" 
-              className="h-24 md:h-28 object-contain w-full max-w-xl"
+              className="h-16 sm:h-20 md:h-24 lg:h-28 object-contain w-full max-w-xl px-4"
             />
           </div>
         </div>
 
         {/* Tab Navigation */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6 bg-white/80 backdrop-blur-sm shadow-lg rounded-xl p-1 h-auto">
+          <TabsList className="grid w-full grid-cols-4 mb-4 sm:mb-6 bg-white/80 backdrop-blur-sm shadow-lg rounded-lg sm:rounded-xl p-0.5 sm:p-1 h-auto">
             <TabsTrigger 
               value="tenants" 
-              className="flex items-center gap-2 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all"
+              className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 sm:py-3 px-1 sm:px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-md sm:rounded-lg transition-all text-xs sm:text-sm"
             >
-              <Home className="w-4 h-4" />
+              <Home className="w-4 h-4 sm:w-4 sm:h-4" />
               <span className="hidden sm:inline">Tenant Management</span>
-              <span className="sm:hidden">Tenants</span>
+              <span className="sm:hidden text-[10px]">Tenants</span>
             </TabsTrigger>
             <TabsTrigger 
               value="receipt" 
-              className="flex items-center gap-2 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all"
+              className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 sm:py-3 px-1 sm:px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-md sm:rounded-lg transition-all text-xs sm:text-sm"
             >
-              <FileText className="w-4 h-4" />
+              <FileText className="w-4 h-4 sm:w-4 sm:h-4" />
               <span className="hidden sm:inline">Create Receipt</span>
-              <span className="sm:hidden">Receipt</span>
+              <span className="sm:hidden text-[10px]">Receipt</span>
             </TabsTrigger>
             <TabsTrigger 
               value="history" 
-              className="flex items-center gap-2 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all"
+              className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 sm:py-3 px-1 sm:px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-md sm:rounded-lg transition-all text-xs sm:text-sm"
             >
-              <History className="w-4 h-4" />
+              <History className="w-4 h-4 sm:w-4 sm:h-4" />
               <span className="hidden sm:inline">Receipt History</span>
-              <span className="sm:hidden">History</span>
+              <span className="sm:hidden text-[10px]">History</span>
             </TabsTrigger>
             <TabsTrigger 
               value="settings" 
-              className="flex items-center gap-2 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all"
+              className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 sm:py-3 px-1 sm:px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-md sm:rounded-lg transition-all text-xs sm:text-sm"
             >
-              <Settings className="w-4 h-4" />
+              <Settings className="w-4 h-4 sm:w-4 sm:h-4" />
               <span className="hidden sm:inline">Settings</span>
-              <span className="sm:hidden">Settings</span>
+              <span className="sm:hidden text-[10px]">Settings</span>
             </TabsTrigger>
           </TabsList>
 

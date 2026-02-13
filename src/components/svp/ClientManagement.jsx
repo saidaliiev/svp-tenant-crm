@@ -306,29 +306,33 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
 
   return (
     <Card className="bg-white/90 backdrop-blur-sm shadow-xl border-0">
-      <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-purple-50">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-              <Users className="w-5 h-5 text-white" />
+      <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-purple-50 p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <CardTitle className="text-xl">Tenant Management</CardTitle>
+            <CardTitle className="text-lg sm:text-xl">Tenant Management</CardTitle>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
             <Button 
               onClick={handleOpenAdd}
-              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
+              size="sm"
+              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white text-xs sm:text-sm"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Tenant
+              <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden xs:inline">Add Tenant</span>
+              <span className="xs:hidden">Add</span>
             </Button>
             <Button 
               variant="outline"
+              size="sm"
               onClick={() => fileInputRef.current?.click()}
-              className="border-blue-300 text-blue-700 hover:bg-blue-50"
+              className="border-blue-300 text-blue-700 hover:bg-blue-50 text-xs sm:text-sm"
             >
-              <Upload className="w-4 h-4 mr-2" />
-              Import CSV/Excel
+              <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Import CSV/Excel</span>
+              <span className="sm:hidden">Import</span>
             </Button>
             <ExportClientsPDF tenants={tenants} settings={settings} />
             <input
@@ -341,7 +345,7 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-6">
+      <CardContent className="p-3 sm:p-4 md:p-6">
         {error && (
           <Alert variant="destructive" className="mb-4">
             <AlertCircle className="h-4 w-4" />
@@ -364,16 +368,16 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
             <p className="text-sm">Add your first tenant or import from a file</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
+          <div className="overflow-x-auto -mx-3 sm:mx-0">
+            <table className="w-full min-w-[640px]">
               <thead>
                 <tr className="border-b-2 border-slate-200">
-                  <th className="text-left py-3 px-4 font-semibold text-slate-700">ID</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-700">Full Name</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-700">Address</th>
-                  <th className="text-right py-3 px-4 font-semibold text-slate-700">Balance</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-700 hidden sm:table-cell">Last Receipt</th>
-                  <th className="text-right py-3 px-4 font-semibold text-slate-700">Actions</th>
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm">ID</th>
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm">Full Name</th>
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm hidden md:table-cell">Address</th>
+                  <th className="text-right py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm">Balance</th>
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm hidden lg:table-cell">Last Receipt</th>
+                  <th className="text-right py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -382,40 +386,40 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                     key={tenant.id} 
                     className={`border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
                   >
-                    <td className="py-3 px-4 font-mono text-sm text-slate-600">{tenant.displayId || tenant.id}</td>
-                    <td className="py-3 px-4 font-medium text-slate-800">{tenant.fullName}</td>
-                    <td className="py-3 px-4 text-slate-600 text-sm max-w-xs truncate">{tenant.address}</td>
-                    <td className={`py-3 px-4 text-right font-semibold ${(tenant.currentBalance || 0) > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 font-mono text-xs sm:text-sm text-slate-600">{tenant.displayId || tenant.id}</td>
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 font-medium text-slate-800 text-xs sm:text-sm">{tenant.fullName}</td>
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 text-slate-600 text-xs sm:text-sm max-w-xs truncate hidden md:table-cell">{tenant.address}</td>
+                    <td className={`py-2 sm:py-3 px-2 sm:px-4 text-right font-semibold text-xs sm:text-sm ${(tenant.currentBalance || 0) > 0 ? 'text-red-600' : 'text-green-600'}`}>
                       {formatCurrency(tenant.currentBalance || 0)}
                     </td>
-                    <td className="py-3 px-4 text-slate-600 hidden sm:table-cell">
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 text-slate-600 text-xs sm:text-sm hidden lg:table-cell">
                       {formatDate(getLastReceiptDate(tenant.id))}
                     </td>
-                    <td className="py-3 px-4">
-                      <div className="flex justify-end gap-1">
+                    <td className="py-2 sm:py-3 px-2 sm:px-4">
+                      <div className="flex justify-end gap-0.5 sm:gap-1">
                         <Button
                           size="sm"
                           onClick={() => onSelectTenant(tenant.id)}
-                          className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
+                          className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white h-7 sm:h-8 px-2 sm:px-3 text-xs"
                         >
-                          <UserCheck className="w-4 h-4" />
-                          <span className="hidden sm:inline ml-1">Select</span>
+                          <UserCheck className="w-3 h-3 sm:w-4 sm:h-4" />
+                          <span className="hidden lg:inline ml-1">Select</span>
                         </Button>
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => handleOpenEdit(tenant)}
-                          className="border-blue-300 text-blue-600 hover:bg-blue-50"
+                          className="border-blue-300 text-blue-600 hover:bg-blue-50 h-7 sm:h-8 px-2 sm:px-3"
                         >
-                          <Pencil className="w-4 h-4" />
+                          <Pencil className="w-3 h-3 sm:w-4 sm:h-4" />
                         </Button>
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => setDeleteTenant(tenant)}
-                          className="border-red-300 text-red-600 hover:bg-red-50"
+                          className="border-red-300 text-red-600 hover:bg-red-50 h-7 sm:h-8 px-2 sm:px-3"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                         </Button>
                       </div>
                     </td>
