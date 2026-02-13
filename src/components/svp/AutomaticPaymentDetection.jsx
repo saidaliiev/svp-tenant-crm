@@ -22,7 +22,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Upload, FileText, Trash2, CheckCircle, AlertCircle, X } from 'lucide-react';
-import { parseBOIStatement, matchPaymentsToTenants, extractStatementDateRange } from '../utils/pdfParser';
+import { parseBOIStatement, matchPaymentsToTenants, extractStatementDateRange } from '@/components/utils/pdfParser';
 import { toast } from 'sonner';
 
 export default function AutomaticPaymentDetection({ tenants, onApply }) {
