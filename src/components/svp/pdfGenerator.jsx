@@ -17,13 +17,9 @@ export function generateReceiptPDF(receiptData, settings) {
 
     // Add SVP Logo - aligned left
     const logoUrl = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/36ae01103_SVP-1200x675-Photoroom.png';
-    try {
-      const logoWidth = 70;
-      const logoHeight = 23;
-      doc.addImage(logoUrl, 'PNG', margin, yPos, logoWidth, logoHeight);
-    } catch (e) {
-      console.log('Could not load logo');
-    }
+    const logoWidth = 70;
+    const logoHeight = 23;
+    doc.addImage(logoUrl, 'PNG', margin, yPos, logoWidth, logoHeight);
     
     yPos += 28;
     
@@ -177,13 +173,13 @@ export function generateReceiptPDF(receiptData, settings) {
     
     yPos = doc.lastAutoTable.finalY + 3;
 
-    // Final Balance Box - Rectangular without rounding, smaller
+    // Final Balance Box with breakdown inside
     const totalRentDue = receiptData.totalRentDue || 0;
     const totalTenantPaid = receiptData.totalTenantPayments || 0;
     const totalRasReceived = receiptData.totalRasReceived || 0;
     
     const boxWidth = pageWidth - (margin * 2);
-    const boxHeight = 14;
+    const boxHeight = 18;
     
     // Determine color based on balance
     const isDebt = receiptData.finalBalance > 0;
@@ -198,22 +194,15 @@ export function generateReceiptPDF(receiptData, settings) {
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     
-    // Center vertically in the box
-    const textY = yPos + (boxHeight / 2) + 3;
-    
-    // Left side - label
-    doc.text('FINAL TENANT BALANCE:', margin + 4, textY);
-    
-    // Right side - amount
+    // First line - label and amount
+    const firstLineY = yPos + 7;
+    doc.text('FINAL TENANT BALANCE:', margin + 4, firstLineY);
     doc.setFontSize(12);
-    doc.text(formatCurrency(receiptData.finalBalance), pageWidth - margin - 4, textY, { align: 'right' });
+    doc.text(formatCurrency(receiptData.finalBalance), pageWidth - margin - 4, firstLineY, { align: 'right' });
     
-    yPos += boxHeight + 5;
-    
-    // Breakdown below the box (optional, smaller)
+    // Second line - breakdown
     doc.setFontSize(7);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(100, 100, 100);
     
     let breakdownParts = [];
     if (startDebt !== 0) {
@@ -229,9 +218,10 @@ export function generateReceiptPDF(receiptData, settings) {
     }
     
     const breakdownText = breakdownParts.join('  |  ');
-    doc.text(breakdownText, margin, yPos + 3);
+    const secondLineY = yPos + 14;
+    doc.text(breakdownText, margin + 4, secondLineY);
     
-    yPos += 10;
+    yPos += boxHeight + 8;
 
     // Notes with paragraph breaks
     if (receiptData.notes) {
@@ -239,13 +229,16 @@ export function generateReceiptPDF(receiptData, settings) {
       doc.setFontSize(8.5);
       doc.setFont('helvetica', 'normal');
 
-      // Keep Euro signs but remove other special characters
-      const cleanedNotes = receiptData.notes.replace(/⚠️/g, '(!!)').replace(/[^\x00-\x7F€]/g, '');
+      // Remove (!!) and other special characters
+      const cleanedNotes = receiptData.notes
+        .replace(/\(!\!\)/g, '')
+        .replace(/⚠️/g, '')
+        .replace(/[^\x00-\x7F€]/g, '');
 
       // Split by double newlines for paragraphs
-      const paragraphs = cleanedNotes.split('\n\n');
+      const paragraphs = cleanedNotes.split('\n\n').filter(p => p.trim());
       paragraphs.forEach((para, idx) => {
-        const splitText = doc.splitTextToSize(para, pageWidth - (margin * 2));
+        const splitText = doc.splitTextToSize(para.trim(), pageWidth - (margin * 2));
         doc.text(splitText, margin, yPos);
         yPos += (splitText.length * 4) + 4; // Add extra space between paragraphs
       });
