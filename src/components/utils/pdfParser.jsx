@@ -37,13 +37,25 @@ function extractPayments(text) {
   
   // BOI statement patterns
   const datePattern = /(\d{2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{4})/i;
-  const amountPattern = /[\d,]+\.\d{2}/g;
   
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+    let line = lines[i].trim();
     
-    // Skip empty lines and headers
-    if (!line || line.includes('Transaction details') || line.includes('BALANCE FORWARD') || line.includes('SUBTOTAL')) {
+    // Skip unwanted lines
+    if (!line || 
+        line.includes('Transaction details') || 
+        line.includes('BALANCE FORWARD') || 
+        line.includes('SUBTOTAL') ||
+        line.includes('All Business') ||
+        line.includes('Page ') ||
+        line.includes('Balance') ||
+        line.includes('Payments - out') ||
+        line.includes('Payments - in') ||
+        line.includes('Your Current Account Statement') ||
+        line.includes('CARNDONAGH') ||
+        line.includes('Bank of Ireland') ||
+        line.includes('IBAN') ||
+        line.includes('Account number')) {
       continue;
     }
     
@@ -54,33 +66,59 @@ function extractPayments(text) {
     const [_, day, month, year] = dateMatch;
     const date = `${day} ${month} ${year}`;
     
-    // Extract description (everything between date and amount)
-    const afterDate = line.substring(dateMatch.index + dateMatch[0].length).trim();
+    // Everything after date is description + amounts + balance
+    let afterDate = line.substring(dateMatch.index + dateMatch[0].length).trim();
     
-    // Find all amounts in the line
-    const amounts = afterDate.match(amountPattern);
-    if (!amounts || amounts.length === 0) continue;
-    
-    // Description is everything before the last amount (which is the balance)
-    const lastAmountIndex = afterDate.lastIndexOf(amounts[amounts.length - 1]);
-    const beforeBalance = afterDate.substring(0, lastAmountIndex).trim();
-    
-    // Find the payment amount (second to last, or first if only one)
-    const paymentAmount = amounts.length >= 2 ? amounts[amounts.length - 2] : amounts[0];
-    const description = beforeBalance.replace(paymentAmount, '').trim();
-    
-    // Parse amount
-    const amount = parseFloat(paymentAmount.replace(/,/g, ''));
-    
-    // Only include if we have a valid positive amount (Payments in)
-    if (amount > 0 && description) {
-      payments.push({
-        date,
-        description,
-        amount,
-        rawLine: line
+    // Extract all amounts (format: 12,345.67 or 123.45)
+    const amountPattern = /\d{1,3}(?:,\d{3})*\.\d{2}/g;
+    const amounts = [];
+    let match;
+    while ((match = amountPattern.exec(afterDate)) !== null) {
+      amounts.push({
+        value: parseFloat(match[0].replace(/,/g, '')),
+        index: match.index,
+        text: match[0]
       });
     }
+    
+    if (amounts.length === 0) continue;
+    
+    // In BOI statements: description, then payment-out (if any), then payment-in (if any), then balance
+    // We want payments-in (positive, second or third from end typically)
+    // Balance is always last
+    // Look for payment-in: typically second from last if there are 2+ amounts
+    
+    let paymentAmount = null;
+    let description = afterDate;
+    
+    if (amounts.length >= 2) {
+      // Try second-to-last as payment-in
+      paymentAmount = amounts[amounts.length - 2].value;
+      // Description is everything before the payment amount
+      const paymentIndex = amounts[amounts.length - 2].index;
+      description = afterDate.substring(0, paymentIndex).trim();
+    } else if (amounts.length === 1) {
+      // Single amount could be payment or balance - skip if unsure
+      continue;
+    }
+    
+    // Skip if no valid payment amount or no description
+    if (!paymentAmount || paymentAmount <= 0 || !description) continue;
+    
+    // Clean up description - remove trailing spaces and amounts
+    description = description.replace(/\s+/g, ' ').trim();
+    
+    // Skip cheque out lines (negative amounts column)
+    if (description.includes('CHEQUE') && line.includes('Payments - out')) {
+      continue;
+    }
+    
+    payments.push({
+      date,
+      description,
+      amount: paymentAmount,
+      rawLine: line
+    });
   }
   
   return payments;
@@ -188,22 +226,38 @@ function calculateMatchScore(payment, tenant) {
 function extractLodgmentNumbers(description) {
   const numbers = [];
   
-  // Pattern: LODGEMENT 3251 or LODGMENT 3251-3300
-  const singlePattern = /LODG[E]?MENT\s+(\d{4})/gi;
-  const rangePattern = /LODG[E]?MENT\s+(\d{4})-(\d{4})/gi;
+  // Pattern: LODGEMENT/LODGMENT followed by number or range
+  // Examples: "LODGEMENT 3251", "LODGMENT 3251-3300", "LODGEMENT 349701"
+  const patterns = [
+    /LODG[E]?MENT\s+(\d{4,6})-(\d{4,6})/gi,  // Range: 3251-3300
+    /LODG[E]?MENT\s+(\d{4,6})/gi             // Single: 3251 or 349701
+  ];
   
+  // First try to match ranges
   let match;
+  const rangePattern = patterns[0];
+  rangePattern.lastIndex = 0; // Reset regex
   while ((match = rangePattern.exec(description)) !== null) {
     const start = parseInt(match[1]);
     const end = parseInt(match[2]);
-    // Add all numbers in range
-    for (let i = start; i <= end; i++) {
-      numbers.push(i);
+    // Don't expand huge ranges, just add start and end for matching
+    if (end - start <= 100) {
+      for (let i = start; i <= end; i++) {
+        numbers.push(i);
+      }
+    } else {
+      numbers.push(start);
+      numbers.push(end);
     }
   }
   
-  while ((match = singlePattern.exec(description)) !== null) {
-    numbers.push(parseInt(match[1]));
+  // Then try single numbers (if no range found)
+  if (numbers.length === 0) {
+    const singlePattern = patterns[1];
+    singlePattern.lastIndex = 0;
+    while ((match = singlePattern.exec(description)) !== null) {
+      numbers.push(parseInt(match[1]));
+    }
   }
   
   return numbers;
