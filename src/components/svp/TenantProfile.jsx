@@ -140,7 +140,7 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
             <CardContent className="space-y-3">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-slate-600">Monthly Rent</p>
+                  <p className="text-sm text-slate-600">Weekly Rent</p>
                   <p className="text-lg font-semibold">{formatCurrency(tenant.monthlyRent || 0)}</p>
                 </div>
                 <div>
