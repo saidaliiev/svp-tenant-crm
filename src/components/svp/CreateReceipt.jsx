@@ -330,7 +330,8 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
           totalTenantPayments: pendingReceiptData.totalTenantPayments,
           totalRasReceived: pendingReceiptData.totalRasReceived,
           finalBalance: pendingReceiptData.finalBalance,
-          notes: pendingReceiptData.notes
+          notes: pendingReceiptData.notes,
+          createdDate: pendingReceiptData.createdDate
         });
         
         // Save to local history only if saved to cloud
