@@ -171,24 +171,62 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
               {tenantStatements.length === 0 ? (
                 <p className="text-slate-500 text-center py-8">No payment history yet</p>
               ) : (
-                <div className="space-y-3 max-h-64 overflow-y-auto">
-                  {tenantStatements.map((statement, index) => (
-                    <div key={statement.id} className={`flex items-center justify-between p-3 rounded-lg border ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50'}`}>
-                      <div className="flex-1">
-                        <p className="font-semibold text-slate-800">
-                          {formatDate(statement.startDate)} - {formatDate(statement.endDate)}
-                        </p>
-                        <p className="text-sm text-slate-600">
-                          Receipt: {statement.receiptId}
-                        </p>
+                <div className="space-y-4 max-h-96 overflow-y-auto">
+                  {tenantStatements.map((statement, stmtIndex) => (
+                    <div key={statement.id} className={`rounded-lg border ${stmtIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50'}`}>
+                      {/* Statement Header */}
+                      <div className="p-3 border-b bg-slate-100">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-semibold text-slate-800">
+                              {formatDate(statement.startDate)} - {formatDate(statement.endDate)}
+                            </p>
+                            <p className="text-xs text-slate-600">
+                              Receipt: {statement.receiptId}
+                            </p>
+                          </div>
+                          <p className="text-xs text-slate-500">
+                            {formatDate(statement.createdDate)}
+                          </p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-bold text-green-600">
-                          {formatCurrency(statement.totalTenantPayments || 0)}
-                        </p>
-                        <p className="text-xs text-slate-500">
-                          {formatDate(statement.createdDate)}
-                        </p>
+                      
+                      {/* Weekly Breakdown */}
+                      <div className="p-2">
+                        {statement.transactions && statement.transactions.length > 0 ? (
+                          <div className="space-y-1">
+                            {statement.transactions
+                              .filter(t => t.tenantPaid && (parseFloat(t.tenantPayment) || 0) > 0)
+                              .map((transaction, txIndex) => (
+                                <div 
+                                  key={txIndex} 
+                                  className="flex items-center justify-between py-2 px-3 text-sm hover:bg-slate-50 rounded"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                                    <span className="text-slate-700">
+                                      {formatDate(transaction.date)}
+                                    </span>
+                                  </div>
+                                  <span className="font-medium text-green-600">
+                                    {formatCurrency(transaction.tenantPayment || 0)}
+                                  </span>
+                                </div>
+                              ))}
+                            
+                            {/* Monthly Total */}
+                            <div className="flex items-center justify-between py-2 px-3 mt-2 border-t bg-green-50 rounded font-semibold">
+                              <span className="text-slate-800">Total for Month:</span>
+                              <span className="text-green-600">
+                                {formatCurrency(statement.totalTenantPayments || 0)}
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-center py-4 text-sm text-slate-500">
+                            No weekly transactions recorded
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
