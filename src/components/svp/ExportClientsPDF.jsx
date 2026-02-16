@@ -158,6 +158,11 @@ export default function ExportClientsPDF({ tenants = [], settings }) {
           }
           
           if (data.section === 'body') {
+            // Alternating row colors
+            if (data.row.index % 2 === 1) {
+              data.cell.styles.fillColor = [245, 245, 245];
+            }
+            
             // Balance column (index 3) - red if debt
             if (data.column.index === 3) {
               const value = parseFloat(data.cell.text[0].replace('€', '').replace(',', '').replace('-', ''));
