@@ -28,7 +28,7 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
     ?.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate)) || [];
 
   const totalPaid = tenantStatements.reduce((sum, s) => 
-    sum + (s.totalTenantPayments || 0) + (s.totalRasReceived || 0), 0
+    sum + (s.totalTenantPayments || 0), 0
   );
 
   const formatCurrency = (amount) => {
@@ -172,8 +172,8 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
                 <p className="text-slate-500 text-center py-8">No payment history yet</p>
               ) : (
                 <div className="space-y-3 max-h-64 overflow-y-auto">
-                  {tenantStatements.map((statement) => (
-                    <div key={statement.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border">
+                  {tenantStatements.map((statement, index) => (
+                    <div key={statement.id} className={`flex items-center justify-between p-3 rounded-lg border ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50'}`}>
                       <div className="flex-1">
                         <p className="font-semibold text-slate-800">
                           {formatDate(statement.startDate)} - {formatDate(statement.endDate)}
@@ -184,7 +184,7 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
                       </div>
                       <div className="text-right">
                         <p className="font-bold text-green-600">
-                          {formatCurrency((statement.totalTenantPayments || 0) + (statement.totalRasReceived || 0))}
+                          {formatCurrency(statement.totalTenantPayments || 0)}
                         </p>
                         <p className="text-xs text-slate-500">
                           {formatDate(statement.createdDate)}

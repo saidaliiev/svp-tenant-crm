@@ -311,10 +311,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
   const handleConfirmGenerate = async (shouldSave) => {
     if (!pendingReceiptData) return;
     
-    // Generate PDF
-    generateReceiptPDF(pendingReceiptData, settings);
-    
-    // Save to cloud if requested
+    // Save to cloud if requested first
     if (shouldSave) {
       try {
         await base44.entities.Statement.create({
@@ -339,26 +336,21 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
         // Save to local history only if saved to cloud
         onReceiptCreated(pendingReceiptData);
         
-        setSuccess('Receipt generated and saved to cloud!');
+        setSuccess('Receipt saved to cloud and opened in new window!');
       } catch (err) {
         console.error('Error saving to cloud:', err);
-        setError('Receipt generated but failed to save to cloud');
+        setError('Receipt opened but failed to save to cloud');
       }
     } else {
-      setSuccess('Receipt printed successfully!');
+      setSuccess('Receipt opened in new window!');
     }
+    
+    // Generate PDF after saving (or not)
+    generateReceiptPDF(pendingReceiptData, settings);
     
     setTimeout(() => setSuccess(''), 3000);
     setShowSaveDialog(false);
     setPendingReceiptData(null);
-    
-    // Reset form
-    setClientId('');
-    setStartDate('');
-    setEndDate('');
-    setTransactions([]);
-    setStartingDebt(0);
-    setCredit(0);
   };
 
   const handleApplyAutomatic = (data) => {

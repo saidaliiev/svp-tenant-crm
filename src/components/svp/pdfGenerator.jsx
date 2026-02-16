@@ -165,8 +165,8 @@ export function generateReceiptPDF(receiptData, settings) {
         4: { cellWidth: 30, halign: 'right' }
       },
       didParseCell: function(data) {
-        if (data.row.index === 0 && data.section === 'body') {
-          data.cell.styles.fillColor = [250, 250, 250];
+        if (data.section === 'body' && data.row.index % 2 === 1) {
+          data.cell.styles.fillColor = [245, 245, 245];
         }
       }
     });
