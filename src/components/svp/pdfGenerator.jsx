@@ -11,7 +11,7 @@ export function generateReceiptPDF(receiptData, settings) {
     const primaryBlue = [14, 86, 167];
     const lightGray = [240, 242, 245];
     
-    const receiptNum = receiptData.id || 'RCP-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const receiptNum = receiptData.receiptId || 'RCP-' + Math.random().toString(36).substring(2, 8).toUpperCase();
     
     let yPos = margin;
 
