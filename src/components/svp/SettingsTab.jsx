@@ -4,7 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Settings, Save, RotateCcw } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Settings, Save, RotateCcw, Trash2, AlertTriangle } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 
 const DEFAULT_SETTINGS = {
   organizationName: "Society of Saint Vincent de Paul",
@@ -18,6 +29,8 @@ const DEFAULT_SETTINGS = {
 export default function SettingsTab({ settings, setSettings }) {
   const [formData, setFormData] = useState(settings);
   const [success, setSuccess] = useState('');
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const handleSave = () => {
     setSettings(formData);
@@ -30,6 +43,38 @@ export default function SettingsTab({ settings, setSettings }) {
     setSettings(DEFAULT_SETTINGS);
     setSuccess('Settings reset to defaults');
     setTimeout(() => setSuccess(''), 3000);
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleteLoading(true);
+    try {
+      // Get current user
+      const user = await base44.auth.me();
+      
+      // Delete all user's tenants
+      const tenants = await base44.entities.Tenant.list();
+      for (const tenant of tenants) {
+        await base44.entities.Tenant.delete(tenant.id);
+      }
+      
+      // Delete all user's statements
+      const statements = await base44.entities.Statement.list();
+      for (const statement of statements) {
+        await base44.entities.Statement.delete(statement.id);
+      }
+      
+      // Clear localStorage
+      localStorage.removeItem('svp_settings');
+      
+      // Logout
+      await base44.auth.logout();
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      alert('Error deleting account. Please try again.');
+    } finally {
+      setDeleteLoading(false);
+      setShowDeleteDialog(false);
+    }
   };
 
   return (
@@ -118,23 +163,76 @@ export default function SettingsTab({ settings, setSettings }) {
         </div>
 
         {/* Data Management Section */}
-        <div className="mt-10 pt-6 border-t">
-          <h3 className="text-lg font-semibold mb-4 text-slate-700">Data Storage</h3>
-          <div className="bg-slate-50 rounded-xl p-4 text-sm text-slate-600">
+        <div className="mt-10 pt-6 border-t dark:border-gray-700">
+          <h3 className="text-lg font-semibold mb-4 text-slate-700 dark:text-slate-300">Data Storage</h3>
+          <div className="bg-slate-50 dark:bg-gray-800 rounded-xl p-4 text-sm text-slate-600 dark:text-slate-400">
             <p className="mb-2">
-              <strong>All data is stored locally</strong> in your browser's localStorage:
+              <strong>All data is stored in the cloud</strong>:
             </p>
             <ul className="list-disc list-inside space-y-1 ml-2">
-              <li><code className="bg-slate-200 px-1 rounded">svp_clients</code> – Client/tenant records</li>
-              <li><code className="bg-slate-200 px-1 rounded">svp_statements</code> – Receipt history</li>
-              <li><code className="bg-slate-200 px-1 rounded">svp_settings</code> – App settings</li>
+              <li>Tenant records</li>
+              <li>Receipt history</li>
+              <li>App settings (localStorage)</li>
             </ul>
-            <p className="mt-3 text-xs text-slate-500">
-              Data persists across browser sessions. Clearing browser data will remove all stored information.
+            <p className="mt-3 text-xs text-slate-500 dark:text-slate-500">
+              Data persists across devices when you log in.
             </p>
           </div>
         </div>
+
+        {/* Danger Zone */}
+        <div className="mt-10 pt-6 border-t border-red-200 dark:border-red-900">
+          <h3 className="text-lg font-semibold mb-4 text-red-600 dark:text-red-400 flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5" />
+            Danger Zone
+          </h3>
+          <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-xl p-4">
+            <p className="text-sm text-slate-700 dark:text-slate-300 mb-4">
+              Permanently delete your account and all associated data. This action cannot be undone.
+            </p>
+            <Button
+              variant="destructive"
+              onClick={() => setShowDeleteDialog(true)}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete Account
+            </Button>
+          </div>
+        </div>
       </CardContent>
+
+      {/* Delete Account Confirmation */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-red-600">
+              <AlertTriangle className="w-5 h-5" />
+              Delete Account Permanently?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete:
+              <ul className="list-disc list-inside mt-2 space-y-1">
+                <li>All tenant records</li>
+                <li>All receipt history</li>
+                <li>All settings</li>
+                <li>Your user account</li>
+              </ul>
+              <p className="mt-3 font-semibold text-red-600">This action cannot be undone!</p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteLoading}>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteAccount}
+              disabled={deleteLoading}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {deleteLoading ? 'Deleting...' : 'Yes, Delete Everything'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }
