@@ -230,11 +230,11 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
     } 
     // If positive balance (arrears)
     else if (finalTenantBalance > 0) {
-      // Calculate monthly tenant payment (weeks in the month)
-      const monthlyTenantPayment = totalTenantPayments;
-      const monthlyTotalWithRas = totalTenantPayments + totalRasReceived;
+      // Calculate monthly rent due (not tenant payments)
+      const monthlyRentDue = totalRentDue;
+      const monthlyTotalWithRas = totalRentDue + totalRasReceived;
 
-      smartNote += `You have paid €${totalTenantPayments.toFixed(2)} this month, your rent for the month of ${monthName} is €${monthlyTenantPayment.toFixed(2)} (with RAS €${monthlyTotalWithRas.toFixed(2)}). Your arrears at the start of ${monthName} is €${debtAmt.toFixed(2)}.\n\n`;
+      smartNote += `You have paid €${totalTenantPayments.toFixed(2)} this month, your rent for the month of ${monthName} is €${monthlyRentDue.toFixed(2)} (with RAS €${monthlyTotalWithRas.toFixed(2)}). Your arrears at the start of ${monthName} is €${debtAmt.toFixed(2)}.\n\n`;
 
       // If large arrears (> 200)
       if (finalTenantBalance > 200) {
