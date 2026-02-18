@@ -235,18 +235,28 @@ export default function TutorialGuide({ activeTab }) {
 
   return (
     <>
-      {/* Fixed Tutorial Button — below header, next to tabs */}
+      {/* Fixed Tutorial Button — collapses to icon on scroll */}
       <motion.button
         onClick={handleOpen}
-        className="fixed top-3 right-3 z-[100] flex items-center gap-1.5 rounded-full px-3 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg hover:shadow-xl transition-shadow text-xs font-medium"
+        className="fixed top-3 right-3 z-[100] flex items-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg hover:shadow-xl text-xs font-medium overflow-hidden"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        animate={shouldBlink ? { opacity: [1, 0.15, 1, 0.15, 1, 1, 1, 1] } : { opacity: 1 }}
-        transition={shouldBlink ? { duration: 2, repeat: Infinity, ease: "linear" } : {}}
+        animate={
+          shouldBlink
+            ? { opacity: [1, 0.15, 1, 0.15, 1, 1, 1, 1], width: collapsed ? 36 : 'auto', paddingLeft: collapsed ? 0 : 12, paddingRight: collapsed ? 0 : 12, paddingTop: 8, paddingBottom: 8 }
+            : { opacity: 1, width: collapsed ? 36 : 'auto', paddingLeft: collapsed ? 0 : 12, paddingRight: collapsed ? 0 : 12, paddingTop: 8, paddingBottom: 8 }
+        }
+        transition={shouldBlink ? { opacity: { duration: 2, repeat: Infinity, ease: "linear" }, width: { duration: 0.3, ease: "easeInOut" }, paddingLeft: { duration: 0.3 }, paddingRight: { duration: 0.3 } } : { width: { duration: 0.3, ease: "easeInOut" }, paddingLeft: { duration: 0.3 }, paddingRight: { duration: 0.3 } }}
         title="Open Tutorial"
       >
-        <HelpCircle className="w-4 h-4" />
-        <span className="hidden sm:inline">Guide</span>
+        <HelpCircle className="w-4 h-4 shrink-0" style={{ margin: collapsed ? '0 auto' : 0 }} />
+        <motion.span
+          className="hidden sm:inline whitespace-nowrap ml-1.5"
+          animate={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto' }}
+          transition={{ duration: 0.2 }}
+        >
+          Guide
+        </motion.span>
       </motion.button>
 
       {/* Tutorial Overlay */}
