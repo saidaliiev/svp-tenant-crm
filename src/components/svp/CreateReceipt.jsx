@@ -367,35 +367,91 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
     // Set primary tenant
     setClientId(primaryTenantId);
     
-    // Set date range from statement if available
+    const tenant = tenants.find(t => t.id === primaryTenantId);
+    
+    // Set date range from statement dates
     if (statementDateRange) {
       setStartDate(statementDateRange.startDate.toISOString().split('T')[0]);
       setEndDate(statementDateRange.endDate.toISOString().split('T')[0]);
     }
     
-    // Build transactions from detected payments
-    const newTransactions = [];
-    const allPayments = { ...tenantPayments, ...rasPayments };
+    // Collect all payments for this tenant
+    const tPayments = (tenantPayments[primaryTenantId] || []).map(p => ({
+      ...p, paymentType: 'tenant'
+    }));
+    const rPayments = (rasPayments[primaryTenantId] || []).map(p => ({
+      ...p, paymentType: 'ras'
+    }));
     
-    Object.keys(allPayments).forEach(tenantId => {
-      const payments = allPayments[tenantId];
+    // Combine and sort by date
+    const allPaymentsSorted = [...tPayments, ...rPayments].sort(
+      (a, b) => new Date(a.date) - new Date(b.date)
+    );
+    
+    // If we have a date range, figure out weeks in that period
+    if (statementDateRange && tenant) {
+      const start = new Date(statementDateRange.startDate);
+      const end = new Date(statementDateRange.endDate);
+      const daysInPeriod = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
+      const weeksInPeriod = Math.ceil(daysInPeriod / 7);
       
-      payments.forEach(payment => {
-        const dateObj = new Date(payment.date);
+      const newTransactions = [];
+      
+      // Create weekly transaction slots
+      for (let i = 0; i < weeksInPeriod; i++) {
+        const weekDate = new Date(start);
+        weekDate.setDate(weekDate.getDate() + (i * 7));
+        const weekDateStr = weekDate.toISOString().split('T')[0];
+        
+        // Find tenant payment for this week (within 3 days of week date)
+        const matchedTenantPayment = tPayments.find(p => {
+          const pDate = new Date(p.date);
+          const diff = Math.abs(pDate - weekDate) / (1000 * 60 * 60 * 24);
+          return diff <= 4 && !p._used;
+        });
+        
+        if (matchedTenantPayment) matchedTenantPayment._used = true;
         
         newTransactions.push({
+          id: Date.now() + Math.random() + i,
+          date: matchedTenantPayment ? new Date(matchedTenantPayment.date).toISOString().split('T')[0] : weekDateStr,
+          rentDue: tenant?.monthlyRent || 0,
+          tenantPayment: matchedTenantPayment ? matchedTenantPayment.amount : (tenant?.weeklyTenantPayment || 0),
+          tenantPaid: !!matchedTenantPayment,
+          rasPayment: tenant?.weeklyRasAmount || 0,
+          rasReceived: (tenant?.weeklyRasAmount || 0) > 0
+        });
+      }
+      
+      // Add any unmatched tenant payments as extra transactions
+      tPayments.filter(p => !p._used).forEach(p => {
+        newTransactions.push({
           id: Date.now() + Math.random(),
-          date: dateObj.toISOString().split('T')[0],
-          rentDue: 0, // Will be filled manually if needed
-          tenantPayment: payment.type === 'Tenant Payment' ? payment.amount : 0,
-          tenantPaid: payment.type === 'Tenant Payment',
-          rasPayment: payment.type === 'RAS' ? payment.amount : 0,
-          rasReceived: payment.type === 'RAS'
+          date: new Date(p.date).toISOString().split('T')[0],
+          rentDue: 0,
+          tenantPayment: p.amount,
+          tenantPaid: true,
+          rasPayment: 0,
+          rasReceived: false
         });
       });
-    });
-    
-    setTransactions(newTransactions);
+      
+      // Sort by date
+      newTransactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+      setTransactions(newTransactions);
+    } else {
+      // Fallback: just create transactions from payments
+      const newTransactions = allPaymentsSorted.map((payment, i) => ({
+        id: Date.now() + Math.random() + i,
+        date: new Date(payment.date).toISOString().split('T')[0],
+        rentDue: tenant?.monthlyRent || 0,
+        tenantPayment: payment.paymentType === 'tenant' ? payment.amount : 0,
+        tenantPaid: payment.paymentType === 'tenant',
+        rasPayment: payment.paymentType === 'ras' ? payment.amount : 0,
+        rasReceived: payment.paymentType === 'ras'
+      }));
+      setTransactions(newTransactions);
+    }
     
     // Switch to manual mode to review
     setMode('manual');
