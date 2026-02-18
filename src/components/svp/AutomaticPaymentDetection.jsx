@@ -104,21 +104,29 @@ export default function AutomaticPaymentDetection({ tenants, onApply }) {
     toast.success('Cleared all detected payments');
   };
 
-  const handleApply = () => {
-    const activePayments = parsedPayments.filter(p => !p.ignored && p.matchedTenant);
-    
-    if (activePayments.length === 0) {
-      toast.error('No payments to apply. Please match payments to tenants first.');
+  const [selectedTenantForApply, setSelectedTenantForApply] = useState('');
+
+  const handleApplyForTenant = () => {
+    if (!selectedTenantForApply) {
+      toast.error('Please select a tenant to apply payments for.');
       return;
     }
 
-    // Group by tenant and type
+    const tenantPaymentsForSelected = parsedPayments.filter(
+      p => !p.ignored && p.matchedTenant?.id === selectedTenantForApply
+    );
+
+    if (tenantPaymentsForSelected.length === 0) {
+      toast.error('No matched payments found for this tenant.');
+      return;
+    }
+
+    // Split into tenant payments and RAS
     const tenantPayments = {};
     const rasPayments = {};
-    
-    activePayments.forEach(payment => {
+
+    tenantPaymentsForSelected.forEach(payment => {
       const tenantId = payment.matchedTenant.id;
-      
       if (payment.type === 'RAS') {
         if (!rasPayments[tenantId]) rasPayments[tenantId] = [];
         rasPayments[tenantId].push(payment);
@@ -128,26 +136,14 @@ export default function AutomaticPaymentDetection({ tenants, onApply }) {
       }
     });
 
-    // Get most common tenant (if multiple)
-    const tenantCounts = {};
-    activePayments.forEach(p => {
-      const id = p.matchedTenant.id;
-      tenantCounts[id] = (tenantCounts[id] || 0) + 1;
-    });
-    
-    const primaryTenantId = Object.keys(tenantCounts).reduce((a, b) => 
-      tenantCounts[a] > tenantCounts[b] ? a : b
-    );
-
     onApply({
-      primaryTenantId,
+      primaryTenantId: selectedTenantForApply,
       tenantPayments,
       rasPayments,
       statementDateRange
     });
 
-    toast.success(`Applied ${activePayments.length} payments`);
-    handleClearAll();
+    toast.success(`Applied ${tenantPaymentsForSelected.length} payments for tenant`);
   };
 
   const activePayments = parsedPayments.filter(p => !p.ignored);
