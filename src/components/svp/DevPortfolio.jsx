@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ExternalLink, ArrowUp, Github, Linkedin, Mail, Globe, Code2, Sparkles } from 'lucide-react';
+import { ExternalLink, ArrowDown, Github, Linkedin, Mail, Globe, Code2, Sparkles, X } from 'lucide-react';
 
 const SOCIAL_LINKS = [
   { name: 'LinkedIn', url: 'https://www.linkedin.com/in/saidaliiev/', icon: Linkedin, color: 'from-blue-500 to-blue-700' },
-  { name: 'GitHub', url: 'https://github.com/saidaliiev', icon: Github, color: 'from-gray-700 to-gray-900' },
+  { name: 'GitHub', url: 'https://github.com/saidaliiev', icon: Github, color: 'from-gray-600 to-gray-800' },
   { name: 'Fiverr', url: 'https://www.fiverr.com/iskan_dev', icon: Globe, color: 'from-green-500 to-green-700' },
   { name: 'Upwork', url: 'https://www.upwork.com/freelancers/saidaliiev', icon: ExternalLink, color: 'from-emerald-500 to-teal-700' },
   { name: 'Linktree', url: 'https://linktr.ee/saidaliiev', icon: Sparkles, color: 'from-purple-500 to-pink-600' },
@@ -19,93 +19,159 @@ const PROJECTS = [
 function FloatingParticle({ delay, x }) {
   return (
     <motion.div
-      className="absolute w-1 h-1 rounded-full bg-white/20"
-      initial={{ y: '100%', x, opacity: 0 }}
-      animate={{ y: '-100%', opacity: [0, 0.6, 0] }}
-      transition={{ duration: 6 + Math.random() * 4, delay, repeat: Infinity, ease: 'linear' }}
+      className="absolute w-1 h-1 rounded-full bg-white/15"
+      style={{ left: x }}
+      initial={{ bottom: '-2%', opacity: 0 }}
+      animate={{ bottom: '102%', opacity: [0, 0.5, 0] }}
+      transition={{ duration: 8 + Math.random() * 4, delay, repeat: Infinity, ease: 'linear' }}
     />
   );
 }
 
 export default function DevPortfolio({ isOpen, onClose }) {
-  const [activeSection, setActiveSection] = useState('about');
+  const scrollRef = useRef(null);
+  const scrollPosRef = useRef(0);
 
+  // Save/restore scroll position & lock body
   useEffect(() => {
     if (isOpen) {
+      scrollPosRef.current = window.scrollY;
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
+      window.scrollTo(0, scrollPosRef.current);
     }
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
+
+  // Escape key closes
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [isOpen, onClose]);
+
+  // Swipe down to close (mobile)
+  const touchStartY = useRef(null);
+  const handleTouchStart = useCallback((e) => {
+    if (scrollRef.current && scrollRef.current.scrollTop <= 0) {
+      touchStartY.current = e.touches[0].clientY;
+    }
+  }, []);
+  const handleTouchEnd = useCallback((e) => {
+    if (touchStartY.current === null) return;
+    const delta = e.changedTouches[0].clientY - touchStartY.current;
+    if (delta > 100) onClose();
+    touchStartY.current = null;
+  }, [onClose]);
 
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
           className="fixed inset-0 z-[200] flex flex-col"
-          initial={{ clipPath: 'inset(100% 0 0 0)' }}
-          animate={{ clipPath: 'inset(0% 0 0 0)' }}
-          exit={{ clipPath: 'inset(100% 0 0 0)' }}
-          transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
+          initial={{ y: '100%' }}
+          animate={{ y: 0 }}
+          exit={{ y: '100%' }}
+          transition={{ duration: 0.45, ease: [0.32, 0.72, 0, 1] }}
         >
           {/* Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-950 to-purple-950">
-            {/* Floating particles */}
-            {Array.from({ length: 15 }).map((_, i) => (
-              <FloatingParticle key={i} delay={i * 0.4} x={`${5 + (i * 6.5) % 90}%`} />
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-950 to-purple-950 overflow-hidden">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <FloatingParticle key={i} delay={i * 0.5} x={`${6 + (i * 7.5) % 88}%`} />
             ))}
-            {/* Gradient orbs */}
-            <div className="absolute top-20 left-10 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-40 right-10 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl" />
+            <motion.div
+              className="absolute top-16 left-8 w-72 h-72 bg-blue-500/8 rounded-full blur-3xl"
+              animate={{ x: [0, 20, 0], y: [0, -10, 0] }}
+              transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            <motion.div
+              className="absolute bottom-32 right-4 w-80 h-80 bg-purple-500/8 rounded-full blur-3xl"
+              animate={{ x: [0, -15, 0], y: [0, 15, 0] }}
+              transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+            />
           </div>
 
           {/* Scrollable content */}
-          <div className="relative z-10 flex-1 overflow-y-auto">
-            {/* Close / Swipe indicator */}
-            <div className="sticky top-0 z-20 pt-3 pb-2 flex flex-col items-center bg-gradient-to-b from-slate-900/90 to-transparent">
+          <div
+            ref={scrollRef}
+            className="relative z-10 flex-1 overflow-y-auto overscroll-contain"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            {/* Close bar */}
+            <div className="sticky top-0 z-20 pt-3 pb-2 flex flex-col items-center bg-gradient-to-b from-slate-900/95 via-slate-900/60 to-transparent backdrop-blur-sm">
               <motion.div
-                className="w-10 h-1 rounded-full bg-white/30 mb-2"
-                animate={{ scaleX: [1, 1.3, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
+                className="w-10 h-1 rounded-full bg-white/25 mb-2 cursor-pointer"
+                onClick={onClose}
+                whileHover={{ scaleX: 1.5 }}
               />
+              {/* Mobile: swipe down hint */}
               <button
                 onClick={onClose}
-                className="flex items-center gap-1.5 text-white/50 hover:text-white/80 text-xs transition-colors"
+                className="md:hidden flex items-center gap-1.5 text-white/40 hover:text-white/70 text-[11px] transition-colors"
               >
-                <ArrowUp className="w-3 h-3" />
-                <span>Swipe up or tap to close</span>
+                <ArrowDown className="w-3 h-3" />
+                <span>Swipe down to close</span>
+              </button>
+              {/* Desktop: X button */}
+              <button
+                onClick={onClose}
+                className="hidden md:flex items-center gap-1.5 text-white/40 hover:text-white/70 text-xs transition-colors"
+                aria-label="Close portfolio"
+              >
+                <X className="w-3.5 h-3.5" />
+                <span>Close</span>
+                <kbd className="ml-1 px-1.5 py-0.5 rounded bg-white/10 text-[9px] text-white/30 font-mono">Esc</kbd>
               </button>
             </div>
 
-            <div className="px-6 pb-20 max-w-lg mx-auto">
-              {/* Hero section */}
+            <div className="px-6 pb-24 max-w-lg mx-auto">
+              {/* Hero */}
               <motion.div
-                className="text-center pt-4 pb-8"
+                className="text-center pt-2 pb-8"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.15 }}
               >
-                {/* Avatar */}
                 <motion.div
                   className="w-24 h-24 mx-auto mb-5 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 p-[2px]"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.4, type: 'spring', stiffness: 200 }}
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.2, type: 'spring', stiffness: 180, damping: 15 }}
                 >
-                  <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center">
+                  <motion.div
+                    className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center"
+                    animate={{ y: [0, -3, 0] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                  >
                     <Code2 className="w-10 h-10 text-blue-400" />
-                  </div>
+                  </motion.div>
                 </motion.div>
 
-                <h1 className="text-2xl font-bold text-white mb-1">Iskan</h1>
-                <p className="text-blue-300/70 text-sm">Full-Stack Developer</p>
-
+                <motion.h1
+                  className="text-2xl font-bold text-white mb-1"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  Iskan
+                </motion.h1>
                 <motion.p
-                  className="text-white/40 text-xs mt-3 max-w-xs mx-auto leading-relaxed"
+                  className="text-blue-300/60 text-sm"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.6 }}
+                  transition={{ delay: 0.35 }}
+                >
+                  Full-Stack Developer
+                </motion.p>
+
+                <motion.p
+                  className="text-white/35 text-xs mt-3 max-w-xs mx-auto leading-relaxed"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.45 }}
                 >
                   Building modern web applications with passion and precision.
                   <br />
@@ -116,11 +182,11 @@ export default function DevPortfolio({ isOpen, onClose }) {
               {/* Social Links */}
               <motion.div
                 className="mb-8"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
               >
-                <h2 className="text-[10px] font-semibold text-white/30 uppercase tracking-widest mb-3 text-center">Connect</h2>
+                <h2 className="text-[10px] font-semibold text-white/25 uppercase tracking-widest mb-3 text-center">Connect</h2>
                 <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
                   {SOCIAL_LINKS.map((link, i) => (
                     <motion.a
@@ -128,17 +194,17 @@ export default function DevPortfolio({ isOpen, onClose }) {
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`group flex items-center gap-2.5 px-3.5 py-3 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all duration-300`}
+                      className="group flex items-center gap-2.5 px-3.5 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:border-white/20 hover:bg-white/[0.07] transition-all duration-300 min-h-[44px]"
                       initial={{ opacity: 0, y: 15 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5 + i * 0.08 }}
+                      transition={{ delay: 0.45 + i * 0.07 }}
                       whileHover={{ scale: 1.03, y: -2 }}
                       whileTap={{ scale: 0.97 }}
                     >
-                      <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${link.color} flex items-center justify-center shrink-0`}>
+                      <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${link.color} flex items-center justify-center shrink-0`}>
                         <link.icon className="w-4 h-4 text-white" />
                       </div>
-                      <span className="text-white/80 text-xs font-medium group-hover:text-white transition-colors">{link.name}</span>
+                      <span className="text-white/70 text-xs font-medium group-hover:text-white transition-colors">{link.name}</span>
                     </motion.a>
                   ))}
                 </div>
@@ -147,25 +213,25 @@ export default function DevPortfolio({ isOpen, onClose }) {
               {/* Projects */}
               <motion.div
                 className="mb-8"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
               >
-                <h2 className="text-[10px] font-semibold text-white/30 uppercase tracking-widest mb-3 text-center">Projects</h2>
+                <h2 className="text-[10px] font-semibold text-white/25 uppercase tracking-widest mb-3 text-center">Projects</h2>
                 <div className="space-y-2.5">
                   {PROJECTS.map((project, i) => (
                     <motion.div
                       key={project.name}
-                      className="p-4 rounded-xl bg-white/5 border border-white/10"
+                      className="p-4 rounded-xl bg-white/[0.04] border border-white/[0.08]"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.7 + i * 0.1 }}
+                      transition={{ delay: 0.65 + i * 0.08 }}
                     >
                       <h3 className="text-white text-sm font-semibold">{project.name}</h3>
-                      <p className="text-white/40 text-xs mt-0.5">{project.desc}</p>
+                      <p className="text-white/35 text-xs mt-0.5">{project.desc}</p>
                       <div className="flex gap-1.5 mt-2 flex-wrap">
                         {project.tech.map(t => (
-                          <span key={t} className="px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300/80 text-[10px] font-medium">{t}</span>
+                          <span key={t} className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-300/70 text-[10px] font-medium">{t}</span>
                         ))}
                       </div>
                     </motion.div>
@@ -178,28 +244,28 @@ export default function DevPortfolio({ isOpen, onClose }) {
                 className="text-center pb-8"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.9 }}
+                transition={{ delay: 0.85 }}
               >
-                <h2 className="text-[10px] font-semibold text-white/30 uppercase tracking-widest mb-3">Get in Touch</h2>
+                <h2 className="text-[10px] font-semibold text-white/25 uppercase tracking-widest mb-3">Get in Touch</h2>
                 <a
                   href="mailto:saidaliiev.iskandar@gmail.com"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-medium hover:from-blue-600 hover:to-purple-600 transition-all shadow-lg shadow-blue-500/20"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-medium hover:from-blue-600 hover:to-purple-600 transition-all shadow-lg shadow-blue-500/20 min-h-[44px]"
                 >
                   <Mail className="w-3.5 h-3.5" />
                   saidaliiev.iskandar@gmail.com
                 </a>
               </motion.div>
 
-              {/* Back button */}
+              {/* Back */}
               <motion.div
                 className="text-center"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 1 }}
+                transition={{ delay: 0.95 }}
               >
                 <button
                   onClick={onClose}
-                  className="text-white/30 hover:text-white/60 text-xs underline underline-offset-4 transition-colors"
+                  className="text-white/25 hover:text-white/50 text-xs underline underline-offset-4 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
                 >
                   ← Back to App
                 </button>
