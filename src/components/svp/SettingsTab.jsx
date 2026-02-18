@@ -162,24 +162,6 @@ export default function SettingsTab({ settings, setSettings }) {
           </div>
         </div>
 
-        {/* Data Management Section */}
-        <div className="mt-10 pt-6 border-t dark:border-gray-700">
-          <h3 className="text-lg font-semibold mb-4 text-slate-700 dark:text-slate-300">Data Storage</h3>
-          <div className="bg-slate-50 dark:bg-gray-800 rounded-xl p-4 text-sm text-slate-600 dark:text-slate-400">
-            <p className="mb-2">
-              <strong>All data is stored in the cloud</strong>:
-            </p>
-            <ul className="list-disc list-inside space-y-1 ml-2">
-              <li>Tenant records</li>
-              <li>Receipt history</li>
-              <li>App settings (localStorage)</li>
-            </ul>
-            <p className="mt-3 text-xs text-slate-500 dark:text-slate-500">
-              Data persists across devices when you log in.
-            </p>
-          </div>
-        </div>
-
         {/* Danger Zone */}
         <div className="mt-10 pt-6 border-t border-red-200 dark:border-red-900">
           <h3 className="text-lg font-semibold mb-4 text-red-600 dark:text-red-400 flex items-center gap-2">
