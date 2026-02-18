@@ -322,7 +322,7 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
     <Card className="bg-white/90 backdrop-blur-sm shadow-xl border-0">
       <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-purple-50 p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3" data-tutorial="tenant-header">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
               <Users className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
@@ -332,6 +332,7 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
             <Button 
               onClick={handleOpenAdd}
               size="sm"
+              data-tutorial="btn-add-tenant"
               className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white text-xs sm:text-sm"
             >
               <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
@@ -341,6 +342,7 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
             <Button 
               variant="outline"
               size="sm"
+              data-tutorial="btn-import"
               onClick={() => fileInputRef.current?.click()}
               className="border-blue-300 text-blue-700 hover:bg-blue-50 text-xs sm:text-sm"
             >
@@ -407,7 +409,7 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                       {formatCurrency(tenant.currentBalance || 0)}
                     </td>
                     <td className="py-2 sm:py-3 px-2 sm:px-4" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex justify-end gap-0.5 sm:gap-1">
+                      <div className="flex justify-end gap-0.5 sm:gap-1" {...(index === 0 ? {'data-tutorial': 'tenant-actions'} : {})}>
                         <Button
                           size="sm"
                           onClick={() => setProfileTenant(tenant)}
