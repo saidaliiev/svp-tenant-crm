@@ -353,17 +353,38 @@ export default function AutomaticPaymentDetection({ tenants, onApply }) {
               </div>
             </div>
 
-            {/* Apply Button */}
-            <div className="flex justify-end gap-3 pt-4">
-              <Button
-                onClick={handleApply}
-                size="lg"
-                className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
-                disabled={activePayments.filter(p => p.matchedTenant).length === 0}
-              >
-                <CheckCircle className="w-5 h-5 mr-2" />
-                Apply Payments to Receipt
-              </Button>
+            {/* Apply for Specific Tenant */}
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 space-y-3">
+              <Label className="text-base font-semibold">Apply Payments for Tenant</Label>
+              <p className="text-sm text-slate-600">Select a tenant to create a receipt with their matched payments.</p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Select value={selectedTenantForApply} onValueChange={setSelectedTenantForApply}>
+                  <SelectTrigger className="flex-1">
+                    <SelectValue placeholder="Choose tenant..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {/* Only show tenants that have matched payments */}
+                    {[...new Set(activePayments.filter(p => p.matchedTenant).map(p => p.matchedTenant.id))].map(tenantId => {
+                      const tenant = tenants.find(t => t.id === tenantId);
+                      const count = activePayments.filter(p => p.matchedTenant?.id === tenantId).length;
+                      return (
+                        <SelectItem key={tenantId} value={tenantId}>
+                          {tenant?.fullName} ({count} payments)
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+                <Button
+                  onClick={handleApplyForTenant}
+                  size="lg"
+                  className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
+                  disabled={!selectedTenantForApply}
+                >
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  Apply to Receipt
+                </Button>
+              </div>
             </div>
           </div>
         )}
