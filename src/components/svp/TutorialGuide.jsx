@@ -118,7 +118,24 @@ export default function TutorialGuide({ activeTab }) {
   const [shouldBlink, setShouldBlink] = useState(false);
   const [highlightRect, setHighlightRect] = useState(null);
   const [elementFound, setElementFound] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
   const overlayRef = useRef(null);
+  const lastScrollY = useRef(0);
+
+  // Collapse on scroll down, expand on scroll up
+  useEffect(() => {
+    const handleScroll = () => {
+      const y = window.scrollY;
+      if (y > lastScrollY.current && y > 60) {
+        setCollapsed(true);
+      } else if (y < lastScrollY.current) {
+        setCollapsed(false);
+      }
+      lastScrollY.current = y;
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const tutorial = TUTORIALS[activeTab] || TUTORIALS.tenants;
 
