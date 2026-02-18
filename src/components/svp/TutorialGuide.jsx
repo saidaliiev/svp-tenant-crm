@@ -345,12 +345,12 @@ export default function TutorialGuide({ activeTab }) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="absolute bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden"
-              style={{ ...getTooltipStyle(), pointerEvents: 'auto', zIndex: 95 }}
+              className="absolute bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col"
+              style={{ ...getTooltipStyle(), pointerEvents: 'auto', zIndex: 95, maxHeight: window.innerWidth < 480 ? 'calc(50vh)' : undefined }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
-              <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-4 py-2.5 flex items-center justify-between">
+              <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-4 py-2.5 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
                   <GraduationCap className="w-4 h-4 text-white/80" />
                   <span className="text-white text-xs font-medium">{tutorial.title}</span>
@@ -360,8 +360,8 @@ export default function TutorialGuide({ activeTab }) {
                 </button>
               </div>
 
-              {/* Content */}
-              <div className="p-4">
+              {/* Content — scrollable on mobile */}
+              <div className="p-4 overflow-y-auto flex-1 min-h-0">
                 <div className="flex items-start gap-3">
                   <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-xs font-bold text-blue-600 dark:text-blue-300 shrink-0 mt-0.5">
                     {currentStep + 1}
@@ -383,8 +383,8 @@ export default function TutorialGuide({ activeTab }) {
                 </div>
               </div>
 
-              {/* Footer */}
-              <div className="border-t border-gray-100 dark:border-gray-700 px-4 py-2.5 flex items-center justify-between">
+              {/* Footer — always visible */}
+              <div className="border-t border-gray-100 dark:border-gray-700 px-4 py-2.5 flex items-center justify-between shrink-0">
                 <div className="flex gap-1">
                   {tutorial.steps.map((_, i) => (
                     <div key={i} className={`w-1.5 h-1.5 rounded-full transition-colors ${i === currentStep ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'}`} />
