@@ -235,28 +235,39 @@ export default function TutorialGuide({ activeTab }) {
 
   return (
     <>
-      {/* Fixed Tutorial Button — collapses to icon on scroll */}
+      {/* Fixed Tutorial Button — collapses to small circle on scroll */}
       <motion.button
         onClick={handleOpen}
-        className="fixed top-3 right-3 z-[100] flex items-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg hover:shadow-xl text-xs font-medium overflow-hidden"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        animate={
-          shouldBlink
-            ? { opacity: [1, 0.15, 1, 0.15, 1, 1, 1, 1], width: collapsed ? 36 : 'auto', paddingLeft: collapsed ? 0 : 12, paddingRight: collapsed ? 0 : 12, paddingTop: 8, paddingBottom: 8 }
-            : { opacity: 1, width: collapsed ? 36 : 'auto', paddingLeft: collapsed ? 0 : 12, paddingRight: collapsed ? 0 : 12, paddingTop: 8, paddingBottom: 8 }
-        }
-        transition={shouldBlink ? { opacity: { duration: 2, repeat: Infinity, ease: "linear" }, width: { duration: 0.3, ease: "easeInOut" }, paddingLeft: { duration: 0.3 }, paddingRight: { duration: 0.3 } } : { width: { duration: 0.3, ease: "easeInOut" }, paddingLeft: { duration: 0.3 }, paddingRight: { duration: 0.3 } }}
+        className="fixed top-3 right-3 z-[100] flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg text-xs font-medium"
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.92 }}
+        animate={{
+          width: collapsed ? 28 : 80,
+          height: collapsed ? 28 : 32,
+          opacity: shouldBlink ? [1, 0.15, 1, 0.15, 1, 1, 1, 1] : 1,
+        }}
+        transition={{
+          width: { duration: 0.4, ease: [0.4, 0, 0.2, 1] },
+          height: { duration: 0.4, ease: [0.4, 0, 0.2, 1] },
+          opacity: shouldBlink ? { duration: 2, repeat: Infinity, ease: "linear" } : { duration: 0.3 },
+        }}
         title="Open Tutorial"
       >
-        <HelpCircle className="w-4 h-4 shrink-0" style={{ margin: collapsed ? '0 auto' : 0 }} />
-        <motion.span
-          className="hidden sm:inline whitespace-nowrap ml-1.5"
-          animate={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto' }}
-          transition={{ duration: 0.2 }}
-        >
-          Guide
-        </motion.span>
+        <HelpCircle className={`shrink-0 transition-all duration-300 ${collapsed ? 'w-3.5 h-3.5' : 'w-4 h-4'}`} />
+        <AnimatePresence>
+          {!collapsed && (
+            <motion.span
+              key="label"
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: 'auto' }}
+              exit={{ opacity: 0, width: 0 }}
+              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+              className="hidden sm:inline whitespace-nowrap ml-1.5 overflow-hidden"
+            >
+              Guide
+            </motion.span>
+          )}
+        </AnimatePresence>
       </motion.button>
 
       {/* Tutorial Overlay */}
