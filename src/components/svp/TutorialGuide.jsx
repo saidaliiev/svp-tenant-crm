@@ -211,13 +211,31 @@ export default function TutorialGuide({ activeTab }) {
   };
 
   const getTooltipStyle = () => {
-    if (!highlightRect) return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' };
-    
     const viewportH = window.innerHeight;
     const viewportW = window.innerWidth;
-    const tooltipW = Math.min(380, viewportW - 32);
-    const tooltipH = 240;
+    const isMobile = viewportW < 480;
+    const tooltipW = isMobile ? viewportW - 32 : Math.min(380, viewportW - 32);
     
+    // On mobile, always center horizontally for best readability
+    if (isMobile) {
+      const centerLeft = (viewportW - tooltipW) / 2;
+      if (!highlightRect) {
+        return { top: '50%', left: centerLeft, transform: 'translateY(-50%)', width: tooltipW };
+      }
+      const tooltipH = 280;
+      // Place below highlight if room, otherwise above, otherwise center
+      if (highlightRect.top + highlightRect.height + tooltipH + 16 < viewportH) {
+        return { top: highlightRect.top + highlightRect.height + 12, left: centerLeft, width: tooltipW };
+      }
+      if (highlightRect.top - tooltipH - 16 > 0) {
+        return { top: highlightRect.top - tooltipH - 12, left: centerLeft, width: tooltipW };
+      }
+      return { top: 16, left: centerLeft, width: tooltipW };
+    }
+
+    if (!highlightRect) return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' };
+    
+    const tooltipH = 240;
     if (highlightRect.top + highlightRect.height + tooltipH + 20 < viewportH) {
       return {
         top: highlightRect.top + highlightRect.height + 16,
