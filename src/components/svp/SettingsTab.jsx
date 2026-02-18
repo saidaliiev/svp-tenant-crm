@@ -79,15 +79,15 @@ export default function SettingsTab({ settings, setSettings }) {
 
   return (
     <Card className="bg-white/90 backdrop-blur-sm shadow-xl border-0">
-      <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-purple-50">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-            <Settings className="w-5 h-5 text-white" />
+      <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-purple-50 p-4 sm:p-6">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+            <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
           </div>
-          <CardTitle className="text-xl">Settings</CardTitle>
+          <CardTitle className="text-lg sm:text-xl">Settings</CardTitle>
         </div>
       </CardHeader>
-      <CardContent className="p-6">
+      <CardContent className="p-3 sm:p-6">
         {success && (
           <Alert className="mb-6 border-green-200 bg-green-50">
             <AlertDescription className="text-green-700">{success}</AlertDescription>
@@ -143,10 +143,10 @@ export default function SettingsTab({ settings, setSettings }) {
             <p className="text-xs text-slate-500">Displayed in the app header and receipt footer</p>
           </div>
 
-          <div className="flex gap-3 pt-4" data-tutorial="settings-save">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4" data-tutorial="settings-save">
             <Button
               onClick={handleSave}
-              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
+              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 w-full sm:w-auto"
             >
               <Save className="w-4 h-4 mr-2" />
               Save Settings
@@ -154,7 +154,7 @@ export default function SettingsTab({ settings, setSettings }) {
             <Button
               variant="outline"
               onClick={handleReset}
-              className="border-slate-300"
+              className="border-slate-300 w-full sm:w-auto"
             >
               <RotateCcw className="w-4 h-4 mr-2" />
               Reset to Defaults

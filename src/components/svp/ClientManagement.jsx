@@ -28,6 +28,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import Papa from 'papaparse';
 import ExportClientsPDF from './ExportClientsPDF';
 import TenantProfile from './TenantProfile';
+import TenantCardMobile from './TenantCardMobile';
 
 export default function ClientManagement({ tenants = [], tenantsLoading, statements, onSelectTenant, settings }) {
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -384,71 +385,71 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
             <p className="text-sm">Add your first tenant or import from a file</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b-2 border-slate-200">
-                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm whitespace-nowrap">ID</th>
-                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm whitespace-nowrap">Full Name</th>
-                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm whitespace-nowrap">Address</th>
-                  <th className="text-right py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm whitespace-nowrap">Balance</th>
-                  <th className="text-right py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm whitespace-nowrap">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tenants.map((tenant, index) => (
-                  <tr 
-                    key={tenant.id} 
-                    className={`border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-colors cursor-pointer ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
-                    onClick={() => setProfileTenant(tenant)}
-                  >
-                    <td className="py-2 sm:py-3 px-2 sm:px-4 font-mono text-xs sm:text-sm text-slate-600 whitespace-nowrap">{tenant.displayId || tenant.id}</td>
-                    <td className="py-2 sm:py-3 px-2 sm:px-4 font-medium text-slate-800 text-xs sm:text-sm whitespace-nowrap">{tenant.fullName}</td>
-                    <td className="py-2 sm:py-3 px-2 sm:px-4 text-slate-600 text-xs sm:text-sm whitespace-nowrap">{tenant.address}</td>
-                    <td className={`py-2 sm:py-3 px-2 sm:px-4 text-right font-semibold text-xs sm:text-sm whitespace-nowrap ${(tenant.currentBalance || 0) > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                      {formatCurrency(tenant.currentBalance || 0)}
-                    </td>
-                    <td className="py-2 sm:py-3 px-2 sm:px-4" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex justify-end gap-0.5 sm:gap-1" {...(index === 0 ? {'data-tutorial': 'tenant-actions'} : {})}>
-                        <Button
-                          size="sm"
-                          onClick={() => setProfileTenant(tenant)}
-                          className="bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white h-7 sm:h-8 px-2 sm:px-3 text-xs"
-                        >
-                          <User className="w-3 h-3 sm:w-4 sm:h-4" />
-                          <span className="hidden lg:inline ml-1">Profile</span>
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => onSelectTenant(tenant.id)}
-                          className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white h-7 sm:h-8 px-2 sm:px-3 text-xs"
-                        >
-                          <UserCheck className="w-3 h-3 sm:w-4 sm:h-4" />
-                          <span className="hidden lg:inline ml-1">Select</span>
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleOpenEdit(tenant)}
-                          className="border-blue-300 text-blue-600 hover:bg-blue-50 h-7 sm:h-8 px-2 sm:px-3"
-                        >
-                          <Pencil className="w-3 h-3 sm:w-4 sm:h-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setDeleteTenant(tenant)}
-                          className="border-red-300 text-red-600 hover:bg-red-50 h-7 sm:h-8 px-2 sm:px-3"
-                        >
-                          <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                        </Button>
-                      </div>
-                    </td>
+          <>
+            {/* Mobile: Card layout */}
+            <div className="sm:hidden space-y-2.5">
+              {tenants.map((tenant, index) => (
+                <TenantCardMobile
+                  key={tenant.id}
+                  tenant={tenant}
+                  index={index}
+                  onProfile={(t) => setProfileTenant(t)}
+                  onSelect={onSelectTenant}
+                  onEdit={handleOpenEdit}
+                  onDelete={(t) => setDeleteTenant(t)}
+                  formatCurrency={formatCurrency}
+                />
+              ))}
+            </div>
+            {/* Desktop: Table layout */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b-2 border-slate-200">
+                    <th className="text-left py-3 px-4 font-semibold text-slate-700 text-sm whitespace-nowrap">ID</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-700 text-sm whitespace-nowrap">Full Name</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-700 text-sm whitespace-nowrap">Address</th>
+                    <th className="text-right py-3 px-4 font-semibold text-slate-700 text-sm whitespace-nowrap">Balance</th>
+                    <th className="text-right py-3 px-4 font-semibold text-slate-700 text-sm whitespace-nowrap">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {tenants.map((tenant, index) => (
+                    <tr 
+                      key={tenant.id} 
+                      className={`border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-colors cursor-pointer ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
+                      onClick={() => setProfileTenant(tenant)}
+                    >
+                      <td className="py-3 px-4 font-mono text-sm text-slate-600 whitespace-nowrap">{tenant.displayId || tenant.id}</td>
+                      <td className="py-3 px-4 font-medium text-slate-800 text-sm whitespace-nowrap">{tenant.fullName}</td>
+                      <td className="py-3 px-4 text-slate-600 text-sm whitespace-nowrap">{tenant.address}</td>
+                      <td className={`py-3 px-4 text-right font-semibold text-sm whitespace-nowrap ${(tenant.currentBalance || 0) > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                        {formatCurrency(tenant.currentBalance || 0)}
+                      </td>
+                      <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex justify-end gap-1" {...(index === 0 ? {'data-tutorial': 'tenant-actions'} : {})}>
+                          <Button size="sm" onClick={() => setProfileTenant(tenant)} className="bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white h-8 px-3 text-xs">
+                            <User className="w-4 h-4" />
+                            <span className="hidden lg:inline ml-1">Profile</span>
+                          </Button>
+                          <Button size="sm" onClick={() => onSelectTenant(tenant.id)} className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white h-8 px-3 text-xs">
+                            <UserCheck className="w-4 h-4" />
+                            <span className="hidden lg:inline ml-1">Select</span>
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => handleOpenEdit(tenant)} className="border-blue-300 text-blue-600 hover:bg-blue-50 h-8 px-3">
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => setDeleteTenant(tenant)} className="border-red-300 text-red-600 hover:bg-red-50 h-8 px-3">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
         {/* Add/Edit Dialog */}

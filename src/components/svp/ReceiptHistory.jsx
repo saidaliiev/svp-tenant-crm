@@ -108,63 +108,71 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
             <p className="text-sm">Create your first receipt to see it here</p>
           </div>
         ) : (
-          <div className="overflow-x-auto -mx-3 sm:mx-0">
-            <table className="w-full min-w-[600px]">
-              <thead>
-                <tr className="border-b-2 border-slate-200">
-                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm">Tenant Name</th>
-                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm hidden md:table-cell">Receipt Date</th>
-                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm hidden lg:table-cell">Period</th>
-                  <th className="text-right py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm">Final Balance</th>
-                  <th className="text-right py-2 sm:py-3 px-2 sm:px-4 font-semibold text-slate-700 text-xs sm:text-sm">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedStatements.map((receipt, index) => (
-                  <tr 
-                    key={receipt.id} 
-                    className={`border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
-                  >
-                    <td className="py-2 sm:py-3 px-2 sm:px-4">
-                      <div>
-                        <p className="font-medium text-slate-800 text-xs sm:text-sm">{receipt.clientName}</p>
-                        <p className="text-[10px] sm:text-xs text-slate-500">{receipt.receiptId}</p>
-                      </div>
-                    </td>
-                    <td className="py-2 sm:py-3 px-2 sm:px-4 text-slate-600 text-xs sm:text-sm hidden md:table-cell">
-                      {formatDate(receipt.created_date || receipt.createdDate)}
-                    </td>
-                    <td className="py-2 sm:py-3 px-2 sm:px-4 text-slate-600 text-xs sm:text-sm hidden lg:table-cell">
-                      {formatDate(receipt.startDate)} – {formatDate(receipt.endDate)}
-                    </td>
-                    <td className={`py-2 sm:py-3 px-2 sm:px-4 text-right font-semibold text-xs sm:text-sm ${receipt.finalBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>
+          <>
+            {/* Mobile: Card layout */}
+            <div className="sm:hidden space-y-2.5">
+              {sortedStatements.map((receipt, index) => (
+                <div key={receipt.id} className="bg-white rounded-xl border border-slate-200 p-3 shadow-sm" {...(index === 0 ? {'data-tutorial': 'history-actions'} : {})}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="min-w-0">
+                      <p className="font-medium text-slate-800 text-sm truncate">{receipt.clientName}</p>
+                      <p className="text-[10px] text-slate-400">{receipt.receiptId} · {formatDate(receipt.created_date || receipt.createdDate)}</p>
+                    </div>
+                    <span className={`text-sm font-bold shrink-0 ml-2 ${receipt.finalBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>
                       {formatCurrency(receipt.finalBalance)}
-                    </td>
-                    <td className="py-2 sm:py-3 px-2 sm:px-4">
-                      <div className="flex justify-end gap-0.5 sm:gap-1" {...(index === 0 ? {'data-tutorial': 'history-actions'} : {})}>
-                        <Button
-                          size="sm"
-                          onClick={() => handleViewPDF(receipt)}
-                          className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white h-7 sm:h-8 px-2 sm:px-3 text-xs"
-                        >
-                          <Printer className="w-3 h-3 sm:w-4 sm:h-4" />
-                          <span className="hidden lg:inline ml-1">View/Print</span>
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setDeleteReceipt(receipt)}
-                          className="border-red-300 text-red-600 hover:bg-red-50 h-7 sm:h-8 px-2 sm:px-3"
-                        >
-                          <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                        </Button>
-                      </div>
-                    </td>
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-500 mb-2">{formatDate(receipt.startDate)} – {formatDate(receipt.endDate)}</p>
+                  <div className="flex gap-1.5">
+                    <Button size="sm" onClick={() => handleViewPDF(receipt)} className="flex-1 bg-blue-500 hover:bg-blue-600 text-white h-8 text-xs">
+                      <Printer className="w-3.5 h-3.5 mr-1" /> Print
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setDeleteReceipt(receipt)} className="border-red-300 text-red-600 h-8 w-8 p-0">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Desktop: Table layout */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b-2 border-slate-200">
+                    <th className="text-left py-3 px-4 font-semibold text-slate-700 text-sm">Tenant Name</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-700 text-sm hidden md:table-cell">Receipt Date</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-700 text-sm hidden lg:table-cell">Period</th>
+                    <th className="text-right py-3 px-4 font-semibold text-slate-700 text-sm">Final Balance</th>
+                    <th className="text-right py-3 px-4 font-semibold text-slate-700 text-sm">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {sortedStatements.map((receipt, index) => (
+                    <tr key={receipt.id} className={`border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}>
+                      <td className="py-3 px-4">
+                        <p className="font-medium text-slate-800 text-sm">{receipt.clientName}</p>
+                        <p className="text-xs text-slate-500">{receipt.receiptId}</p>
+                      </td>
+                      <td className="py-3 px-4 text-slate-600 text-sm hidden md:table-cell">{formatDate(receipt.created_date || receipt.createdDate)}</td>
+                      <td className="py-3 px-4 text-slate-600 text-sm hidden lg:table-cell">{formatDate(receipt.startDate)} – {formatDate(receipt.endDate)}</td>
+                      <td className={`py-3 px-4 text-right font-semibold text-sm ${receipt.finalBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>{formatCurrency(receipt.finalBalance)}</td>
+                      <td className="py-3 px-4">
+                        <div className="flex justify-end gap-1" {...(index === 0 ? {'data-tutorial': 'history-actions'} : {})}>
+                          <Button size="sm" onClick={() => handleViewPDF(receipt)} className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white h-8 px-3 text-xs">
+                            <Printer className="w-4 h-4" />
+                            <span className="hidden lg:inline ml-1">View/Print</span>
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => setDeleteReceipt(receipt)} className="border-red-300 text-red-600 hover:bg-red-50 h-8 px-3">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
         {/* Delete Confirmation Dialog */}

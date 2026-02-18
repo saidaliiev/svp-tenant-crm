@@ -182,7 +182,7 @@ export default function AutomaticPaymentDetection({
 
           <div 
             onClick={() => !isLoading && fileInputRef.current?.click()}
-            className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
+            className={`border-2 border-dashed rounded-xl p-4 sm:p-8 text-center cursor-pointer transition-all ${
               isLoading ? 'border-blue-300 bg-blue-50' : 'border-slate-300 hover:border-blue-400 hover:bg-slate-50'
             }`}
           >
@@ -243,7 +243,38 @@ export default function AutomaticPaymentDetection({
               </Button>
             </div>
 
-            <div className="border rounded-lg overflow-hidden">
+            {/* Mobile: Card layout */}
+            <div className="sm:hidden space-y-2">
+              {parsedPayments.map((payment) => (
+                <div key={payment.id} className={`bg-white rounded-lg border p-3 ${payment.ignored ? 'opacity-50 bg-slate-50' : ''}`}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-slate-500">{payment.date}</span>
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${payment.type === 'RAS' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}>{payment.type}</span>
+                      <div className={`w-1.5 h-1.5 rounded-full ${payment.confidence >= 85 ? 'bg-green-500' : payment.confidence >= 70 ? 'bg-yellow-500' : payment.confidence >= 50 ? 'bg-orange-500' : 'bg-red-500'}`} />
+                    </div>
+                    <span className="text-sm font-bold">€{payment.amount.toFixed(2)}</span>
+                  </div>
+                  <p className="text-xs text-slate-500 truncate mb-2">{payment.description}</p>
+                  <div className="flex items-center gap-2">
+                    <Select value={payment.matchedTenant?.id || ''} onValueChange={(value) => updateMatch(payment.id, value)} disabled={payment.ignored}>
+                      <SelectTrigger className="h-8 text-xs flex-1"><SelectValue placeholder="Match tenant..." /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__none__">None</SelectItem>
+                        {tenants.map(t => <SelectItem key={t.id} value={t.id}>{t.fullName}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                    {!payment.ignored && (
+                      <Button variant="ghost" size="sm" onClick={() => ignorePayment(payment.id)} className="text-red-500 h-8 w-8 p-0 shrink-0">
+                        <X className="w-3.5 h-3.5" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Desktop: Table layout */}
+            <div className="hidden sm:block border rounded-lg overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[800px]">
                   <thead className="bg-slate-50 border-b">
@@ -259,68 +290,31 @@ export default function AutomaticPaymentDetection({
                   </thead>
                   <tbody>
                     {parsedPayments.map((payment) => (
-                      <tr 
-                        key={payment.id}
-                        className={`border-b hover:bg-slate-50 transition-colors ${
-                          payment.ignored ? 'opacity-50 bg-slate-100' : ''
-                        }`}
-                      >
+                      <tr key={payment.id} className={`border-b hover:bg-slate-50 transition-colors ${payment.ignored ? 'opacity-50 bg-slate-100' : ''}`}>
                         <td className="py-3 px-4 text-sm">{payment.date}</td>
-                        <td className="py-3 px-4 text-sm max-w-xs truncate" title={payment.description}>
-                          {payment.description}
-                        </td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">
-                          €{payment.amount.toFixed(2)}
-                        </td>
+                        <td className="py-3 px-4 text-sm max-w-xs truncate" title={payment.description}>{payment.description}</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium">€{payment.amount.toFixed(2)}</td>
                         <td className="py-3 px-4">
-                          <Select
-                            value={payment.matchedTenant?.id || ''}
-                            onValueChange={(value) => updateMatch(payment.id, value)}
-                            disabled={payment.ignored}
-                          >
-                            <SelectTrigger className="h-9 text-sm">
-                              <SelectValue placeholder="Select tenant..." />
-                            </SelectTrigger>
+                          <Select value={payment.matchedTenant?.id || ''} onValueChange={(value) => updateMatch(payment.id, value)} disabled={payment.ignored}>
+                            <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select tenant..." /></SelectTrigger>
                             <SelectContent>
                               <SelectItem value="__none__">None</SelectItem>
-                              {tenants.map(tenant => (
-                                <SelectItem key={tenant.id} value={tenant.id}>
-                                  {tenant.fullName}
-                                </SelectItem>
-                              ))}
+                              {tenants.map(t => <SelectItem key={t.id} value={t.id}>{t.fullName}</SelectItem>)}
                             </SelectContent>
                           </Select>
                         </td>
                         <td className="py-3 px-4 text-center">
                           <div className="flex items-center justify-center gap-2">
-                            <div className={`w-2 h-2 rounded-full ${
-                              payment.confidence >= 85 ? 'bg-green-500' :
-                              payment.confidence >= 70 ? 'bg-yellow-500' :
-                              payment.confidence >= 50 ? 'bg-orange-500' :
-                              'bg-red-500'
-                            }`} />
+                            <div className={`w-2 h-2 rounded-full ${payment.confidence >= 85 ? 'bg-green-500' : payment.confidence >= 70 ? 'bg-yellow-500' : payment.confidence >= 50 ? 'bg-orange-500' : 'bg-red-500'}`} />
                             <span className="text-sm font-medium">{payment.confidence}%</span>
                           </div>
                         </td>
                         <td className="py-3 px-4 text-center">
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                            payment.type === 'RAS' 
-                              ? 'bg-blue-100 text-blue-800' 
-                              : 'bg-green-100 text-green-800'
-                          }`}>
-                            {payment.type}
-                          </span>
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${payment.type === 'RAS' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}`}>{payment.type}</span>
                         </td>
                         <td className="py-3 px-4 text-center">
                           {!payment.ignored ? (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => ignorePayment(payment.id)}
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
+                            <Button variant="ghost" size="sm" onClick={() => ignorePayment(payment.id)} className="text-red-600 hover:text-red-700 hover:bg-red-50"><X className="w-4 h-4" /></Button>
                           ) : (
                             <span className="text-xs text-slate-500">Ignored</span>
                           )}
@@ -333,22 +327,22 @@ export default function AutomaticPaymentDetection({
             </div>
 
             {/* Summary Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
-              <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                <p className="text-sm text-slate-600">Total Amount</p>
-                <p className="text-2xl font-bold text-blue-600">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-4">
+              <div className="bg-blue-50 rounded-lg p-2.5 sm:p-4 border border-blue-200">
+                <p className="text-[10px] sm:text-sm text-slate-600">Total</p>
+                <p className="text-base sm:text-2xl font-bold text-blue-600">
                   €{activePayments.reduce((sum, p) => sum + p.amount, 0).toFixed(2)}
                 </p>
               </div>
-              <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                <p className="text-sm text-slate-600">Matched Payments</p>
-                <p className="text-2xl font-bold text-green-600">
+              <div className="bg-green-50 rounded-lg p-2.5 sm:p-4 border border-green-200">
+                <p className="text-[10px] sm:text-sm text-slate-600">Matched</p>
+                <p className="text-base sm:text-2xl font-bold text-green-600">
                   {activePayments.filter(p => p.matchedTenant).length}
                 </p>
               </div>
-              <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
-                <p className="text-sm text-slate-600">Unmatched</p>
-                <p className="text-2xl font-bold text-orange-600">
+              <div className="bg-orange-50 rounded-lg p-2.5 sm:p-4 border border-orange-200">
+                <p className="text-[10px] sm:text-sm text-slate-600">Unmatched</p>
+                <p className="text-base sm:text-2xl font-bold text-orange-600">
                   {unmatchedCount}
                 </p>
               </div>

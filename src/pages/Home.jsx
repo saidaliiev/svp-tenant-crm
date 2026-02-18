@@ -93,11 +93,11 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
         {/* Header */}
-        <div className="text-center mb-4 sm:mb-6 select-none">
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">
+        <div className="text-center mb-3 sm:mb-6 select-none">
+          <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white">
             Society of St. Vincent de Paul
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Carndonagh</p>
+          <p className="text-[10px] sm:text-sm text-slate-500 dark:text-slate-400">Carndonagh</p>
         </div>
 
         {/* Desktop Tab Navigation */}
