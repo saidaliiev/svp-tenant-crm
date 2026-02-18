@@ -141,7 +141,13 @@ export default function TutorialGuide({ activeTab }) {
 
   useEffect(() => {
     const shownTabs = JSON.parse(sessionStorage.getItem(SESSION_KEY) || '[]');
-    setShouldBlink(!shownTabs.includes(activeTab));
+    if (!shownTabs.includes(activeTab)) {
+      setShouldBlink(true);
+      const timer = setTimeout(() => setShouldBlink(false), 5000);
+      return () => clearTimeout(timer);
+    } else {
+      setShouldBlink(false);
+    }
   }, [activeTab]);
 
   const markTabShown = useCallback(() => {
