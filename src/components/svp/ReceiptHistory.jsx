@@ -33,7 +33,7 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
     : statements.filter(s => s.clientId === filterClientId);
 
   const sortedStatements = [...filteredStatements].sort(
-    (a, b) => new Date(b.createdDate) - new Date(a.createdDate)
+    (a, b) => new Date(b.created_date || b.createdDate) - new Date(a.created_date || a.createdDate)
   );
 
   const handleViewPDF = (receipt) => {
@@ -132,7 +132,7 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
                       </div>
                     </td>
                     <td className="py-2 sm:py-3 px-2 sm:px-4 text-slate-600 text-xs sm:text-sm hidden md:table-cell">
-                      {formatDate(receipt.createdDate)}
+                      {formatDate(receipt.created_date || receipt.createdDate)}
                     </td>
                     <td className="py-2 sm:py-3 px-2 sm:px-4 text-slate-600 text-xs sm:text-sm hidden lg:table-cell">
                       {formatDate(receipt.startDate)} – {formatDate(receipt.endDate)}

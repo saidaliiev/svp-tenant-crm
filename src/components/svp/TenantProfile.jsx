@@ -22,10 +22,10 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
     return name.substring(0, 2).toUpperCase();
   };
 
-  // Get tenant statements history
+  // Get tenant statements history - sorted newest first
   const tenantStatements = statements
     ?.filter(s => s.clientId === tenant.id)
-    ?.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate)) || [];
+    ?.sort((a, b) => new Date(b.endDate || b.created_date || b.createdDate) - new Date(a.endDate || a.created_date || a.createdDate)) || [];
 
   const totalPaid = tenantStatements.reduce((sum, s) => 
     sum + (s.totalTenantPayments || 0), 0
@@ -50,7 +50,7 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">Tenant Profile</DialogTitle>
         </DialogHeader>
@@ -171,7 +171,7 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
               {tenantStatements.length === 0 ? (
                 <p className="text-slate-500 text-center py-8">No payment history yet</p>
               ) : (
-                <div className="space-y-4 max-h-96 overflow-y-auto">
+                <div className="space-y-4">
                   {tenantStatements.map((statement, stmtIndex) => (
                     <div key={statement.id} className={`rounded-lg border ${stmtIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50'}`}>
                       {/* Statement Header */}

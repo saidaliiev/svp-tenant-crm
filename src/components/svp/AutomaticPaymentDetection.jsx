@@ -165,7 +165,7 @@ export default function AutomaticPaymentDetection({ tenants, onApply }) {
           Automatic Payment Detection
         </CardTitle>
         <CardDescription>
-          Upload BOI monthly statement PDF to auto-detect tenant and RAS payments
+          Upload Bank Statement monthly PDF to auto-detect tenant and RAS payments
         </CardDescription>
       </CardHeader>
       <CardContent className="p-4 sm:p-6 space-y-6">
@@ -210,7 +210,7 @@ export default function AutomaticPaymentDetection({ tenants, onApply }) {
               <div className="space-y-2">
                 <Upload className="w-12 h-12 mx-auto text-slate-400" />
                 <p className="font-medium text-slate-700">Click to upload PDF statement</p>
-                <p className="text-sm text-slate-500">Bank of Ireland monthly statement</p>
+                <p className="text-sm text-slate-500">Bank statement (monthly)</p>
               </div>
             )}
           </div>

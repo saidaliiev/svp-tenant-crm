@@ -92,14 +92,11 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
         {/* Header */}
-        <div className="text-center mb-6 sm:mb-8 md:mb-12 select-none">
-          <div className="flex justify-center mb-3 sm:mb-4">
-            <img 
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/36ae01103_SVP-1200x675-Photoroom.png" 
-              alt="SVP Logo" 
-              className="h-16 sm:h-20 md:h-24 lg:h-28 object-contain w-full max-w-xl px-4"
-            />
-          </div>
+        <div className="text-center mb-4 sm:mb-6 select-none">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">
+            Society of St. Vincent de Paul
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Carndonagh</p>
         </div>
 
         {/* Desktop Tab Navigation */}
