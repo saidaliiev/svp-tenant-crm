@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import TutorialGuide from '@/components/svp/TutorialGuide';
+import SecretFooter from '@/components/svp/SecretFooter';
+import DevPortfolio from '@/components/svp/DevPortfolio';
 
 function useActiveTab(pageName) {
   const [tab, setTab] = useState(() => {
@@ -31,6 +33,7 @@ function useActiveTab(pageName) {
 
 export default function Layout({ children, currentPageName }) {
   const activeTab = useActiveTab(currentPageName);
+  const [showPortfolio, setShowPortfolio] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
@@ -40,11 +43,8 @@ export default function Layout({ children, currentPageName }) {
           {children}
         </div>
       </div>
-      <footer className="mt-12 py-5 px-4 text-xs text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 text-center mb-safe">
-        Custom CRM for Society St. Vincent de Paul, Carndonagh
-        <br />
-        Developed with ❤️ by <a href="https://linktr.ee/saidaliiev" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 underline">Iskan</a>
-      </footer>
-    </div>);
-
+      <SecretFooter onReveal={() => setShowPortfolio(true)} />
+      <DevPortfolio isOpen={showPortfolio} onClose={() => setShowPortfolio(false)} />
+    </div>
+  );
 }
