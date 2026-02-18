@@ -1,9 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Select,
   SelectContent,
@@ -24,13 +22,22 @@ import {
 import { Upload, FileText, Trash2, CheckCircle, AlertCircle, X } from 'lucide-react';
 import { parseBOIStatement, matchPaymentsToTenants, extractStatementDateRange } from '@/components/utils/pdfParser';
 import { toast } from 'sonner';
+import { useState } from 'react';
 
-export default function AutomaticPaymentDetection({ tenants, onApply }) {
-  const [parsedPayments, setParsedPayments] = useState([]);
+export default function AutomaticPaymentDetection({
+  tenants,
+  onApply,
+  // Lifted state from parent
+  uploadedFile,
+  setUploadedFile,
+  parsedPayments,
+  setParsedPayments,
+  statementDateRange,
+  setStatementDateRange,
+}) {
   const [isLoading, setIsLoading] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState(null);
   const [showClearDialog, setShowClearDialog] = useState(false);
-  const [statementDateRange, setStatementDateRange] = useState(null);
+  const [selectedTenantForApply, setSelectedTenantForApply] = useState('');
   const fileInputRef = useRef(null);
 
   const handleFileUpload = async (event) => {
@@ -46,7 +53,6 @@ export default function AutomaticPaymentDetection({ tenants, onApply }) {
     setUploadedFile(file);
 
     try {
-      // Parse PDF
       const payments = await parseBOIStatement(file);
       
       if (payments.length === 0) {
@@ -55,13 +61,11 @@ export default function AutomaticPaymentDetection({ tenants, onApply }) {
         return;
       }
 
-      // Get date range from parsed statement
       const dateRange = extractStatementDateRange();
       if (dateRange) {
         setStatementDateRange(dateRange);
       }
 
-      // Match to tenants
       const matchedPayments = matchPaymentsToTenants(payments, tenants);
       
       setParsedPayments(matchedPayments.map(p => ({
@@ -104,8 +108,6 @@ export default function AutomaticPaymentDetection({ tenants, onApply }) {
     toast.success('Cleared all detected payments');
   };
 
-  const [selectedTenantForApply, setSelectedTenantForApply] = useState('');
-
   const handleApplyForTenant = () => {
     if (!selectedTenantForApply) {
       toast.error('Please select a tenant to apply payments for.');
@@ -121,25 +123,24 @@ export default function AutomaticPaymentDetection({ tenants, onApply }) {
       return;
     }
 
-    // Split into tenant payments and RAS
-    const tenantPayments = {};
-    const rasPayments = {};
+    const tenantPaymentsMap = {};
+    const rasPaymentsMap = {};
 
     tenantPaymentsForSelected.forEach(payment => {
       const tenantId = payment.matchedTenant.id;
       if (payment.type === 'RAS') {
-        if (!rasPayments[tenantId]) rasPayments[tenantId] = [];
-        rasPayments[tenantId].push(payment);
+        if (!rasPaymentsMap[tenantId]) rasPaymentsMap[tenantId] = [];
+        rasPaymentsMap[tenantId].push(payment);
       } else {
-        if (!tenantPayments[tenantId]) tenantPayments[tenantId] = [];
-        tenantPayments[tenantId].push(payment);
+        if (!tenantPaymentsMap[tenantId]) tenantPaymentsMap[tenantId] = [];
+        tenantPaymentsMap[tenantId].push(payment);
       }
     });
 
     onApply({
       primaryTenantId: selectedTenantForApply,
-      tenantPayments,
-      rasPayments,
+      tenantPayments: tenantPaymentsMap,
+      rasPayments: rasPaymentsMap,
       statementDateRange
     });
 
@@ -157,7 +158,7 @@ export default function AutomaticPaymentDetection({ tenants, onApply }) {
           Automatic Payment Detection
         </CardTitle>
         <CardDescription>
-          Upload Bank Statement monthly PDF to auto-detect tenant and RAS payments
+          Upload Bank Statement monthly PDF to auto-detect tenant payments
         </CardDescription>
       </CardHeader>
       <CardContent className="p-4 sm:p-6 space-y-6">
@@ -281,7 +282,7 @@ export default function AutomaticPaymentDetection({ tenants, onApply }) {
                               <SelectValue placeholder="Select tenant..." />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value={null}>None</SelectItem>
+                              <SelectItem value="__none__">None</SelectItem>
                               {tenants.map(tenant => (
                                 <SelectItem key={tenant.id} value={tenant.id}>
                                   {tenant.fullName}
@@ -363,7 +364,6 @@ export default function AutomaticPaymentDetection({ tenants, onApply }) {
                     <SelectValue placeholder="Choose tenant..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {/* Only show tenants that have matched payments */}
                     {[...new Set(activePayments.filter(p => p.matchedTenant).map(p => p.matchedTenant.id))].map(tenantId => {
                       const tenant = tenants.find(t => t.id === tenantId);
                       const count = activePayments.filter(p => p.matchedTenant?.id === tenantId).length;

@@ -50,6 +50,11 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
   const [lastStatement, setLastStatement] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState('');
 
+  // Lifted state for AutomaticPaymentDetection (persists across tab switches)
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [parsedPayments, setParsedPayments] = useState([]);
+  const [autoStatementDateRange, setAutoStatementDateRange] = useState(null);
+
   const selectedTenant = tenants.find(t => t.id === clientId);
 
   // When selectedTenantId prop changes (from tenant management)
@@ -75,40 +80,35 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
         const lastStmt = allStatements[0];
         setLastStatement(lastStmt);
         
-        // Auto-suggest next month
         const lastEndDate = new Date(lastStmt.endDate);
         const nextMonth = new Date(lastEndDate);
         nextMonth.setMonth(nextMonth.getMonth() + 1);
-        nextMonth.setDate(1); // First day of next month
+        nextMonth.setDate(1);
         
         const yearMonth = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, '0')}`;
         setSelectedMonth(yearMonth);
         
         setShowLoadDialog(true);
-        } else {
+      } else {
         setStartingDebt(selectedTenant.currentBalance || 0);
-        }
-        } catch (err) {
-        console.error('Error loading last statement:', err);
-        setStartingDebt(selectedTenant.currentBalance || 0);
-        }
-        };
+      }
+    } catch (err) {
+      console.error('Error loading last statement:', err);
+      setStartingDebt(selectedTenant.currentBalance || 0);
+    }
+  };
   
   const handleLoadStatementData = () => {
     if (lastStatement && selectedMonth) {
       const [year, month] = selectedMonth.split('-').map(Number);
       
-      // Start from first day of selected month
       const newStartDate = new Date(year, month - 1, 1);
-      
-      // End on last day of selected month
       const newEndDate = new Date(year, month, 0);
       
       setStartDate(newStartDate.toISOString().split('T')[0]);
       setEndDate(newEndDate.toISOString().split('T')[0]);
       setStartingDebt(lastStatement.finalBalance || 0);
 
-      // Calculate weeks in the month
       const daysInMonth = newEndDate.getDate();
       const weeks = Math.ceil(daysInMonth / 7);
       
@@ -133,14 +133,14 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       setTransactions(newTransactions);
     }
     setShowLoadDialog(false);
-    };
+  };
 
-    const handleSkipLoadStatement = () => {
+  const handleSkipLoadStatement = () => {
     setStartingDebt(selectedTenant.currentBalance || 0);
     setShowLoadDialog(false);
-    };
+  };
 
-    const initializeTransaction = () => {
+  const initializeTransaction = () => {
     const tenant = tenants.find(t => t.id === clientId);
     setTransactions([{
       id: Date.now(),
@@ -151,11 +151,9 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       rasPayment: tenant?.weeklyRasAmount || 0,
       rasReceived: (tenant?.weeklyRasAmount || 0) > 0
     }]);
-    };
+  };
 
-
-
-    const addTransaction = () => {
+  const addTransaction = () => {
     const tenant = tenants.find(t => t.id === clientId);
     setTransactions(prev => [...prev, {
       id: Date.now(),
@@ -166,7 +164,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       rasPayment: tenant?.weeklyRasAmount || 0,
       rasReceived: (tenant?.weeklyRasAmount || 0) > 0
     }]);
-    };
+  };
 
   const updateTransaction = (id, field, value) => {
     setTransactions(prev => prev.map(t => 
@@ -206,9 +204,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
     const tenant = tenants.find(t => t.id === clientId);
     const weeklyTenant = tenant?.weeklyTenantPayment || 40;
     const weeklyRas = tenant?.weeklyRasAmount || 103.40;
-    const totalWeeklyWithRas = weeklyTenant + weeklyRas;
 
-    // Get month name from end date
     const endDateObj = new Date(endDate);
     const monthName = endDateObj.toLocaleDateString('en-US', { month: 'long' });
     const nextMonth = new Date(endDateObj);
@@ -223,22 +219,16 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
     }
     smartNote += `. Contact SVP at 086 7856869 if you need assistance.\n\n`;
 
-    // If negative balance (credit)
     if (finalTenantBalance < 0) {
       const creditAmt = Math.abs(finalTenantBalance);
       smartNote += `Your credit balance is now €${creditAmt.toFixed(2)}, this amount will be carried forward to ${nextMonthName}.`;
-    } 
-    // If positive balance (arrears)
-    else if (finalTenantBalance > 0) {
-      // Calculate monthly rent due (not tenant payments)
+    } else if (finalTenantBalance > 0) {
       const monthlyRentDue = totalRentDue;
       const monthlyTotalWithRas = totalRentDue + totalRasReceived;
 
       smartNote += `You have paid €${totalTenantPayments.toFixed(2)} this month, your rent for the month of ${monthName} is €${monthlyRentDue.toFixed(2)} (with RAS €${monthlyTotalWithRas.toFixed(2)}). Your arrears at the start of ${monthName} is €${debtAmt.toFixed(2)}.\n\n`;
 
-      // If large arrears (> 200)
       if (finalTenantBalance > 200) {
-        // Calculate repayment: standard payment + 15% rounded
         const extraPayment = Math.round(weeklyTenant * 0.15);
         const repaymentAmount = weeklyTenant + extraPayment;
 
@@ -252,7 +242,6 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
   const handleGenerateReceipt = async () => {
     setError('');
     
-    // Validation
     if (!clientId) {
       setError('Please select a client');
       return;
@@ -264,19 +253,16 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
     if (transactions.length === 0) {
       setError('Please add at least one transaction');
       return;
-      }
+    }
 
-      const tenant = tenants.find(t => t.id === clientId);
+    const tenant = tenants.find(t => t.id === clientId);
+    const smartNotes = generateSmartNotes();
 
-      // Generate smart notes
-      const smartNotes = generateSmartNotes();
-
-      // Generate receipt ID with tenant initials
-      const nameParts = tenant.fullName.trim().split(' ');
-      const firstInitial = nameParts[0] ? nameParts[0][0].toUpperCase() : 'X';
-      const lastInitial = nameParts.length > 1 ? nameParts[nameParts.length - 1][0].toUpperCase() : 'X';
-      const randomDigits = Math.floor(1000 + Math.random() * 9000); // 4 digits
-      const receiptId = `${firstInitial}${lastInitial}${randomDigits}`;
+    const nameParts = tenant.fullName.trim().split(' ');
+    const firstInitial = nameParts[0] ? nameParts[0][0].toUpperCase() : 'X';
+    const lastInitial = nameParts.length > 1 ? nameParts[nameParts.length - 1][0].toUpperCase() : 'X';
+    const randomDigits = Math.floor(1000 + Math.random() * 9000);
+    const receiptId = `${firstInitial}${lastInitial}${randomDigits}`;
 
     const receiptData = {
       id: receiptId,
@@ -302,7 +288,6 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       finalBalance: finalTenantBalance,
       notes: smartNotes,
       createdDate: (() => {
-        // If end date is in the past, use end date as receipt date; otherwise use today
         const end = new Date(endDate);
         const today = new Date();
         today.setHours(0,0,0,0);
@@ -318,7 +303,6 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
   const handleConfirmGenerate = async (shouldSave) => {
     if (!pendingReceiptData) return;
     
-    // Save to cloud if requested first
     if (shouldSave) {
       try {
         await base44.entities.Statement.create({
@@ -341,7 +325,6 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
           createdDate: pendingReceiptData.createdDate
         });
         
-        // Save to local history only if saved to cloud
         onReceiptCreated(pendingReceiptData);
         
         setSuccess('Receipt saved to cloud and opened in new window!');
@@ -353,7 +336,6 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       setSuccess('Receipt opened in new window!');
     }
     
-    // Generate PDF after saving (or not)
     generateReceiptPDF(pendingReceiptData, settings);
     
     setTimeout(() => setSuccess(''), 3000);
@@ -374,7 +356,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       setStartDate(statementDateRange.startDate.toISOString().split('T')[0]);
       setEndDate(statementDateRange.endDate.toISOString().split('T')[0]);
     }
-    
+
     // Collect all payments for this tenant
     const tPayments = (tenantPayments[primaryTenantId] || []).map(p => ({
       ...p, paymentType: 'tenant'
@@ -383,68 +365,81 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       ...p, paymentType: 'ras'
     }));
     
-    // Combine and sort by date
-    const allPaymentsSorted = [...tPayments, ...rPayments].sort(
-      (a, b) => new Date(a.date) - new Date(b.date)
-    );
-    
-    // If we have a date range, figure out weeks in that period
+    const allPayments = [...tPayments, ...rPayments];
+
     if (statementDateRange && tenant) {
       const start = new Date(statementDateRange.startDate);
       const end = new Date(statementDateRange.endDate);
       const daysInPeriod = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
       const weeksInPeriod = Math.ceil(daysInPeriod / 7);
-      
+
+      const weeklyRent = (tenant.weeklyTenantPayment || 0) + (tenant.weeklyRasAmount || 0);
       const newTransactions = [];
-      
-      // Create weekly transaction slots
+      const usedPaymentIds = new Set();
+
+      // Create weekly slots and match payments to each week
       for (let i = 0; i < weeksInPeriod; i++) {
-        const weekDate = new Date(start);
-        weekDate.setDate(weekDate.getDate() + (i * 7));
-        const weekDateStr = weekDate.toISOString().split('T')[0];
-        
-        // Find tenant payment for this week (within 3 days of week date)
-        const matchedTenantPayment = tPayments.find(p => {
+        const weekStart = new Date(start);
+        weekStart.setDate(weekStart.getDate() + (i * 7));
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        weekEnd.setHours(23, 59, 59, 999);
+
+        let tenantPaidAmount = 0;
+        let rasPaidAmount = 0;
+        let tenantPaidFlag = false;
+        let rasReceivedFlag = false;
+
+        // Find payments that fall within this week
+        allPayments.forEach(p => {
+          if (usedPaymentIds.has(p.id)) return;
           const pDate = new Date(p.date);
-          const diff = Math.abs(pDate - weekDate) / (1000 * 60 * 60 * 24);
-          return diff <= 4 && !p._used;
+          if (pDate >= weekStart && pDate <= weekEnd) {
+            if (p.paymentType === 'tenant') {
+              tenantPaidAmount += p.amount;
+              tenantPaidFlag = true;
+            } else {
+              rasPaidAmount += p.amount;
+              rasReceivedFlag = true;
+            }
+            usedPaymentIds.add(p.id);
+          }
         });
-        
-        if (matchedTenantPayment) matchedTenantPayment._used = true;
-        
+
         newTransactions.push({
           id: Date.now() + Math.random() + i,
-          date: matchedTenantPayment ? new Date(matchedTenantPayment.date).toISOString().split('T')[0] : weekDateStr,
-          rentDue: tenant?.monthlyRent || 0,
-          tenantPayment: matchedTenantPayment ? matchedTenantPayment.amount : (tenant?.weeklyTenantPayment || 0),
-          tenantPaid: !!matchedTenantPayment,
-          rasPayment: tenant?.weeklyRasAmount || 0,
-          rasReceived: (tenant?.weeklyRasAmount || 0) > 0
+          date: weekStart.toISOString().split('T')[0],
+          rentDue: weeklyRent,
+          tenantPayment: tenantPaidAmount,
+          tenantPaid: tenantPaidFlag,
+          rasPayment: rasPaidAmount,
+          rasReceived: rasReceivedFlag
         });
       }
-      
-      // Add any unmatched tenant payments as extra transactions
-      tPayments.filter(p => !p._used).forEach(p => {
-        newTransactions.push({
-          id: Date.now() + Math.random(),
-          date: new Date(p.date).toISOString().split('T')[0],
-          rentDue: 0,
-          tenantPayment: p.amount,
-          tenantPaid: true,
-          rasPayment: 0,
-          rasReceived: false
-        });
+
+      // Any remaining payments that didn't fall into a week slot
+      allPayments.forEach(p => {
+        if (!usedPaymentIds.has(p.id)) {
+          newTransactions.push({
+            id: Date.now() + Math.random(),
+            date: new Date(p.date).toISOString().split('T')[0],
+            rentDue: 0,
+            tenantPayment: p.paymentType === 'tenant' ? p.amount : 0,
+            tenantPaid: p.paymentType === 'tenant',
+            rasPayment: p.paymentType === 'ras' ? p.amount : 0,
+            rasReceived: p.paymentType === 'ras'
+          });
+        }
       });
-      
-      // Sort by date
+
       newTransactions.sort((a, b) => new Date(a.date) - new Date(b.date));
       setTransactions(newTransactions);
     } else {
-      // Fallback: just create transactions from payments
-      const newTransactions = allPaymentsSorted.map((payment, i) => ({
+      // Fallback: create one transaction per payment
+      const newTransactions = allPayments.map((payment, i) => ({
         id: Date.now() + Math.random() + i,
         date: new Date(payment.date).toISOString().split('T')[0],
-        rentDue: tenant?.monthlyRent || 0,
+        rentDue: 0,
         tenantPayment: payment.paymentType === 'tenant' ? payment.amount : 0,
         tenantPaid: payment.paymentType === 'tenant',
         rasPayment: payment.paymentType === 'ras' ? payment.amount : 0,
@@ -452,6 +447,19 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       }));
       setTransactions(newTransactions);
     }
+
+    // Also load last statement debt for this tenant
+    base44.entities.Statement.filter({ clientId: primaryTenantId }, '-created_date', 1).then(stmts => {
+      if (stmts.length > 0) {
+        setStartingDebt(stmts[0].finalBalance || 0);
+      } else {
+        setStartingDebt(tenant?.currentBalance || 0);
+      }
+    }).catch(() => {
+      setStartingDebt(tenant?.currentBalance || 0);
+    });
+
+    setCredit(tenant?.credit || 0);
     
     // Switch to manual mode to review
     setMode('manual');
@@ -690,6 +698,12 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
             <AutomaticPaymentDetection 
               tenants={tenants}
               onApply={handleApplyAutomatic}
+              uploadedFile={uploadedFile}
+              setUploadedFile={setUploadedFile}
+              parsedPayments={parsedPayments}
+              setParsedPayments={setParsedPayments}
+              statementDateRange={autoStatementDateRange}
+              setStatementDateRange={setAutoStatementDateRange}
             />
           </TabsContent>
         </Tabs>
