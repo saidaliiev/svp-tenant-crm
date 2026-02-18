@@ -301,7 +301,14 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       netTenantObligation,
       finalBalance: finalTenantBalance,
       notes: smartNotes,
-      createdDate: new Date().toISOString()
+      createdDate: (() => {
+        // If end date is in the past, use end date as receipt date; otherwise use today
+        const end = new Date(endDate);
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        end.setHours(0,0,0,0);
+        return end < today ? new Date(endDate + 'T12:00:00').toISOString() : new Date().toISOString();
+      })()
     };
 
     setPendingReceiptData(receiptData);
