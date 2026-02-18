@@ -9,6 +9,7 @@ import ClientManagement from '@/components/svp/ClientManagement';
 import CreateReceipt from '@/components/svp/CreateReceipt';
 import ReceiptHistory from '@/components/svp/ReceiptHistory';
 import SettingsTab from '@/components/svp/SettingsTab';
+import TutorialGuide from '@/components/svp/TutorialGuide';
 
 const DEFAULT_SETTINGS = {
   organizationName: "Society of Saint Vincent de Paul",
@@ -179,6 +180,9 @@ export default function HomePage() {
           </AnimatePresence>
         </Tabs>
       </div>
+
+      {/* Tutorial Guide */}
+      <TutorialGuide activeTab={activeTab} />
 
       {/* Mobile Bottom Navigation */}
       <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-t border-gray-200 dark:border-gray-700 z-50 pb-safe">
