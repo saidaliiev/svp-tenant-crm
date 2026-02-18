@@ -240,18 +240,20 @@ export default function TutorialGuide({ activeTab }) {
 
   return (
     <>
-      {/* Fixed Tutorial Button — always small circle with ? */}
+      {/* Fixed Tutorial Button — always small circle with ?, hides after 40% scroll */}
       <motion.button
         onClick={handleOpen}
         className="fixed top-3 right-3 z-[100] flex items-center justify-center w-8 h-8 rounded-full border-2 border-blue-500 bg-white text-blue-600 shadow-sm hover:shadow-md"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         animate={{
-          opacity: shouldBlink ? [1, 0.15, 1, 0.15, 1, 1, 1, 1] : 1,
+          opacity: hidden ? 0 : (shouldBlink ? [1, 0.15, 1, 0.15, 1, 1, 1, 1] : 1),
+          pointerEvents: hidden ? 'none' : 'auto',
         }}
         transition={{
-          opacity: shouldBlink ? { duration: 2, repeat: Infinity, ease: "linear" } : { duration: 0.3 },
+          opacity: shouldBlink && !hidden ? { duration: 2, repeat: Infinity, ease: "linear" } : { duration: 0.3 },
         }}
+        style={{ pointerEvents: hidden ? 'none' : 'auto' }}
         title="Open Tutorial"
       >
         <span className="text-sm font-bold">?</span>
