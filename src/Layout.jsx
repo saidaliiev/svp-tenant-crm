@@ -1,18 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import TutorialGuide from '@/components/svp/TutorialGuide';
 
-const PAGE_TAB_MAP = { Home: null };
+function useActiveTab(pageName) {
+  const [tab, setTab] = useState(() => {
+    if (pageName === 'Home') {
+      return new URLSearchParams(window.location.search).get('tab') || 'tenants';
+    }
+    return null;
+  });
 
-function getActiveTab(pageName) {
-  if (pageName === 'Home') {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('tab') || 'tenants';
-  }
-  return null;
+  useEffect(() => {
+    if (pageName !== 'Home') { setTab(null); return; }
+    const update = () => setTab(new URLSearchParams(window.location.search).get('tab') || 'tenants');
+    update();
+    // Listen for pushState/replaceState and popstate
+    const origPush = history.pushState;
+    const origReplace = history.replaceState;
+    history.pushState = function() { origPush.apply(this, arguments); update(); };
+    history.replaceState = function() { origReplace.apply(this, arguments); update(); };
+    window.addEventListener('popstate', update);
+    return () => {
+      history.pushState = origPush;
+      history.replaceState = origReplace;
+      window.removeEventListener('popstate', update);
+    };
+  }, [pageName]);
+
+  return tab;
 }
 
 export default function Layout({ children, currentPageName }) {
-  const activeTab = getActiveTab(currentPageName);
+  const activeTab = useActiveTab(currentPageName);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
