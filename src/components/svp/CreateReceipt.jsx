@@ -478,7 +478,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       <CardContent className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
         
         <Tabs value={mode} onValueChange={setMode} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-2" data-tutorial="receipt-modes">
             <TabsTrigger value="manual">Manual Mode</TabsTrigger>
             <TabsTrigger value="automatic">Automatic Mode</TabsTrigger>
           </TabsList>
@@ -498,7 +498,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
         )}
 
         {/* Client Selection */}
-        <div className="space-y-2">
+        <div className="space-y-2" data-tutorial="receipt-tenant-select">
           <Label className="text-base font-semibold">Select Tenant</Label>
           <Select value={clientId} onValueChange={setClientId}>
             <SelectTrigger className="h-12">
@@ -598,7 +598,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
             </div>
 
             {/* Transactions */}
-            <div className="space-y-4">
+            <div className="space-y-4" data-tutorial="receipt-transactions">
               <div className="flex items-center justify-between">
                 <Label className="text-base font-semibold">Transactions</Label>
                 <Button
@@ -637,7 +637,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
             </div>
 
             {/* Balance Preview */}
-            <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg sm:rounded-xl p-4 sm:p-6 border">
+            <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg sm:rounded-xl p-4 sm:p-6 border" data-tutorial="receipt-balance">
               <div className="flex items-center gap-2 mb-3 sm:mb-4">
                 <Calculator className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
                 <h3 className="font-semibold text-base sm:text-lg">Balance Preview</h3>
@@ -683,6 +683,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
             <Button
               onClick={handleGenerateReceipt}
               size="lg"
+              data-tutorial="receipt-generate"
               className="w-full h-12 sm:h-14 text-base sm:text-lg bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 shadow-lg"
             >
               <Printer className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />

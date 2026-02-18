@@ -94,7 +94,7 @@ export default function SettingsTab({ settings, setSettings }) {
           </Alert>
         )}
 
-        <div className="max-w-xl space-y-6">
+        <div className="max-w-xl space-y-6" data-tutorial="settings-org">
           <div className="space-y-2">
             <Label htmlFor="organizationName">Organization Name</Label>
             <Input
@@ -143,7 +143,7 @@ export default function SettingsTab({ settings, setSettings }) {
             <p className="text-xs text-slate-500">Displayed in the app header and receipt footer</p>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-4" data-tutorial="settings-save">
             <Button
               onClick={handleSave}
               className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
@@ -163,7 +163,7 @@ export default function SettingsTab({ settings, setSettings }) {
         </div>
 
         {/* Danger Zone */}
-        <div className="mt-10 pt-6 border-t border-red-200 dark:border-red-900">
+        <div className="mt-10 pt-6 border-t border-red-200 dark:border-red-900" data-tutorial="settings-danger">
           <h3 className="text-lg font-semibold mb-4 text-red-600 dark:text-red-400 flex items-center gap-2">
             <AlertTriangle className="w-5 h-5" />
             Danger Zone

@@ -76,14 +76,14 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
     <Card className="bg-white/90 backdrop-blur-sm shadow-xl border-0">
       <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-purple-50 p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3" data-tutorial="history-header">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
               <History className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <CardTitle className="text-lg sm:text-xl">Receipt History</CardTitle>
           </div>
           
-          <div className="w-full sm:w-64">
+          <div className="w-full sm:w-64" data-tutorial="history-filter">
             <Select value={filterClientId} onValueChange={setFilterClientId}>
               <SelectTrigger>
                 <SelectValue placeholder="Filter by client" />
@@ -141,7 +141,7 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
                       {formatCurrency(receipt.finalBalance)}
                     </td>
                     <td className="py-2 sm:py-3 px-2 sm:px-4">
-                      <div className="flex justify-end gap-0.5 sm:gap-1">
+                      <div className="flex justify-end gap-0.5 sm:gap-1" {...(index === 0 ? {'data-tutorial': 'history-actions'} : {})}>
                         <Button
                           size="sm"
                           onClick={() => handleViewPDF(receipt)}
