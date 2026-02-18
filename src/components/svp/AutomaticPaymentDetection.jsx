@@ -22,7 +22,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Upload, FileText, Trash2, CheckCircle, AlertCircle, X } from 'lucide-react';
-import { parseBOIStatement, matchPaymentsToTenants, extractStatementDateRange } from '@/components/utils/pdfParser';
+import { parseBOIStatement, matchPaymentsToTenants, extractStatementDateRange } from '@/components/utils/pdfParser.jsx';
 import { toast } from 'sonner';
 
 export default function AutomaticPaymentDetection({ tenants, onApply }) {
@@ -55,6 +55,12 @@ export default function AutomaticPaymentDetection({ tenants, onApply }) {
         return;
       }
 
+      // Get date range from parsed statement
+      const dateRange = extractStatementDateRange();
+      if (dateRange) {
+        setStatementDateRange(dateRange);
+      }
+
       // Match to tenants
       const matchedPayments = matchPaymentsToTenants(payments, tenants);
       
@@ -65,16 +71,6 @@ export default function AutomaticPaymentDetection({ tenants, onApply }) {
       })));
 
       toast.success(`Detected ${payments.length} payments from statement`);
-      
-      // Show tutorial toast on first use
-      if (!localStorage.getItem('auto_detection_tutorial_shown')) {
-        setTimeout(() => {
-          toast.info('Review matches → adjust if needed → Apply to tenant', {
-            duration: 5000
-          });
-          localStorage.setItem('auto_detection_tutorial_shown', 'true');
-        }, 1000);
-      }
     } catch (error) {
       toast.error('Failed to parse PDF: ' + error.message);
       console.error('PDF parsing error:', error);
