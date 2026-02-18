@@ -122,16 +122,15 @@ export default function TutorialGuide({ activeTab }) {
   const overlayRef = useRef(null);
   const lastScrollY = useRef(0);
 
-  // Collapse on scroll down, expand on scroll up
+  // Hide button when scrolled past 40% of the page
+  const [hidden, setHidden] = useState(false);
+
   useEffect(() => {
     const handleScroll = () => {
-      const y = window.scrollY;
-      if (y > lastScrollY.current && y > 60) {
-        setCollapsed(true);
-      } else if (y < lastScrollY.current) {
-        setCollapsed(false);
-      }
-      lastScrollY.current = y;
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollable <= 0) { setHidden(false); return; }
+      const pct = window.scrollY / scrollable;
+      setHidden(pct > 0.4);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
