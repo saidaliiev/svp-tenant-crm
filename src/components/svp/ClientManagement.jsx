@@ -333,7 +333,7 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
             <Button 
               onClick={handleOpenAdd}
               size="sm"
-              data-tutorial="btn-add-tenant"
+              data-tour="btn-add-tenant"
               className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white text-xs sm:text-sm"
             >
               <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
@@ -343,7 +343,7 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
             <Button 
               variant="outline"
               size="sm"
-              data-tutorial="btn-import"
+              data-tour="btn-import"
               onClick={() => fileInputRef.current?.click()}
               className="border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 text-xs sm:text-sm"
             >
@@ -402,8 +402,8 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
               ))}
             </div>
             {/* Desktop: Table layout */}
-            <div className="hidden sm:block overflow-x-auto">
-              <table className="w-full">
+             <div className="hidden sm:block overflow-x-auto" data-tour="tenant-table">
+               <table className="w-full">
                 <thead>
                   <tr className="border-b-2 border-slate-200 dark:border-gray-700">
                     <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">ID</th>
@@ -427,19 +427,19 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                         {formatCurrency(tenant.currentBalance || 0)}
                       </td>
                       <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex justify-end gap-1" {...(index === 0 ? {'data-tutorial': 'tenant-actions'} : {})}>
-                          <Button size="sm" onClick={() => setProfileTenant(tenant)} className="bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white h-8 px-3 text-xs">
+                        <div className="flex justify-end gap-1">
+                          <Button size="sm" onClick={() => setProfileTenant(tenant)} data-tour={index === 0 ? "btn-profile" : undefined} className="bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white h-8 px-3 text-xs">
                             <User className="w-4 h-4" />
                             <span className="hidden lg:inline ml-1">Profile</span>
                           </Button>
-                          <Button size="sm" onClick={() => onSelectTenant(tenant.id)} className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white h-8 px-3 text-xs">
+                          <Button size="sm" onClick={() => onSelectTenant(tenant.id)} data-tour={index === 0 ? "btn-select" : undefined} className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white h-8 px-3 text-xs">
                             <UserCheck className="w-4 h-4" />
                             <span className="hidden lg:inline ml-1">Select</span>
                           </Button>
-                          <Button size="sm" variant="outline" onClick={() => handleOpenEdit(tenant)} className="border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 h-8 px-3">
+                          <Button size="sm" variant="outline" onClick={() => handleOpenEdit(tenant)} data-tour={index === 0 ? "btn-edit" : undefined} className="border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 h-8 px-3">
                             <Pencil className="w-4 h-4" />
                           </Button>
-                          <Button size="sm" variant="outline" onClick={() => setDeleteTenant(tenant)} className="border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 h-8 px-3">
+                          <Button size="sm" variant="outline" onClick={() => setDeleteTenant(tenant)} data-tour={index === 0 ? "btn-delete" : undefined} className="border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 h-8 px-3">
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
