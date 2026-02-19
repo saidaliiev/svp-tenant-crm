@@ -102,8 +102,9 @@ export default function DevPortfolio({ isOpen, onClose }) {
           >
             {/* Close bar */}
             <div className="sticky top-0 z-20 pt-3 pb-2 flex flex-col items-center bg-gradient-to-b from-slate-900/95 via-slate-900/60 to-transparent backdrop-blur-sm">
+              {/* Drag handle — mobile only */}
               <motion.div
-                className="w-10 h-1 rounded-full bg-white/25 mb-2 cursor-pointer"
+                className="w-10 h-1 rounded-full bg-white/25 mb-2 cursor-pointer md:hidden"
                 onClick={onClose}
                 whileHover={{ scaleX: 1.5 }}
               />
@@ -114,16 +115,18 @@ export default function DevPortfolio({ isOpen, onClose }) {
                 <ArrowDown className="w-3 h-3" />
                 <span>Swipe down to close</span>
               </button>
-              <button
-                onClick={onClose}
-                className="hidden md:flex items-center gap-1.5 text-white/40 hover:text-white/70 text-xs transition-colors"
-                aria-label="Close portfolio"
-              >
-                <X className="w-3.5 h-3.5" />
-                <span>Close</span>
-                <kbd className="ml-1 px-1.5 py-0.5 rounded bg-white/10 text-[9px] text-white/30 font-mono">Esc</kbd>
-              </button>
             </div>
+
+            {/* Desktop close — fixed bottom */}
+            <button
+              onClick={onClose}
+              className="hidden md:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-30 items-center gap-1.5 text-white/40 hover:text-white/70 text-xs transition-colors bg-slate-900/80 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10"
+              aria-label="Close portfolio"
+            >
+              <X className="w-3.5 h-3.5" />
+              <span>Close</span>
+              <kbd className="ml-1 px-1.5 py-0.5 rounded bg-white/10 text-[9px] text-white/30 font-mono">Esc</kbd>
+            </button>
 
             <div className="px-6 pb-24 max-w-lg mx-auto">
               {/* Hero */}
