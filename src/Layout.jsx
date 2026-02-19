@@ -73,14 +73,15 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Help Button - Bottom Right */}
       {currentPageName !== 'Settings' && (
-        <button
-          onClick={() => setShowGuide(true)}
-          className="fixed bottom-6 right-6 w-8 h-8 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 z-30"
+        <motion.button
+          animate={controls}
+          onClick={handleGuideClick}
+          className="fixed bottom-6 right-6 w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 z-30"
           aria-label="Start interactive tour"
           title="Help"
         >
-          <HelpCircle className="w-5 h-5" />
-        </button>
+          <HelpCircle className="w-6 h-6" />
+        </motion.button>
       )}
 
       <SecretFooter onReveal={handleReveal} />
