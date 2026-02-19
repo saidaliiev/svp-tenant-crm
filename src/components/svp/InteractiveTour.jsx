@@ -242,7 +242,7 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
 
       {/* Tooltip */}
       <div
-        className="fixed z-50 bg-white rounded-xl shadow-2xl p-6 max-w-sm"
+        className="fixed z-[9999] bg-white rounded-xl shadow-2xl p-6 max-w-sm"
         style={{
           left: '50%',
           top: `${tooltipTop}px`,
