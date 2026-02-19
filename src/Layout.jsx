@@ -2,10 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import SecretFooter from '@/components/svp/SecretFooter';
 import DevPortfolio from '@/components/svp/DevPortfolio';
 import MobilePortfolioTrigger from '@/components/svp/MobilePortfolioTrigger';
+import GuideDrawer from '@/components/svp/GuideDrawer';
 import { base44 } from '@/api/base44Client';
+import { HelpCircle } from 'lucide-react';
 
 export default function Layout({ children, currentPageName }) {
   const [showPortfolio, setShowPortfolio] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
 
   // Load user font size pref on mount
   useEffect(() => {
@@ -39,9 +42,21 @@ export default function Layout({ children, currentPageName }) {
           {children}
         </div>
       </div>
+
+      {/* Help Button - Bottom Right */}
+      <button
+        onClick={() => setShowGuide(true)}
+        className="fixed bottom-6 right-6 w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 z-30"
+        aria-label="Open user guide"
+        title="Help"
+      >
+        <HelpCircle className="w-6 h-6" />
+      </button>
+
       <SecretFooter onReveal={handleReveal} />
       <MobilePortfolioTrigger onReveal={handleReveal} />
       <DevPortfolio isOpen={showPortfolio} onClose={handleClose} />
+      <GuideDrawer isOpen={showGuide} onClose={() => setShowGuide(false)} />
     </div>
   );
 }
