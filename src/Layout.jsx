@@ -44,19 +44,20 @@ export default function Layout({ children, currentPageName }) {
   const handleGuideClick = () => {
     if (currentTab === 'settings') {
       controls.start({
-        x: [0, -15, 15, -10, 10, -5, 5, 0],
-        rotate: [0, -10, 10, -10, 10, -5, 5, 0],
-        transition: { duration: 0.5 }
+        x: [0, -15, 15, -15, 15, -10, 10, -5, 5, 0],
+        rotate: [0, -20, 20, -20, 20, -10, 10, -5, 5, 0],
+        scale: [1, 1.2, 1.2, 1.2, 1.2, 1.1, 1.1, 1.05, 1.05, 1],
+        transition: { duration: 0.6, ease: "easeInOut" }
       });
       toast.custom((t) => (
-        <div className="bg-slate-900 text-white p-4 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700">
-          <span className="text-2xl">😂</span>
+        <div className="bg-slate-900 text-white p-4 rounded-xl shadow-2xl flex items-center gap-4 border border-slate-700 w-full max-w-sm ml-auto">
+          <span className="text-3xl animate-bounce">😂</span>
           <div>
-            <h4 className="font-bold text-sm">Seriously?</h4>
-            <p className="text-xs text-slate-300 mt-0.5">Did you really think I wrote a guide for the Settings page? Just click the buttons!</p>
+            <h4 className="font-bold text-[15px] mb-1">Seriously?</h4>
+            <p className="text-sm text-slate-300 leading-snug">Did you really think I wrote a guide for the Settings page? Just click the buttons!</p>
           </div>
         </div>
-      ), { duration: 3000 });
+      ), { duration: 3500 });
     } else {
       setShowGuide(true);
     }
