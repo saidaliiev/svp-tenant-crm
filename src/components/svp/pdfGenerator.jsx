@@ -217,12 +217,17 @@ export function generateReceiptPDF(receiptData, settings) {
         .replace(/⚠️/g, '')
         .replace(/[^\x00-\x7F€]/g, '');
 
-      // Split by double newlines for paragraphs
+      // Split by double newlines for paragraphs, then handle single newlines within
       const paragraphs = cleanedNotes.split('\n\n').filter(p => p.trim());
       paragraphs.forEach((para, idx) => {
-        const splitText = doc.splitTextToSize(para.trim(), pageWidth - (margin * 2));
-        doc.text(splitText, margin, yPos);
-        yPos += (splitText.length * 4) + 4; // Add extra space between paragraphs
+        // Handle single newlines within a paragraph as line breaks
+        const lines = para.trim().split('\n');
+        lines.forEach(line => {
+          const splitText = doc.splitTextToSize(line.trim(), pageWidth - (margin * 2));
+          doc.text(splitText, margin, yPos);
+          yPos += (splitText.length * 4) + 1;
+        });
+        yPos += 3; // Extra space between paragraphs
       });
     }
 
