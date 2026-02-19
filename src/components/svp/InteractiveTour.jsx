@@ -183,8 +183,12 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
 
     findElement();
     const timer = setTimeout(findElement, 250); // wait a bit longer for layouts to settle
-    return () => clearTimeout(timer);
-  }, [currentStep, isOpen, currentTourStep, currentPage, currentTab, tourKey]);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('scroll', updateRect, true);
+      window.removeEventListener('resize', updateRect);
+    };
+  }, [currentStep, isOpen, currentTourStep, currentPage, currentTab, tourKey, highlightedElement]);
 
   const handleNext = () => {
     if (currentStep < tourSteps.length - 1) {
