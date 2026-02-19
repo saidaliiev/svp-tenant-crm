@@ -127,25 +127,24 @@ export function generateReceiptPDF(receiptData, settings) {
       head: [['Date', 'Rent Due', 'Tenant Payment', 'RAS Payment']],
       body: tableData,
       theme: 'plain',
-      tableWidth: 'auto',
+      tableWidth: pageWidth - (margin * 2),
       headStyles: {
         fillColor: lightGray,
         textColor: [60, 60, 60],
         fontSize: 9,
         fontStyle: 'bold',
-        halign: 'left',
-        cellPadding: { top: 3, right: 3, bottom: 3, left: 3 }
+        cellPadding: { top: 3, right: 4, bottom: 3, left: 4 }
       },
       bodyStyles: {
         fontSize: 8.5,
-        cellPadding: { top: 2.5, right: 3, bottom: 2.5, left: 3 },
+        cellPadding: { top: 2.5, right: 4, bottom: 2.5, left: 4 },
         textColor: [60, 60, 60]
       },
       columnStyles: {
-        0: { cellWidth: 30 },
-        1: { cellWidth: 'auto', halign: 'right' },
-        2: { cellWidth: 40, halign: 'right' },
-        3: { cellWidth: 40, halign: 'right' }
+        0: { cellWidth: 30, halign: 'left' },
+        1: { halign: 'center' },
+        2: { halign: 'center' },
+        3: { halign: 'center' }
       },
       didParseCell: function(data) {
         if (data.section === 'body' && data.row.index % 2 === 1) {
