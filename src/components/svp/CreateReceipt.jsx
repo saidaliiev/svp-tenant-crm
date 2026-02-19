@@ -493,9 +493,9 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       <CardContent className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
         
         <Tabs value={mode} onValueChange={setMode} className="w-full">
-          <TabsList className="grid w-full grid-cols-2" data-tutorial="receipt-modes">
-            <TabsTrigger value="manual">Manual Mode</TabsTrigger>
-            <TabsTrigger value="automatic">Automatic Mode</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="manual" data-tour="manual-mode">Manual Mode</TabsTrigger>
+            <TabsTrigger value="automatic" data-tour="automatic-mode">Automatic Mode</TabsTrigger>
           </TabsList>
 
           <TabsContent value="manual" className="space-y-4 sm:space-y-6 mt-6">
@@ -513,7 +513,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
         )}
 
         {/* Client Selection — grid of tenant cards */}
-        <div className="space-y-2" data-tutorial="receipt-tenant-select">
+        <div className="space-y-2" data-tour="tenant-selector">
           <Label className="text-base font-semibold">Select Tenant</Label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {tenants.map(t => (
@@ -550,10 +550,10 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
 
         {/* Period Selection */}
         {selectedTenant && (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Period Start Date</Label>
+        <>
+         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" data-tour="period-dates">
+           <div className="space-y-2">
+             <Label>Period Start Date</Label>
                 <Input
                   type="date"
                   value={startDate}
@@ -573,7 +573,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
             </div>
 
             {/* Starting Debt and Credit */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" data-tour="starting-debt">
               <div className="space-y-2">
                 <Label>Starting Debt (Previous Balance)</Label>
                 <div className="flex gap-2 items-center">
@@ -617,12 +617,13 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
             </div>
 
             {/* Transactions */}
-            <div className="space-y-4" data-tutorial="receipt-transactions">
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label className="text-base font-semibold">Transactions</Label>
                 <Button
                   onClick={addTransaction}
                   size="sm"
+                  data-tour="add-transaction"
                   className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
                 >
                   <Plus className="w-4 h-4 mr-1" />
@@ -645,7 +646,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
             </div>
 
             {/* Notes */}
-            <div className="space-y-2">
+            <div className="space-y-2" data-tour="receipt-notes">
               <Label>Notes for Receipt</Label>
               <Textarea
                 value={notes}
@@ -656,7 +657,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
             </div>
 
             {/* Balance Preview */}
-            <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-gray-800/60 dark:to-gray-800/40 rounded-lg sm:rounded-xl p-4 sm:p-6 border dark:border-gray-700/50" data-tutorial="receipt-balance">
+            <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-gray-800/60 dark:to-gray-800/40 rounded-lg sm:rounded-xl p-4 sm:p-6 border dark:border-gray-700/50" data-tour="balance-preview">
               <div className="flex items-center gap-2 mb-3 sm:mb-4">
                 <Calculator className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" />
                 <h3 className="font-semibold text-base sm:text-lg dark:text-gray-100">Balance Preview</h3>
@@ -707,7 +708,6 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
                 onClick={handleGenerateReceipt}
                 size="lg"
                 disabled={isGenerating}
-                data-tutorial="receipt-generate"
                 className="w-full h-12 sm:h-14 text-base sm:text-lg bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500 hover:from-violet-600 hover:via-purple-600 hover:to-indigo-600 shadow-lg shadow-purple-200 transition-all duration-300 relative overflow-hidden"
               >
                 <AnimatePresence mode="wait">
