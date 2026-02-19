@@ -151,9 +151,9 @@ export default function AutomaticPaymentDetection({
   const unmatchedCount = activePayments.filter(p => !p.matchedTenant).length;
 
   return (
-    <Card className="bg-white/90 backdrop-blur-sm shadow-xl border-0">
-      <CardHeader className="border-b bg-gradient-to-r from-green-50 to-blue-50 p-4 sm:p-6">
-        <CardTitle className="text-lg sm:text-xl flex items-center gap-2">
+    <Card className="bg-white/90 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl dark:shadow-gray-950/20 border-0 dark:border dark:border-gray-700/50">
+      <CardHeader className="border-b dark:border-gray-700/50 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950/30 dark:to-blue-950/30 p-4 sm:p-6">
+        <CardTitle className="text-lg sm:text-xl dark:text-gray-100 flex items-center gap-2">
           <FileText className="w-5 h-5" />
           Automatic Payment Detection
         </CardTitle>
@@ -183,27 +183,27 @@ export default function AutomaticPaymentDetection({
           <div 
             onClick={() => !isLoading && fileInputRef.current?.click()}
             className={`border-2 border-dashed rounded-xl p-4 sm:p-8 text-center cursor-pointer transition-all ${
-              isLoading ? 'border-blue-300 bg-blue-50' : 'border-slate-300 hover:border-blue-400 hover:bg-slate-50'
+              isLoading ? 'border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-950/20' : 'border-slate-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-slate-50 dark:hover:bg-gray-800/50'
             }`}
           >
             {isLoading ? (
               <div className="space-y-2">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                <p className="text-sm text-slate-600">Parsing PDF statement...</p>
+                <p className="text-sm text-slate-600 dark:text-gray-400">Parsing PDF statement...</p>
               </div>
             ) : uploadedFile ? (
               <div className="space-y-2">
                 <FileText className="w-12 h-12 mx-auto text-green-600" />
-                <p className="font-medium text-slate-700">{uploadedFile.name}</p>
-                <p className="text-sm text-slate-500">
+                <p className="font-medium text-slate-700 dark:text-gray-200">{uploadedFile.name}</p>
+                <p className="text-sm text-slate-500 dark:text-gray-400">
                   {parsedPayments.length} payments detected
                 </p>
               </div>
             ) : (
               <div className="space-y-2">
                 <Upload className="w-12 h-12 mx-auto text-slate-400" />
-                <p className="font-medium text-slate-700">Click to upload PDF statement</p>
-                <p className="text-sm text-slate-500">Bank statement (monthly)</p>
+                <p className="font-medium text-slate-700 dark:text-gray-200">Click to upload PDF statement</p>
+                <p className="text-sm text-slate-500 dark:text-gray-400">Bank statement (monthly)</p>
               </div>
             )}
           </div>
@@ -233,10 +233,10 @@ export default function AutomaticPaymentDetection({
                 )}
               </div>
               <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowClearDialog(true)}
-                className="text-red-600 border-red-300 hover:bg-red-50"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowClearDialog(true)}
+              className="text-red-600 dark:text-red-400 border-red-300 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-950/30"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
                 Clear All
@@ -246,16 +246,16 @@ export default function AutomaticPaymentDetection({
             {/* Mobile: Card layout */}
             <div className="sm:hidden space-y-2">
               {parsedPayments.map((payment) => (
-                <div key={payment.id} className={`bg-white rounded-lg border p-3 ${payment.ignored ? 'opacity-50 bg-slate-50' : ''}`}>
+                <div key={payment.id} className={`bg-white dark:bg-gray-800/60 rounded-lg border dark:border-gray-700/50 p-3 ${payment.ignored ? 'opacity-50 bg-slate-50 dark:bg-gray-900/50' : ''}`}>
                   <div className="flex items-center justify-between mb-1.5">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-slate-500">{payment.date}</span>
+                      <span className="text-xs text-slate-500 dark:text-gray-400">{payment.date}</span>
                       <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${payment.type === 'RAS' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}>{payment.type}</span>
                       <div className={`w-1.5 h-1.5 rounded-full ${payment.confidence >= 85 ? 'bg-green-500' : payment.confidence >= 70 ? 'bg-yellow-500' : payment.confidence >= 50 ? 'bg-orange-500' : 'bg-red-500'}`} />
                     </div>
                     <span className="text-sm font-bold">€{payment.amount.toFixed(2)}</span>
                   </div>
-                  <p className="text-xs text-slate-500 truncate mb-2">{payment.description}</p>
+                  <p className="text-xs text-slate-500 dark:text-gray-500 truncate mb-2">{payment.description}</p>
                   <div className="flex items-center gap-2">
                     <Select value={payment.matchedTenant?.id || ''} onValueChange={(value) => updateMatch(payment.id, value)} disabled={payment.ignored}>
                       <SelectTrigger className="h-8 text-xs flex-1"><SelectValue placeholder="Match tenant..." /></SelectTrigger>
@@ -274,10 +274,10 @@ export default function AutomaticPaymentDetection({
               ))}
             </div>
             {/* Desktop: Table layout */}
-            <div className="hidden sm:block border rounded-lg overflow-hidden">
+            <div className="hidden sm:block border dark:border-gray-700/50 rounded-lg overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[800px]">
-                  <thead className="bg-slate-50 border-b">
+                  <thead className="bg-slate-50 dark:bg-gray-800/60 border-b dark:border-gray-700">
                     <tr>
                       <th className="text-left py-3 px-4 font-semibold text-sm">Date</th>
                       <th className="text-left py-3 px-4 font-semibold text-sm">Description</th>
@@ -290,7 +290,7 @@ export default function AutomaticPaymentDetection({
                   </thead>
                   <tbody>
                     {parsedPayments.map((payment) => (
-                      <tr key={payment.id} className={`border-b hover:bg-slate-50 transition-colors ${payment.ignored ? 'opacity-50 bg-slate-100' : ''}`}>
+                      <tr key={payment.id} className={`border-b dark:border-gray-700/50 hover:bg-slate-50 dark:hover:bg-gray-800/30 transition-colors ${payment.ignored ? 'opacity-50 bg-slate-100 dark:bg-gray-900/50' : ''}`}>
                         <td className="py-3 px-4 text-sm">{payment.date}</td>
                         <td className="py-3 px-4 text-sm max-w-xs truncate" title={payment.description}>{payment.description}</td>
                         <td className="py-3 px-4 text-sm text-right font-medium">€{payment.amount.toFixed(2)}</td>
@@ -328,20 +328,20 @@ export default function AutomaticPaymentDetection({
 
             {/* Summary Stats */}
             <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-4">
-              <div className="bg-blue-50 rounded-lg p-2.5 sm:p-4 border border-blue-200">
-                <p className="text-[10px] sm:text-sm text-slate-600">Total</p>
+              <div className="bg-blue-50 dark:bg-blue-950/20 rounded-lg p-2.5 sm:p-4 border border-blue-200 dark:border-blue-800/50">
+                <p className="text-[10px] sm:text-sm text-slate-600 dark:text-gray-400">Total</p>
                 <p className="text-base sm:text-2xl font-bold text-blue-600">
                   €{activePayments.reduce((sum, p) => sum + p.amount, 0).toFixed(2)}
                 </p>
               </div>
-              <div className="bg-green-50 rounded-lg p-2.5 sm:p-4 border border-green-200">
-                <p className="text-[10px] sm:text-sm text-slate-600">Matched</p>
+              <div className="bg-green-50 dark:bg-green-950/20 rounded-lg p-2.5 sm:p-4 border border-green-200 dark:border-green-800/50">
+                <p className="text-[10px] sm:text-sm text-slate-600 dark:text-gray-400">Matched</p>
                 <p className="text-base sm:text-2xl font-bold text-green-600">
                   {activePayments.filter(p => p.matchedTenant).length}
                 </p>
               </div>
-              <div className="bg-orange-50 rounded-lg p-2.5 sm:p-4 border border-orange-200">
-                <p className="text-[10px] sm:text-sm text-slate-600">Unmatched</p>
+              <div className="bg-orange-50 dark:bg-orange-950/20 rounded-lg p-2.5 sm:p-4 border border-orange-200 dark:border-orange-800/50">
+                <p className="text-[10px] sm:text-sm text-slate-600 dark:text-gray-400">Unmatched</p>
                 <p className="text-base sm:text-2xl font-bold text-orange-600">
                   {unmatchedCount}
                 </p>
@@ -349,9 +349,9 @@ export default function AutomaticPaymentDetection({
             </div>
 
             {/* Apply for Specific Tenant */}
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 space-y-3">
+            <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800/50 rounded-lg p-4 space-y-3">
               <Label className="text-base font-semibold">Apply Payments for Tenant</Label>
-              <p className="text-sm text-slate-600">Select a tenant to create a receipt with their matched payments.</p>
+              <p className="text-sm text-slate-600 dark:text-gray-400">Select a tenant to create a receipt with their matched payments.</p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Select value={selectedTenantForApply} onValueChange={setSelectedTenantForApply}>
                   <SelectTrigger className="flex-1">

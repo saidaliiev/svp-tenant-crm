@@ -57,18 +57,18 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
 
         <div className="space-y-6">
           {/* Header with Avatar */}
-          <div className="flex items-center gap-4 pb-6 border-b">
+          <div className="flex items-center gap-4 pb-6 border-b dark:border-gray-700">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
               {getInitials(tenant.fullName)}
             </div>
             <div className="flex-1">
-              <h2 className="text-2xl font-bold text-slate-800">{tenant.fullName}</h2>
-              <p className="text-slate-600 flex items-center gap-2 mt-1">
+              <h2 className="text-2xl font-bold text-slate-800 dark:text-gray-100">{tenant.fullName}</h2>
+              <p className="text-slate-600 dark:text-gray-400 flex items-center gap-2 mt-1">
                 <Home className="w-4 h-4" />
                 {tenant.address}
               </p>
               {tenant.phoneNumber && (
-                <p className="text-slate-600 flex items-center gap-2 mt-1">
+                <p className="text-slate-600 dark:text-gray-400 flex items-center gap-2 mt-1">
                   <Phone className="w-4 h-4" />
                   {tenant.phoneNumber}
                 </p>
@@ -81,7 +81,7 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Card>
               <CardHeader className="p-4 pb-2">
-                <CardTitle className="text-xs text-slate-600 flex items-center gap-1">
+                <CardTitle className="text-xs text-slate-600 dark:text-gray-400 flex items-center gap-1">
                   <CreditCard className="w-4 h-4" />
                   Total Paid
                 </CardTitle>
@@ -93,7 +93,7 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
 
             <Card>
               <CardHeader className="p-4 pb-2">
-                <CardTitle className="text-xs text-slate-600 flex items-center gap-1">
+                <CardTitle className="text-xs text-slate-600 dark:text-gray-400 flex items-center gap-1">
                   <TrendingDown className="w-4 h-4" />
                   Current Debt
                 </CardTitle>
@@ -107,7 +107,7 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
 
             <Card>
               <CardHeader className="p-4 pb-2">
-                <CardTitle className="text-xs text-slate-600 flex items-center gap-1">
+                <CardTitle className="text-xs text-slate-600 dark:text-gray-400 flex items-center gap-1">
                   <TrendingUp className="w-4 h-4" />
                   Credit
                 </CardTitle>
@@ -121,7 +121,7 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
 
             <Card>
               <CardHeader className="p-4 pb-2">
-                <CardTitle className="text-xs text-slate-600 flex items-center gap-1">
+                <CardTitle className="text-xs text-slate-600 dark:text-gray-400 flex items-center gap-1">
                   <FileText className="w-4 h-4" />
                   Receipts
                 </CardTitle>
@@ -140,20 +140,20 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
             <CardContent className="space-y-3">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-slate-600">Weekly Rent</p>
-                  <p className="text-lg font-semibold">{formatCurrency(tenant.monthlyRent || 0)}</p>
+                  <p className="text-sm text-slate-600 dark:text-gray-400">Weekly Rent</p>
+                  <p className="text-lg font-semibold dark:text-gray-100">{formatCurrency(tenant.monthlyRent || 0)}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-slate-600">Weekly Tenant Payment</p>
-                  <p className="text-lg font-semibold">{formatCurrency(tenant.weeklyTenantPayment || 0)}</p>
+                  <p className="text-sm text-slate-600 dark:text-gray-400">Weekly Tenant Payment</p>
+                  <p className="text-lg font-semibold dark:text-gray-100">{formatCurrency(tenant.weeklyTenantPayment || 0)}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-slate-600">Weekly RAS</p>
-                  <p className="text-lg font-semibold">{formatCurrency(tenant.weeklyRasAmount || 0)}</p>
+                  <p className="text-sm text-slate-600 dark:text-gray-400">Weekly RAS</p>
+                  <p className="text-lg font-semibold dark:text-gray-100">{formatCurrency(tenant.weeklyRasAmount || 0)}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-slate-600">Move-in Date</p>
-                  <p className="text-lg font-semibold">{tenant.moveInDate ? formatDate(tenant.moveInDate) : 'N/A'}</p>
+                  <p className="text-sm text-slate-600 dark:text-gray-400">Move-in Date</p>
+                  <p className="text-lg font-semibold dark:text-gray-100">{tenant.moveInDate ? formatDate(tenant.moveInDate) : 'N/A'}</p>
                 </div>
               </div>
             </CardContent>
@@ -169,23 +169,23 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
             </CardHeader>
             <CardContent>
               {tenantStatements.length === 0 ? (
-                <p className="text-slate-500 text-center py-8">No payment history yet</p>
+                <p className="text-slate-500 dark:text-gray-500 text-center py-8">No payment history yet</p>
               ) : (
                 <div className="space-y-4">
                   {tenantStatements.map((statement, stmtIndex) => (
-                    <div key={statement.id} className={`rounded-lg border ${stmtIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50'}`}>
+                    <div key={statement.id} className={`rounded-lg border dark:border-gray-700 ${stmtIndex % 2 === 0 ? 'bg-white dark:bg-gray-800/40' : 'bg-slate-50 dark:bg-gray-800/60'}`}>
                       {/* Statement Header */}
-                      <div className="p-3 border-b bg-slate-100">
+                      <div className="p-3 border-b dark:border-gray-700 bg-slate-100 dark:bg-gray-800">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="font-semibold text-slate-800">
+                            <p className="font-semibold text-slate-800 dark:text-gray-200">
                               {formatDate(statement.startDate)} - {formatDate(statement.endDate)}
                             </p>
-                            <p className="text-xs text-slate-600">
+                            <p className="text-xs text-slate-600 dark:text-gray-400">
                               Receipt: {statement.receiptId}
                             </p>
                           </div>
-                          <p className="text-xs text-slate-500">
+                          <p className="text-xs text-slate-500 dark:text-gray-500">
                             {formatDate(statement.createdDate)}
                           </p>
                         </div>
@@ -200,11 +200,11 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
                               .map((transaction, txIndex) => (
                                 <div 
                                   key={txIndex} 
-                                  className="flex items-center justify-between py-2 px-3 text-sm hover:bg-slate-50 rounded"
+                                  className="flex items-center justify-between py-2 px-3 text-sm hover:bg-slate-50 dark:hover:bg-gray-700/30 rounded"
                                 >
                                   <div className="flex items-center gap-2">
                                     <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                                    <span className="text-slate-700">
+                                    <span className="text-slate-700 dark:text-gray-300">
                                       {formatDate(transaction.date)}
                                     </span>
                                   </div>
@@ -215,15 +215,15 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
                               ))}
                             
                             {/* Monthly Total */}
-                            <div className="flex items-center justify-between py-2 px-3 mt-2 border-t bg-green-50 rounded font-semibold">
-                              <span className="text-slate-800">Total for Month:</span>
+                            <div className="flex items-center justify-between py-2 px-3 mt-2 border-t dark:border-gray-700 bg-green-50 dark:bg-green-950/20 rounded font-semibold">
+                              <span className="text-slate-800 dark:text-gray-200">Total for Month:</span>
                               <span className="text-green-600">
                                 {formatCurrency(statement.totalTenantPayments || 0)}
                               </span>
                             </div>
                           </div>
                         ) : (
-                          <div className="text-center py-4 text-sm text-slate-500">
+                          <div className="text-center py-4 text-sm text-slate-500 dark:text-gray-500">
                             No weekly transactions recorded
                           </div>
                         )}
@@ -242,7 +242,7 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
                 <CardTitle className="text-lg">Notes</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-700 whitespace-pre-wrap">{tenant.notes}</p>
+                <p className="text-slate-700 dark:text-gray-300 whitespace-pre-wrap">{tenant.notes}</p>
               </CardContent>
             </Card>
           )}
