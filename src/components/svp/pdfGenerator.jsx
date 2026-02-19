@@ -142,11 +142,10 @@ export function generateReceiptPDF(receiptData, settings) {
         textColor: [60, 60, 60]
       },
       columnStyles: {
-        0: { cellWidth: 25 },
-        1: { cellWidth: 'auto' },
-        2: { cellWidth: 30, halign: 'right' },
-        3: { cellWidth: 30, halign: 'right' },
-        4: { cellWidth: 30, halign: 'right' }
+        0: { cellWidth: 30 },
+        1: { cellWidth: 'auto', halign: 'right' },
+        2: { cellWidth: 40, halign: 'right' },
+        3: { cellWidth: 40, halign: 'right' }
       },
       didParseCell: function(data) {
         if (data.section === 'body' && data.row.index % 2 === 1) {
