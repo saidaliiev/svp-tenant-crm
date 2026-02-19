@@ -46,7 +46,7 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-      {activeTab && <TutorialGuide activeTab={activeTab} />}
+      {activeTab && !showPortfolio && <TutorialGuide activeTab={activeTab} />}
       <div className="flex-1 pb-safe">
         <div className="pb-20 sm:pb-0">
           {children}
