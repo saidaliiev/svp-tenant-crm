@@ -156,19 +156,28 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
   }, [currentStep, isOpen, currentTourStep]);
 
   const handleNext = () => {
-    if (currentStep < tourSteps.length - 1) {
+    if (currentPage === 'Home' && showTabsTour && currentStep === tourSteps.length - 1) {
+      // Switch to detailed tab tour
+      setShowTabsTour(false);
+      setCurrentStep(0);
+    } else if (currentStep < tourSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
 
   const handlePrev = () => {
-    if (currentStep > 0) {
+    if (currentPage === 'Home' && !showTabsTour && currentStep === 0) {
+      // Go back to tabs overview
+      setShowTabsTour(true);
+      setCurrentStep(2); // Back to last tab overview
+    } else if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
 
   const handleClose = () => {
     setCurrentStep(0);
+    setShowTabsTour(true);
     onClose();
   };
 
