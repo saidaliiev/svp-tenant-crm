@@ -12,7 +12,6 @@ import { Toaster, toast } from 'sonner';
 export default function Layout({ children, currentPageName }) {
   const [showPortfolio, setShowPortfolio] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
-  const [showClippy, setShowClippy] = useState(false);
   const location = useLocation();
   const controls = useAnimation();
 
