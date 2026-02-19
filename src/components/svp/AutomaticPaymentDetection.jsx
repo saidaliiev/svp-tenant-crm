@@ -219,7 +219,7 @@ export default function AutomaticPaymentDetection({
 
         {/* Payments Table */}
         {parsedPayments.length > 0 && (
-          <div className="space-y-4">
+          <div className="space-y-4" data-tour="auto-payments">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold">
