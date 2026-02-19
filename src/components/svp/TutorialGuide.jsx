@@ -352,10 +352,10 @@ export default function TutorialGuide({ activeTab }) {
             <motion.div
               ref={tooltipRef}
               key={currentStep}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: isMobile ? 20 : 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              className="absolute bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col"
+              exit={{ opacity: 0, y: isMobile ? 20 : 10 }}
+              className={`bg-white dark:bg-gray-800 shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col ${isMobile ? 'rounded-2xl' : 'rounded-xl'}`}
               style={{ ...tooltipStyle, zIndex: 9999, pointerEvents: 'auto', overflow: 'hidden' }}
               onClick={(e) => e.stopPropagation()}
             >
