@@ -522,7 +522,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
 
         {/* Tenant Info Display */}
         {selectedTenant && (
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 border border-blue-100">
+            <div ref={tenantInfoRef} className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 border border-blue-100">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
                 <User className="w-5 h-5 text-blue-600" />
