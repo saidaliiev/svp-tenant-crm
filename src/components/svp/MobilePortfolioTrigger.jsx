@@ -1,113 +1,41 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronUp } from 'lucide-react';
+import React from 'react';
+import { motion, useAnimationControls } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
 
-/**
- * Mobile-only: sits below the bottom nav.
- * When user overscrolls down (pulls up past the end), 
- * a hidden "developer" section peeks out. Keep pulling → opens portfolio.
- */
+const HeartSVG = ({ className }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+  </svg>
+);
+
 export default function MobilePortfolioTrigger({ onReveal }) {
-  const [pullProgress, setPullProgress] = useState(0);
-  const [isTriggered, setIsTriggered] = useState(false);
-  const touchStartY = useRef(null);
-  const atBottom = useRef(false);
-  const THRESHOLD = 100;
+  const heartControls = useAnimationControls();
 
-  const isAtBottom = useCallback(() => {
-    const scrollTop = window.scrollY || document.documentElement.scrollTop;
-    const scrollHeight = document.documentElement.scrollHeight;
-    const clientHeight = window.innerHeight;
-    return scrollTop + clientHeight >= scrollHeight - 5;
-  }, []);
+  const handleTap = () => {
+    heartControls.start({
+      scale: [1, 1.4, 1],
+      transition: { duration: 0.3 }
+    });
+    setTimeout(() => onReveal(), 150);
+  };
 
-  const handleTouchStart = useCallback((e) => {
-    if (isAtBottom()) {
-      atBottom.current = true;
-      touchStartY.current = e.touches[0].clientY;
-    } else {
-      atBottom.current = false;
-      touchStartY.current = null;
-    }
-  }, [isAtBottom]);
-
-  const handleTouchMove = useCallback((e) => {
-    if (!atBottom.current || touchStartY.current === null) return;
-    const deltaY = touchStartY.current - e.touches[0].clientY;
-    if (deltaY > 0) {
-      setPullProgress(Math.min(deltaY / THRESHOLD, 1));
-    } else {
-      setPullProgress(0);
-    }
-  }, []);
-
-  const handleTouchEnd = useCallback(() => {
-    if (pullProgress >= 1) {
-      setIsTriggered(true);
-      setTimeout(() => {
-        onReveal();
-        setIsTriggered(false);
-        setPullProgress(0);
-      }, 200);
-    } else {
-      setPullProgress(0);
-    }
-    touchStartY.current = null;
-    atBottom.current = false;
-  }, [pullProgress, onReveal]);
-
-  useEffect(() => {
-    window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    window.addEventListener('touchmove', handleTouchMove, { passive: true });
-    window.addEventListener('touchend', handleTouchEnd, { passive: true });
-    return () => {
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, [handleTouchStart, handleTouchMove, handleTouchEnd]);
-
-  // Only show on mobile
   return (
-    <div className="sm:hidden">
-      {/* Peek section that appears when overscrolling */}
-      <AnimatePresence>
-        {pullProgress > 0 && (
-          <motion.div
-            className="fixed bottom-0 left-0 right-0 z-[60] flex flex-col items-center justify-end pb-20"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{ pointerEvents: 'none' }}
-          >
-            <motion.div 
-              className="bg-gradient-to-t from-slate-900/95 to-slate-900/0 absolute inset-0"
-              style={{ opacity: pullProgress * 0.6 }}
-            />
-            <div className="relative z-10 flex flex-col items-center gap-2 pb-2">
-              <motion.div
-                animate={{ y: [0, -3, 0] }}
-                transition={{ duration: 1, repeat: Infinity }}
-              >
-                <ChevronUp className="w-5 h-5 text-white/60" />
-              </motion.div>
-              <p className="text-white/70 text-xs font-medium">
-                {pullProgress >= 1 ? '✨ Release to reveal' : 'Meet the developer'}
-              </p>
-              <p className="text-white/40 text-[10px]">
-                Developed with ❤️ by Iskan
-              </p>
-              {/* Progress indicator */}
-              <div className="w-16 h-0.5 rounded-full bg-white/10 overflow-hidden mt-1">
-                <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-blue-400 to-purple-500"
-                  style={{ width: `${pullProgress * 100}%` }}
-                />
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+    <div className="sm:hidden flex justify-center py-2 pb-1">
+      <button
+        onClick={handleTap}
+        className="inline-flex items-center gap-1 text-[10px] text-gray-400 dark:text-gray-500 active:opacity-60 transition-opacity"
+        aria-label="View developer portfolio"
+      >
+        <span>Developed with</span>
+        <motion.span animate={heartControls} className="inline-block text-red-500">
+          <HeartSVG className="w-2.5 h-2.5" />
+        </motion.span>
+        <span>by</span>
+        <span className="font-medium text-gray-500 dark:text-gray-400 underline underline-offset-2 decoration-gray-300 dark:decoration-gray-600">
+          Iskan
+        </span>
+        <ArrowRight className="w-2.5 h-2.5" />
+      </button>
     </div>
   );
 }
