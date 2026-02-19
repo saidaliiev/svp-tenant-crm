@@ -387,7 +387,7 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
         ) : (
           <>
             {/* Mobile: Card layout */}
-            <div className="sm:hidden space-y-2.5">
+            <div className="sm:hidden space-y-2.5" data-tour="tenant-table">
               {tenants.map((tenant, index) => (
                 <TenantCardMobile
                   key={tenant.id}
