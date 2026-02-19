@@ -1,12 +1,14 @@
 import React, { useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, ArrowDown, Github, Linkedin, Mail, Globe, Code2, Sparkles, X } from 'lucide-react';
+import { ExternalLink, ArrowDown, Github, Linkedin, Mail, Globe, Code2, Sparkles, X, Phone, Facebook } from 'lucide-react';
 
 const SOCIAL_LINKS = [
   { name: 'LinkedIn', url: 'https://www.linkedin.com/in/saidaliiev/', icon: Linkedin, color: 'from-blue-500 to-blue-700' },
   { name: 'GitHub', url: 'https://github.com/saidaliiev', icon: Github, color: 'from-gray-600 to-gray-800' },
   { name: 'Fiverr', url: 'https://www.fiverr.com/iskan_dev', icon: Globe, color: 'from-green-500 to-green-700' },
   { name: 'Upwork', url: 'https://www.upwork.com/freelancers/saidaliiev', icon: ExternalLink, color: 'from-emerald-500 to-teal-700' },
+  { name: 'Facebook', url: 'https://www.facebook.com/share/1BqfXYwJLC/', icon: Facebook, color: 'from-blue-600 to-blue-800' },
+  { name: 'WhatsApp', url: 'https://api.whatsapp.com/send?phone=15189545476', icon: Phone, color: 'from-green-400 to-green-600' },
   { name: 'Linktree', url: 'https://linktr.ee/saidaliiev', icon: Sparkles, color: 'from-purple-500 to-pink-600' },
 ];
 
@@ -32,7 +34,6 @@ export default function DevPortfolio({ isOpen, onClose }) {
   const scrollRef = useRef(null);
   const scrollPosRef = useRef(0);
 
-  // Save/restore scroll position & lock body
   useEffect(() => {
     if (isOpen) {
       scrollPosRef.current = window.scrollY;
@@ -44,7 +45,6 @@ export default function DevPortfolio({ isOpen, onClose }) {
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  // Escape key closes
   useEffect(() => {
     if (!isOpen) return;
     const handleKey = (e) => { if (e.key === 'Escape') onClose(); };
@@ -74,7 +74,7 @@ export default function DevPortfolio({ isOpen, onClose }) {
           initial={{ y: '100%' }}
           animate={{ y: 0 }}
           exit={{ y: '100%' }}
-          transition={{ duration: 0.45, ease: [0.32, 0.72, 0, 1] }}
+          transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
         >
           {/* Background */}
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-950 to-purple-950 overflow-hidden">
@@ -107,7 +107,6 @@ export default function DevPortfolio({ isOpen, onClose }) {
                 onClick={onClose}
                 whileHover={{ scaleX: 1.5 }}
               />
-              {/* Mobile: swipe down hint */}
               <button
                 onClick={onClose}
                 className="md:hidden flex items-center gap-1.5 text-white/40 hover:text-white/70 text-[11px] transition-colors"
@@ -115,7 +114,6 @@ export default function DevPortfolio({ isOpen, onClose }) {
                 <ArrowDown className="w-3 h-3" />
                 <span>Swipe down to close</span>
               </button>
-              {/* Desktop: X button */}
               <button
                 onClick={onClose}
                 className="hidden md:flex items-center gap-1.5 text-white/40 hover:text-white/70 text-xs transition-colors"
@@ -156,7 +154,7 @@ export default function DevPortfolio({ isOpen, onClose }) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
                 >
-                  Iskan
+                  Iskander Saidaliiev
                 </motion.h1>
                 <motion.p
                   className="text-blue-300/60 text-sm"
@@ -248,11 +246,11 @@ export default function DevPortfolio({ isOpen, onClose }) {
               >
                 <h2 className="text-[10px] font-semibold text-white/25 uppercase tracking-widest mb-3">Get in Touch</h2>
                 <a
-                  href="mailto:saidaliiev.iskandar@gmail.com"
+                  href="mailto:saidaliiev@hotmail.com"
                   className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-medium hover:from-blue-600 hover:to-purple-600 transition-all shadow-lg shadow-blue-500/20 min-h-[44px]"
                 >
                   <Mail className="w-3.5 h-3.5" />
-                  saidaliiev.iskandar@gmail.com
+                  saidaliiev@hotmail.com
                 </a>
               </motion.div>
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import TutorialGuide from '@/components/svp/TutorialGuide';
 import SecretFooter from '@/components/svp/SecretFooter';
 import DevPortfolio from '@/components/svp/DevPortfolio';
-import MatrixRain from '@/components/svp/MatrixRain';
+import MobilePortfolioTrigger from '@/components/svp/MobilePortfolioTrigger';
 
 function useActiveTab(pageName) {
   const [tab, setTab] = useState(() => {
@@ -16,7 +16,6 @@ function useActiveTab(pageName) {
     if (pageName !== 'Home') { setTab(null); return; }
     const update = () => setTab(new URLSearchParams(window.location.search).get('tab') || 'tenants');
     update();
-    // Listen for pushState/replaceState and popstate
     const origPush = history.pushState;
     const origReplace = history.replaceState;
     history.pushState = function() { origPush.apply(this, arguments); update(); };
@@ -35,26 +34,13 @@ function useActiveTab(pageName) {
 export default function Layout({ children, currentPageName }) {
   const activeTab = useActiveTab(currentPageName);
   const [showPortfolio, setShowPortfolio] = useState(false);
-  const [matrixActive, setMatrixActive] = useState(false);
-  const [matrixClosing, setMatrixClosing] = useState(false);
 
   const handleReveal = useCallback(() => {
-    if (matrixActive || showPortfolio) return;
-    setMatrixClosing(false);
-    setMatrixActive(true);
-  }, [matrixActive, showPortfolio]);
+    if (showPortfolio) return;
+    setShowPortfolio(true);
+  }, [showPortfolio]);
 
-  const handleMatrixComplete = useCallback(() => {
-    setMatrixActive(false);
-    if (matrixClosing) {
-      setShowPortfolio(false);
-      setMatrixClosing(false);
-    } else {
-      setShowPortfolio(true);
-    }
-  }, [matrixClosing]);
-
-  const handleClosePortfolio = useCallback(() => {
+  const handleClose = useCallback(() => {
     setShowPortfolio(false);
   }, []);
 
@@ -67,8 +53,8 @@ export default function Layout({ children, currentPageName }) {
         </div>
       </div>
       <SecretFooter onReveal={handleReveal} />
-      <MatrixRain isActive={matrixActive} isClosing={matrixClosing} onComplete={handleMatrixComplete} />
-      <DevPortfolio isOpen={showPortfolio} onClose={handleClosePortfolio} />
+      <MobilePortfolioTrigger onReveal={handleReveal} />
+      <DevPortfolio isOpen={showPortfolio} onClose={handleClose} />
     </div>
   );
 }
