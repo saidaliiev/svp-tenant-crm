@@ -5,10 +5,12 @@ import MobilePortfolioTrigger from '@/components/svp/MobilePortfolioTrigger';
 import InteractiveTour from '@/components/svp/InteractiveTour';
 import { base44 } from '@/api/base44Client';
 import { HelpCircle } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 export default function Layout({ children, currentPageName }) {
   const [showPortfolio, setShowPortfolio] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
+  const location = useLocation();
 
   // Load user font size pref on mount
   useEffect(() => {
