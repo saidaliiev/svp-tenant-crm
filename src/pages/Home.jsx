@@ -35,7 +35,9 @@ export default function HomePage() {
 
   const handleTabChange = (newTab) => {
     setActiveTab(newTab);
-    setSearchParams({ tab: newTab });
+    const params = { tab: newTab };
+    // Preserve other params if needed, but for now just set tab
+    setSearchParams(params);
   };
 
   // Fetch tenants from cloud
