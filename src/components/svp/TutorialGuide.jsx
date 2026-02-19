@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -44,6 +44,9 @@ const TUTORIALS = {
 };
 
 const SESSION_KEY = 'svp_tutorial_shown_tabs';
+const TOOLTIP_W = 340;
+const PAD = 12;
+const GAP = 16;
 
 export default function TutorialGuide({ activeTab }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -51,17 +54,20 @@ export default function TutorialGuide({ activeTab }) {
   const [shouldBlink, setShouldBlink] = useState(false);
   const [highlightRect, setHighlightRect] = useState(null);
   const [elementFound, setElementFound] = useState(true);
-  const tooltipRef = useRef(null);
+  const overlayRef = useRef(null);
 
   const tutorial = TUTORIALS[activeTab] || TUTORIALS.tenants;
+  const totalSteps = tutorial.steps.length;
   const currentStepData = tutorial.steps[currentStep];
 
+  // Reset on tab change
   useEffect(() => {
     setIsOpen(false);
     setCurrentStep(0);
     setHighlightRect(null);
   }, [activeTab]);
 
+  // Blink logic
   useEffect(() => {
     const shownTabs = JSON.parse(sessionStorage.getItem(SESSION_KEY) || '[]');
     if (!shownTabs.includes(activeTab)) {
@@ -81,24 +87,26 @@ export default function TutorialGuide({ activeTab }) {
     setShouldBlink(false);
   }, [activeTab]);
 
-  const scrollToElement = useCallback((el) => {
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const vH = window.innerHeight;
-    if (rect.top < 100 || rect.bottom > vH - 200) {
-      const y = window.scrollY + rect.top - vH * 0.3;
-      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
-    }
-  }, []);
-
-  const updateHighlight = useCallback(() => {
+  // Measure target element
+  const measureTarget = useCallback(() => {
     if (!isOpen) { setHighlightRect(null); return; }
     const step = tutorial.steps[currentStep];
     if (!step?.target) { setHighlightRect(null); setElementFound(false); return; }
     const el = document.querySelector(step.target);
     if (el) {
       const r = el.getBoundingClientRect();
-      setHighlightRect({ top: r.top - 6, left: r.left - 6, width: r.width + 12, height: r.height + 12 });
+      setHighlightRect({
+        top: r.top - 8,
+        left: r.left - 8,
+        width: r.width + 16,
+        height: r.height + 16,
+        // raw element center for positioning
+        elCenterY: r.top + r.height / 2,
+        elRight: r.right,
+        elLeft: r.left,
+        elTop: r.top,
+        elBottom: r.bottom,
+      });
       setElementFound(true);
     } else {
       setHighlightRect(null);
@@ -106,72 +114,104 @@ export default function TutorialGuide({ activeTab }) {
     }
   }, [isOpen, currentStep, tutorial]);
 
+  // Scroll target into view + measure
   useEffect(() => {
     if (!isOpen) return;
     const step = tutorial.steps[currentStep];
-    if (!step?.target) { updateHighlight(); return; }
+    if (!step?.target) { measureTarget(); return; }
     const el = document.querySelector(step.target);
-    if (el) scrollToElement(el);
-    updateHighlight();
-    const t1 = setTimeout(updateHighlight, 350);
-    const t2 = setTimeout(updateHighlight, 700);
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      const vH = window.innerHeight;
+      if (rect.top < 80 || rect.bottom > vH - 120) {
+        const y = window.scrollY + rect.top - vH * 0.35;
+        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+      }
+    }
+    measureTarget();
+    const t1 = setTimeout(measureTarget, 300);
+    const t2 = setTimeout(measureTarget, 600);
     return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, [isOpen, currentStep, tutorial, scrollToElement, updateHighlight]);
+  }, [isOpen, currentStep, tutorial, measureTarget]);
 
+  // Re-measure on scroll/resize
   useEffect(() => {
     if (!isOpen) return;
-    const handler = () => updateHighlight();
+    const handler = () => measureTarget();
     window.addEventListener('scroll', handler, { passive: true });
     window.addEventListener('resize', handler, { passive: true });
     return () => { window.removeEventListener('scroll', handler); window.removeEventListener('resize', handler); };
-  }, [isOpen, updateHighlight]);
+  }, [isOpen, measureTarget]);
 
   const handleOpen = () => { setIsOpen(true); setCurrentStep(0); markTabShown(); };
   const handleClose = () => { setIsOpen(false); setCurrentStep(0); setHighlightRect(null); };
-  const nextStep = (e) => { e.stopPropagation(); if (currentStep < tutorial.steps.length - 1) setCurrentStep(s => s + 1); else handleClose(); };
+  const nextStep = (e) => { e.stopPropagation(); if (currentStep < totalSteps - 1) setCurrentStep(s => s + 1); else handleClose(); };
   const prevStep = (e) => { e.stopPropagation(); if (currentStep > 0) setCurrentStep(s => s - 1); };
 
-  const getTooltipPosition = () => {
+  // Compute tooltip style — tries: right of element, left, below, above, then center
+  const tooltipStyle = useMemo(() => {
     const vW = window.innerWidth;
     const vH = window.innerHeight;
+    const isMobile = vW < 640;
 
-    if (vW < 640) {
-      return { position: 'fixed', bottom: 72, left: 8, right: 8, width: 'auto', maxHeight: '45vh' };
+    // Mobile: bottom panel
+    if (isMobile) {
+      return { position: 'fixed', bottom: 16, left: 12, right: 12, maxHeight: '50vh' };
     }
 
-    const tooltipW = Math.min(380, vW - 24);
+    const tw = Math.min(TOOLTIP_W, vW - PAD * 2);
 
+    // No element found — center
     if (!highlightRect || !elementFound) {
-      return { position: 'fixed', top: 80, left: (vW - tooltipW) / 2, width: tooltipW, maxHeight: vH - 160 };
+      return { position: 'fixed', top: 100, left: (vW - tw) / 2, width: tw };
     }
 
-    let left = highlightRect.left;
-    if (left + tooltipW > vW - 12) left = vW - tooltipW - 12;
-    if (left < 12) left = 12;
+    const hlCenterY = highlightRect.top + highlightRect.height / 2;
+    const estimatedTooltipH = 220;
 
-    const gap = 14;
-    const hlBottom = highlightRect.top + highlightRect.height;
-    const spaceBelow = vH - hlBottom - gap;
-    const spaceAbove = highlightRect.top - gap;
-
-    if (spaceBelow >= 150) {
-      return { position: 'fixed', top: hlBottom + gap, left, width: tooltipW, maxHeight: Math.min(spaceBelow, 380) };
+    // Try RIGHT of element
+    const rightX = highlightRect.left + highlightRect.width + GAP;
+    if (rightX + tw + PAD <= vW) {
+      let topY = hlCenterY - estimatedTooltipH / 2;
+      topY = Math.max(PAD, Math.min(topY, vH - estimatedTooltipH - PAD));
+      return { position: 'fixed', top: topY, left: rightX, width: tw };
     }
-    if (spaceAbove >= 150) {
-      const h = Math.min(spaceAbove, 380);
-      return { position: 'fixed', top: highlightRect.top - gap - h, left, width: tooltipW, maxHeight: h };
-    }
-    return { position: 'fixed', top: 12, left, width: tooltipW, maxHeight: vH - 24 };
-  };
 
-  const tooltipPos = isOpen ? getTooltipPosition() : {};
+    // Try LEFT of element
+    const leftX = highlightRect.left - GAP - tw;
+    if (leftX >= PAD) {
+      let topY = hlCenterY - estimatedTooltipH / 2;
+      topY = Math.max(PAD, Math.min(topY, vH - estimatedTooltipH - PAD));
+      return { position: 'fixed', top: topY, left: leftX, width: tw };
+    }
+
+    // Try BELOW element
+    const belowY = highlightRect.top + highlightRect.height + GAP;
+    if (belowY + estimatedTooltipH + PAD <= vH) {
+      let leftPos = highlightRect.left;
+      leftPos = Math.max(PAD, Math.min(leftPos, vW - tw - PAD));
+      return { position: 'fixed', top: belowY, left: leftPos, width: tw };
+    }
+
+    // Try ABOVE element
+    const aboveY = highlightRect.top - GAP - estimatedTooltipH;
+    if (aboveY >= PAD) {
+      let leftPos = highlightRect.left;
+      leftPos = Math.max(PAD, Math.min(leftPos, vW - tw - PAD));
+      return { position: 'fixed', top: aboveY, left: leftPos, width: tw };
+    }
+
+    // Fallback: center of screen
+    return { position: 'fixed', top: (vH - estimatedTooltipH) / 2, left: (vW - tw) / 2, width: tw };
+  }, [highlightRect, elementFound]);
 
   return (
     <>
+      {/* Trigger button */}
       {!isOpen && (
         <motion.button
           onClick={handleOpen}
-          className="fixed top-3 right-3 z-[9999] sm:top-[18px] sm:right-5 flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 rounded-full border-2 border-blue-500/60 bg-white/90 dark:bg-gray-800/90 text-blue-600 dark:text-blue-400 shadow-md hover:shadow-lg hover:border-blue-500 backdrop-blur-sm"
+          className="fixed top-3 right-3 z-[9999] sm:top-[18px] sm:right-5 flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 rounded-full border-2 border-blue-500/60 bg-white/95 dark:bg-gray-900/95 text-blue-600 dark:text-blue-400 shadow-lg hover:shadow-xl hover:border-blue-500 backdrop-blur-sm transition-shadow"
           animate={{ opacity: shouldBlink ? [1, 0.15, 1, 0.15, 1, 1, 1, 1] : 1 }}
           transition={{ opacity: shouldBlink ? { duration: 2, repeat: Infinity, ease: "linear" } : { duration: 0.4 } }}
           whileHover={{ scale: 1.1 }}
@@ -182,82 +222,155 @@ export default function TutorialGuide({ activeTab }) {
         </motion.button>
       )}
 
+      {/* Tutorial overlay */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[9998]">
+          <motion.div
+            ref={overlayRef}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[9998]"
+          >
+            {/* SVG mask overlay */}
             <svg className="absolute inset-0 w-full h-full" style={{ pointerEvents: 'none' }}>
               <defs>
-                <mask id="tut-mask">
+                <mask id="tut-cutout">
                   <rect x="0" y="0" width="100%" height="100%" fill="white" />
-                  {highlightRect && (
-                    <rect x={highlightRect.left} y={highlightRect.top} width={highlightRect.width} height={highlightRect.height} rx="8" fill="black" />
+                  {highlightRect && elementFound && (
+                    <rect
+                      x={highlightRect.left}
+                      y={highlightRect.top}
+                      width={highlightRect.width}
+                      height={highlightRect.height}
+                      rx="10"
+                      fill="black"
+                    />
                   )}
                 </mask>
               </defs>
-              <rect x="0" y="0" width="100%" height="100%" fill="rgba(0,0,0,0.45)" mask="url(#tut-mask)" />
+              <rect
+                x="0" y="0" width="100%" height="100%"
+                fill="rgba(0,0,0,0.5)"
+                mask="url(#tut-cutout)"
+              />
             </svg>
 
+            {/* Highlight border */}
             {highlightRect && elementFound && (
               <motion.div
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                className="fixed rounded-lg border-2 border-blue-400 shadow-[0_0_0_4px_rgba(59,130,246,0.15)]"
-                style={{ top: highlightRect.top, left: highlightRect.left, width: highlightRect.width, height: highlightRect.height, pointerEvents: 'none' }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="fixed rounded-[10px] ring-2 ring-blue-400 ring-offset-2 ring-offset-transparent"
+                style={{
+                  top: highlightRect.top,
+                  left: highlightRect.left,
+                  width: highlightRect.width,
+                  height: highlightRect.height,
+                  pointerEvents: 'none',
+                  boxShadow: '0 0 0 4px rgba(59,130,246,0.2), 0 0 20px rgba(59,130,246,0.15)',
+                }}
               />
             )}
 
+            {/* Click to close */}
             <div className="absolute inset-0" onClick={handleClose} />
 
+            {/* Tooltip card */}
             <motion.div
-              ref={tooltipRef}
               key={`${activeTab}-${currentStep}`}
-              initial={{ opacity: 0, y: 10, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.96 }}
-              transition={{ duration: 0.2 }}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden"
-              style={{ ...tooltipPos, zIndex: 9999, pointerEvents: 'auto' }}
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.92 }}
+              transition={{ duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="rounded-2xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-md border"
+              style={{
+                ...tooltipStyle,
+                zIndex: 9999,
+                pointerEvents: 'auto',
+                background: 'var(--tutorial-bg, rgba(255,255,255,0.97))',
+                borderColor: 'var(--tutorial-border, rgba(226,232,240,0.8))',
+              }}
               onClick={e => e.stopPropagation()}
             >
-              <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-4 py-2.5 flex items-center justify-between shrink-0">
+              <style>{`
+                .dark { --tutorial-bg: rgba(30,34,44,0.97); --tutorial-border: rgba(55,65,81,0.7); }
+                :root { --tutorial-bg: rgba(255,255,255,0.97); --tutorial-border: rgba(226,232,240,0.8); }
+              `}</style>
+
+              {/* Header */}
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 px-4 py-3 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
                   <GraduationCap className="w-4 h-4 text-white/80" />
-                  <span className="text-white text-sm font-medium">{tutorial.title}</span>
-                  <span className="text-white/50 text-xs ml-1">({currentStep + 1}/{tutorial.steps.length})</span>
+                  <span className="text-white text-sm font-semibold">{tutorial.title}</span>
+                  <span className="text-white/40 text-xs ml-1">{currentStep + 1}/{totalSteps}</span>
                 </div>
-                <button onClick={handleClose} className="text-white/60 hover:text-white p-1 -mr-1">
+                <button onClick={handleClose} className="text-white/50 hover:text-white transition-colors p-1 -mr-1 rounded-md hover:bg-white/10">
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <div className="px-4 py-3 overflow-y-auto flex-1 min-h-0">
+              {/* Body */}
+              <div className="px-4 py-3.5 overflow-y-auto flex-1 min-h-0">
                 <div className="flex items-start gap-3">
-                  <div className="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-sm font-bold text-blue-600 dark:text-blue-300 shrink-0 mt-0.5">
+                  <div className="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center text-xs font-bold text-blue-700 dark:text-blue-300 shrink-0 mt-0.5">
                     {currentStep + 1}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-base">{currentStepData.title}</h3>
-                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mt-1.5 whitespace-pre-line">{currentStepData.description}</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-[15px] leading-snug">
+                      {currentStepData.title}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 text-[13px] leading-relaxed mt-1.5 whitespace-pre-line">
+                      {currentStepData.description}
+                    </p>
                     {!elementFound && (
-                      <p className="text-xs text-amber-500 mt-2 italic">↳ This element is not visible right now. You may need to select a tenant first.</p>
+                      <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 italic flex items-center gap-1">
+                        <span>↳</span> This element isn't visible now. You may need to scroll or select a tenant first.
+                      </p>
                     )}
                   </div>
                 </div>
               </div>
 
-              <div className="border-t border-gray-100 dark:border-gray-700 px-4 py-2.5 flex items-center justify-between shrink-0">
+              {/* Footer */}
+              <div className="border-t border-gray-200/60 dark:border-gray-700/60 px-4 py-2.5 flex items-center justify-between shrink-0 bg-gray-50/50 dark:bg-gray-800/50">
+                {/* Step dots */}
                 <div className="flex gap-1.5">
                   {tutorial.steps.map((_, i) => (
-                    <div key={i} className={`w-2.5 h-2.5 rounded-full transition-all ${i === currentStep ? 'bg-blue-500 scale-110' : i < currentStep ? 'bg-blue-300 dark:bg-blue-700' : 'bg-gray-300 dark:bg-gray-600'}`} />
+                    <div
+                      key={i}
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        i === currentStep
+                          ? 'w-5 bg-blue-500'
+                          : i < currentStep
+                            ? 'w-2 bg-blue-400/50 dark:bg-blue-600/50'
+                            : 'w-2 bg-gray-300 dark:bg-gray-600'
+                      }`}
+                    />
                   ))}
                 </div>
-                <div className="flex gap-2">
+
+                {/* Nav buttons */}
+                <div className="flex gap-1.5">
                   {currentStep > 0 && (
-                    <Button variant="ghost" size="sm" onClick={prevStep} className="h-9 px-3 text-sm">
-                      <ChevronLeft className="w-4 h-4 mr-0.5" /> Back
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={prevStep}
+                      className="h-8 px-2.5 text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5 mr-0.5" /> Back
                     </Button>
                   )}
-                  <Button size="sm" onClick={nextStep} className="h-9 px-5 text-sm bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white">
-                    {currentStep < tutorial.steps.length - 1 ? (<>Next <ChevronRight className="w-4 h-4 ml-0.5" /></>) : 'Done ✓'}
+                  <Button
+                    size="sm"
+                    onClick={nextStep}
+                    className="h-8 px-4 text-xs font-medium bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white shadow-sm"
+                  >
+                    {currentStep < totalSteps - 1
+                      ? (<>Next <ChevronRight className="w-3.5 h-3.5 ml-0.5" /></>)
+                      : 'Done ✓'}
                   </Button>
                 </div>
               </div>
