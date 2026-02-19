@@ -7,7 +7,7 @@ export default function TenantCardMobile({ tenant, index, onProfile, onSelect, o
     <div
       className="bg-white dark:bg-gray-800/60 rounded-xl border border-slate-200 dark:border-gray-700/50 p-3 shadow-sm active:bg-blue-50 dark:active:bg-blue-950/30 transition-colors"
       onClick={() => onProfile(tenant)}
-      {...(index === 0 ? { 'data-tutorial': 'tenant-actions' } : {})}
+      {...(index === 0 ? { 'data-tour': 'tenant-actions' } : {})}
     >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2 min-w-0">
