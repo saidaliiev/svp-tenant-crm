@@ -4,9 +4,9 @@ import DevPortfolio from '@/components/svp/DevPortfolio';
 import MobilePortfolioTrigger from '@/components/svp/MobilePortfolioTrigger';
 import InteractiveTour from '@/components/svp/InteractiveTour';
 import { base44 } from '@/api/base44Client';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, Paperclip } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
-import { motion, useAnimation } from 'framer-motion';
+import { motion, useAnimation, AnimatePresence } from 'framer-motion';
 import { Toaster, toast } from 'sonner';
 
 export default function Layout({ children, currentPageName }) {
