@@ -263,6 +263,9 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       return;
     }
 
+    // Start magic animation
+    setIsGenerating(true);
+
     const tenant = tenants.find(t => t.id === clientId);
     const smartNotes = generateSmartNotes();
 
