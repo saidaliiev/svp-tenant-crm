@@ -184,13 +184,13 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
       <div
         className="fixed z-41 pointer-events-none"
         style={{
-          left: `${elementRect.left - 4}px`,
-          top: `${elementRect.top - 4}px`,
-          width: `${elementRect.width + 8}px`,
-          height: `${elementRect.height + 8}px`,
+          left: `${elementRect.left - 2}px`,
+          top: `${elementRect.top - 2}px`,
+          width: `${elementRect.width + 4}px`,
+          height: `${elementRect.height + 4}px`,
           boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.5)',
           borderRadius: '12px',
-          border: '2px solid #3B82F6',
+          border: '1px solid #3B82F6',
           animation: 'tourPulse 2s ease-in-out infinite'
         }}
       />
@@ -256,8 +256,8 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
           }
         }
         @keyframes tourPulse {
-          0%, 100% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5), 0 0 0 3px #3B82F6; }
-          50% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5), 0 0 0 8px #3B82F6; }
+          0%, 100% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5), 0 0 0 1px #3B82F6; }
+          50% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5), 0 0 0 2px #3B82F6; }
         }
       `}</style>
     </>
