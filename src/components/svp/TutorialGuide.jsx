@@ -245,27 +245,38 @@ export default function TutorialGuide({ activeTab }) {
     }
 
     const tooltipW = Math.min(380, viewportW - 32);
+    // Estimate tooltip height — taller when fallback preview is shown
+    const hasFallback = !elementFound && currentStepData?.fallbackPreview;
+    const tooltipH = hasFallback ? 380 : 200;
     
     if (!highlightRect) {
-      return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)', maxWidth: tooltipW };
+      return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)', maxWidth: tooltipW, maxHeight: viewportH - 32, overflow: 'hidden' };
     }
     
-    const tooltipH = 240;
+    const leftPos = Math.max(16, Math.min(highlightRect.left, viewportW - tooltipW - 16));
+    
+    // Try below highlight
     if (highlightRect.top + highlightRect.height + tooltipH + 20 < viewportH) {
       return {
         top: highlightRect.top + highlightRect.height + 16,
-        left: Math.max(16, Math.min(highlightRect.left, viewportW - tooltipW - 16)),
+        left: leftPos,
         maxWidth: tooltipW,
+        maxHeight: viewportH - (highlightRect.top + highlightRect.height + 32),
+        overflow: 'hidden',
       };
     }
+    // Try above highlight
     if (highlightRect.top - tooltipH - 20 > 0) {
       return {
-        top: highlightRect.top - tooltipH - 16,
-        left: Math.max(16, Math.min(highlightRect.left, viewportW - tooltipW - 16)),
+        top: Math.max(16, highlightRect.top - tooltipH - 16),
+        left: leftPos,
         maxWidth: tooltipW,
+        maxHeight: highlightRect.top - 32,
+        overflow: 'hidden',
       };
     }
-    return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)', maxWidth: tooltipW };
+    // Fallback: center but constrain to viewport
+    return { top: 16, left: leftPos, maxWidth: tooltipW, maxHeight: viewportH - 32, overflow: 'hidden' };
   };
 
   const currentStepData = tutorial.steps[currentStep];
