@@ -124,7 +124,7 @@ export function generateReceiptPDF(receiptData, settings) {
     doc.autoTable({
       startY: yPos,
       margin: { left: margin, right: margin },
-      head: [['Date', 'Description', 'Rent Due', 'Payment', 'Balance']],
+      head: [['Date', 'Rent Due', 'Tenant Payment', 'RAS Payment']],
       body: tableData,
       theme: 'plain',
       tableWidth: 'auto',
