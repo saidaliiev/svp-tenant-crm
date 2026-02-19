@@ -39,9 +39,32 @@ export default function Layout({ children, currentPageName }) {
     setShowPortfolio(false);
   }, []);
 
+  const currentTab = new URLSearchParams(location.search).get('tab') || 'tenants';
+
+  const handleGuideClick = () => {
+    if (currentTab === 'settings') {
+      controls.start({
+        x: [0, -15, 15, -10, 10, -5, 5, 0],
+        rotate: [0, -10, 10, -10, 10, -5, 5, 0],
+        transition: { duration: 0.5 }
+      });
+      toast.custom((t) => (
+        <div className="bg-slate-900 text-white p-4 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700">
+          <span className="text-2xl">😂</span>
+          <div>
+            <h4 className="font-bold text-sm">Seriously?</h4>
+            <p className="text-xs text-slate-300 mt-0.5">Did you really think I wrote a guide for the Settings page? Just click the buttons!</p>
+          </div>
+        </div>
+      ), { duration: 3000 });
+    } else {
+      setShowGuide(true);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-
+      <Toaster position="bottom-center" />
       <div className="flex-1 pb-safe">
         <div className="pb-20 sm:pb-0">
           {children}
