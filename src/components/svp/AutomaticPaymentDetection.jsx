@@ -164,7 +164,7 @@ export default function AutomaticPaymentDetection({
       <CardContent className="p-4 sm:p-6 space-y-6">
         
         {/* Upload Section */}
-        <div className="space-y-4">
+        <div className="space-y-4" data-tour="auto-upload">
           <div className="flex items-center justify-between">
             <Label className="text-base font-semibold">Upload Bank Statement</Label>
             {uploadedFile && (
