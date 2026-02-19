@@ -58,7 +58,12 @@ export default function Layout({ children, currentPageName }) {
       <SecretFooter onReveal={handleReveal} />
       <MobilePortfolioTrigger onReveal={handleReveal} />
       <DevPortfolio isOpen={showPortfolio} onClose={handleClose} />
-      <InteractiveTour isOpen={showGuide} onClose={() => setShowGuide(false)} currentPage={currentPageName} />
+      <InteractiveTour 
+        isOpen={showGuide} 
+        onClose={() => setShowGuide(false)} 
+        currentPage={currentPageName}
+        currentTab={new URLSearchParams(window.location.search).get('tab') || 'tenants'}
+      />
     </div>
   );
 }
