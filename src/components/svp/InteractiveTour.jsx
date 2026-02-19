@@ -220,13 +220,13 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
     <>
       {/* Global Overlay (Only if spotlight is missing to avoid double darkening) */}
       {isElementMissing && (
-        <div className="fixed inset-0 bg-black/50 z-40 pointer-events-none" />
+        <div className="fixed inset-0 bg-black/50 z-[9990] pointer-events-none" />
       )}
 
       {/* Spotlight - highlight the element (provides its own darkness via box-shadow) */}
       {!isElementMissing && (
         <div
-          className="fixed z-41 pointer-events-none"
+          className="fixed z-[9990] pointer-events-none"
           style={{
             left: `${elementRect.left - 4}px`,
             top: `${elementRect.top - 4}px`,
