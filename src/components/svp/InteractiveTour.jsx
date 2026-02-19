@@ -234,7 +234,7 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
         <div className="flex items-center justify-between">
           <button
             onClick={handlePrev}
-            disabled={currentStep === 0}
+            disabled={currentStep === 0 && showTabsTour}
             className="flex items-center gap-1 px-3 py-2 text-sm rounded transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -247,10 +247,10 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
 
           <button
             onClick={handleNext}
-            disabled={currentStep === tourSteps.length - 1}
+            disabled={currentStep === tourSteps.length - 1 && (currentPage !== 'Home' || !showTabsTour)}
             className="flex items-center gap-1 px-3 py-2 text-sm rounded transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
           >
-            Next
+            {currentPage === 'Home' && showTabsTour && currentStep === tourSteps.length - 1 ? 'Details →' : 'Next'}
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
