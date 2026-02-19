@@ -22,16 +22,16 @@ export default function TenantCardMobile({ tenant, index, onProfile, onSelect, o
       </div>
       <p className="text-xs text-slate-500 dark:text-gray-500 truncate mb-2.5">{tenant.address}</p>
       <div className="flex gap-1.5" onClick={(e) => e.stopPropagation()}>
-        <Button size="sm" onClick={() => onProfile(tenant)} className="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white h-8 text-xs">
+        <Button size="sm" onClick={() => onProfile(tenant)} data-tour={index === 0 ? "btn-profile" : undefined} className="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white h-8 text-xs">
           <User className="w-3.5 h-3.5 mr-1" /> Profile
         </Button>
-        <Button size="sm" onClick={() => onSelect(tenant.id)} className="flex-1 bg-green-500 hover:bg-green-600 text-white h-8 text-xs">
+        <Button size="sm" onClick={() => onSelect(tenant.id)} data-tour={index === 0 ? "btn-select" : undefined} className="flex-1 bg-green-500 hover:bg-green-600 text-white h-8 text-xs">
           <UserCheck className="w-3.5 h-3.5 mr-1" /> Select
         </Button>
-        <Button size="sm" variant="outline" onClick={() => onEdit(tenant)} className="h-8 w-8 p-0 border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400">
+        <Button size="sm" variant="outline" onClick={() => onEdit(tenant)} data-tour={index === 0 ? "btn-edit" : undefined} className="h-8 w-8 p-0 border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400">
           <Pencil className="w-3.5 h-3.5" />
         </Button>
-        <Button size="sm" variant="outline" onClick={() => onDelete(tenant)} className="h-8 w-8 p-0 border-red-300 dark:border-red-800 text-red-600 dark:text-red-400">
+        <Button size="sm" variant="outline" onClick={() => onDelete(tenant)} data-tour={index === 0 ? "btn-delete" : undefined} className="h-8 w-8 p-0 border-red-300 dark:border-red-800 text-red-600 dark:text-red-400">
           <Trash2 className="w-3.5 h-3.5" />
         </Button>
       </div>
