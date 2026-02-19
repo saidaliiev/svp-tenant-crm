@@ -6,11 +6,14 @@ import InteractiveTour from '@/components/svp/InteractiveTour';
 import { base44 } from '@/api/base44Client';
 import { HelpCircle } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
+import { motion, useAnimation } from 'framer-motion';
+import { Toaster, toast } from 'sonner';
 
 export default function Layout({ children, currentPageName }) {
   const [showPortfolio, setShowPortfolio] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
   const location = useLocation();
+  const controls = useAnimation();
 
   // Load user font size pref on mount
   useEffect(() => {
