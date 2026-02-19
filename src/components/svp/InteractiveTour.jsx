@@ -288,8 +288,8 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
           }
         }
         @keyframes tourPulse {
-          0%, 100% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5), 0 0 0 1px #3B82F6; }
-          50% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5), 0 0 0 2px #3B82F6; }
+          0%, 100% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7), 0 0 0 2px #3B82F6; }
+          50% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7), 0 0 0 4px #3B82F6; }
         }
       `}</style>
     </>
