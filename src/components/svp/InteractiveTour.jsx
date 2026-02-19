@@ -187,13 +187,13 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
   };
 
   // Don't show if not open, on Settings page, or no tour steps
-  if (!isOpen || currentPage === 'Settings' || tourSteps.length === 0 || !currentTourStep || !elementRect) return null;
+  if (!isOpen || currentPage === 'Settings' || tourSteps.length === 0 || !currentTourStep) return null;
 
   // Calculate tooltip position
-  const tooltipTop = Math.min(
-    elementRect.bottom + 20,
-    window.innerHeight - 250
-  );
+  const isElementMissing = !elementRect;
+  const tooltipTop = isElementMissing 
+    ? window.innerHeight / 2 - 100 
+    : Math.min(elementRect.bottom + 20, window.innerHeight - 250);
 
   return (
     <>
@@ -201,19 +201,21 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
       <div className="fixed inset-0 bg-black/50 z-40 pointer-events-none" />
 
       {/* Spotlight - highlight the element */}
-      <div
-        className="fixed z-41 pointer-events-none"
-        style={{
-          left: `${elementRect.left - 2}px`,
-          top: `${elementRect.top - 2}px`,
-          width: `${elementRect.width + 4}px`,
-          height: `${elementRect.height + 4}px`,
-          boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.5)',
-          borderRadius: '12px',
-          border: '1px solid #3B82F6',
-          animation: 'tourPulse 2s ease-in-out infinite'
-        }}
-      />
+      {!isElementMissing && (
+        <div
+          className="fixed z-41 pointer-events-none"
+          style={{
+            left: `${elementRect.left - 2}px`,
+            top: `${elementRect.top - 2}px`,
+            width: `${elementRect.width + 4}px`,
+            height: `${elementRect.height + 4}px`,
+            boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.5)',
+            borderRadius: '12px',
+            border: '1px solid #3B82F6',
+            animation: 'tourPulse 2s ease-in-out infinite'
+          }}
+        />
+      )}
 
       {/* Tooltip */}
       <div
