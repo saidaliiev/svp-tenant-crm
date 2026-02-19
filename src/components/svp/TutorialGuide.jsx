@@ -281,7 +281,13 @@ export default function TutorialGuide({ activeTab }) {
 
   const currentStepData = tutorial.steps[currentStep];
   const showFallback = !elementFound && currentStepData?.fallbackPreview;
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640);
+  
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   return (
     <>
