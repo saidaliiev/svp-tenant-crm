@@ -130,25 +130,33 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
   useEffect(() => {
     if (!isOpen || !currentTourStep || currentPage === 'Settings') return;
 
+    const getVisibleElement = (selector) => {
+      const elements = Array.from(document.querySelectorAll(selector));
+      return elements.find(el => {
+        const rect = el.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0;
+      });
+    };
+
     const findElement = () => {
-      let element = document.querySelector(currentTourStep.selector);
+      let element = getVisibleElement(currentTourStep.selector);
       
       // Smart detection for CreateReceipt (Steps 4+ need a tenant selected)
       if (!element && tourKey === 'Home_CreateReceipt' && currentStep >= 3) {
-        const firstTenantBtn = document.querySelector('[data-tour="tenant-selector"] button');
+        const firstTenantBtn = getVisibleElement('[data-tour="tenant-selector"] button');
         if (firstTenantBtn) {
           firstTenantBtn.click(); // Auto-select to demonstrate
           setTimeout(() => {
-            const newElement = document.querySelector(currentTourStep.selector);
+            const newElement = getVisibleElement(currentTourStep.selector);
             if (newElement) {
               setHighlightedElement(newElement);
               setElementRect(newElement.getBoundingClientRect());
-              newElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              newElement.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
             } else {
               setHighlightedElement(null);
               setElementRect(null);
             }
-          }, 150);
+          }, 200);
           return;
         }
       }
@@ -157,7 +165,7 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
         setHighlightedElement(element);
         const rect = element.getBoundingClientRect();
         setElementRect(rect);
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        element.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
       } else {
         setHighlightedElement(null);
         setElementRect(null);
@@ -165,7 +173,7 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
     };
 
     findElement();
-    const timer = setTimeout(findElement, 200);
+    const timer = setTimeout(findElement, 250); // wait a bit longer for layouts to settle
     return () => clearTimeout(timer);
   }, [currentStep, isOpen, currentTourStep, currentPage, currentTab, tourKey]);
 
