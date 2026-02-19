@@ -349,7 +349,7 @@ export default function AutomaticPaymentDetection({
             </div>
 
             {/* Apply for Specific Tenant */}
-            <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800/50 rounded-lg p-4 space-y-3">
+            <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800/50 rounded-lg p-4 space-y-3" data-tour="auto-apply">
               <Label className="text-base font-semibold">Apply Payments for Tenant</Label>
               <p className="text-sm text-slate-600 dark:text-gray-400">Select a tenant to create a receipt with their matched payments.</p>
               <div className="flex flex-col sm:flex-row gap-3">
