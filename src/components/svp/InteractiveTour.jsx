@@ -127,11 +127,21 @@ const TOUR_CONFIG = {
   ]
 };
 
-export default function InteractiveTour({ isOpen, onClose, currentPage }) {
+export default function InteractiveTour({ isOpen, onClose, currentPage, currentTab }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [highlightedElement, setHighlightedElement] = useState(null);
+  const [showTabsTour, setShowTabsTour] = useState(true);
 
-  const tourSteps = TOUR_CONFIG[currentPage] || [];
+  // Determine which tour to show
+  let tourKey = currentPage;
+  if (currentPage === 'Home' && !showTabsTour && currentTab) {
+    tourKey = `Home_${currentTab.charAt(0).toUpperCase() + currentTab.slice(1).replace(/([A-Z])/g, m => m)}`;
+    if (currentTab === 'tenants') tourKey = 'Home_TenantManagement';
+    if (currentTab === 'receipt') tourKey = 'Home_CreateReceipt';
+    if (currentTab === 'history') tourKey = 'Home_ReceiptHistory';
+  }
+
+  const tourSteps = TOUR_CONFIG[tourKey] || TOUR_CONFIG[currentPage] || [];
   const currentTourStep = tourSteps[currentStep];
 
   useEffect(() => {
