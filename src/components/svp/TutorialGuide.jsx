@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GraduationCap, X, ChevronLeft, ChevronRight, ArrowDown } from 'lucide-react';
+import { GraduationCap, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
 const TUTORIALS = {
@@ -56,7 +56,6 @@ export default function TutorialGuide({ activeTab }) {
   const tutorial = TUTORIALS[activeTab] || TUTORIALS.tenants;
   const currentStepData = tutorial.steps[currentStep];
 
-  // Close & reset on tab change
   useEffect(() => {
     setIsOpen(false);
     setCurrentStep(0);
@@ -82,19 +81,16 @@ export default function TutorialGuide({ activeTab }) {
     setShouldBlink(false);
   }, [activeTab]);
 
-  // Scroll element into center of viewport
   const scrollToElement = useCallback((el) => {
     if (!el) return;
     const rect = el.getBoundingClientRect();
     const vH = window.innerHeight;
-    // If element is not well-visible, scroll it to ~30% from top
     if (rect.top < 100 || rect.bottom > vH - 200) {
       const y = window.scrollY + rect.top - vH * 0.3;
       window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
     }
   }, []);
 
-  // Measure and set highlight rect
   const updateHighlight = useCallback(() => {
     if (!isOpen) { setHighlightRect(null); return; }
     const step = tutorial.steps[currentStep];
@@ -110,21 +106,18 @@ export default function TutorialGuide({ activeTab }) {
     }
   }, [isOpen, currentStep, tutorial]);
 
-  // On step change: scroll + measure
   useEffect(() => {
     if (!isOpen) return;
     const step = tutorial.steps[currentStep];
     if (!step?.target) { updateHighlight(); return; }
     const el = document.querySelector(step.target);
     if (el) scrollToElement(el);
-    // Measure multiple times to account for scroll animation
     updateHighlight();
     const t1 = setTimeout(updateHighlight, 350);
     const t2 = setTimeout(updateHighlight, 700);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [isOpen, currentStep, tutorial, scrollToElement, updateHighlight]);
 
-  // Re-measure on scroll/resize
   useEffect(() => {
     if (!isOpen) return;
     const handler = () => updateHighlight();
@@ -138,66 +131,43 @@ export default function TutorialGuide({ activeTab }) {
   const nextStep = (e) => { e.stopPropagation(); if (currentStep < tutorial.steps.length - 1) setCurrentStep(s => s + 1); else handleClose(); };
   const prevStep = (e) => { e.stopPropagation(); if (currentStep > 0) setCurrentStep(s => s - 1); };
 
-  // Compute tooltip position: always next to the highlighted element
   const getTooltipPosition = () => {
     const vW = window.innerWidth;
     const vH = window.innerHeight;
-    const isMobile = vW < 640;
 
-    // Mobile: fixed bottom sheet
-    if (isMobile) {
+    if (vW < 640) {
       return { position: 'fixed', bottom: 72, left: 8, right: 8, width: 'auto', maxHeight: '45vh' };
     }
 
     const tooltipW = Math.min(380, vW - 24);
 
     if (!highlightRect || !elementFound) {
-      // No element — show centered near top
       return { position: 'fixed', top: 80, left: (vW - tooltipW) / 2, width: tooltipW, maxHeight: vH - 160 };
     }
 
-    // Compute horizontal position: align left edge with highlight, clamped to viewport
     let left = highlightRect.left;
     if (left + tooltipW > vW - 12) left = vW - tooltipW - 12;
     if (left < 12) left = 12;
 
-    const gap = 14; // gap between highlight and tooltip
+    const gap = 14;
     const hlBottom = highlightRect.top + highlightRect.height;
     const spaceBelow = vH - hlBottom - gap;
     const spaceAbove = highlightRect.top - gap;
 
-    // Prefer below
     if (spaceBelow >= 150) {
       return { position: 'fixed', top: hlBottom + gap, left, width: tooltipW, maxHeight: Math.min(spaceBelow, 380) };
     }
-    // Try above
     if (spaceAbove >= 150) {
       const h = Math.min(spaceAbove, 380);
       return { position: 'fixed', top: highlightRect.top - gap - h, left, width: tooltipW, maxHeight: h };
     }
-    // Fallback: fixed position near top
     return { position: 'fixed', top: 12, left, width: tooltipW, maxHeight: vH - 24 };
   };
 
   const tooltipPos = isOpen ? getTooltipPosition() : {};
 
-  // Arrow direction indicator
-  const getArrowIndicator = () => {
-    if (!highlightRect || !elementFound || window.innerWidth < 640) return null;
-    const vH = window.innerHeight;
-    const hlBottom = highlightRect.top + highlightRect.height;
-    const spaceBelow = vH - hlBottom - 14;
-    // If tooltip is below: arrow points up toward element
-    // If tooltip is above: arrow points down toward element
-    if (spaceBelow >= 150) return 'above'; // tooltip is below element, arrow points up
-    return 'below'; // tooltip is above element, arrow points down
-  };
-
-  const arrowDir = isOpen ? getArrowIndicator() : null;
-
   return (
     <>
-      {/* ? button */}
       {!isOpen && (
         <motion.button
           onClick={handleOpen}
@@ -212,11 +182,9 @@ export default function TutorialGuide({ activeTab }) {
         </motion.button>
       )}
 
-      {/* Overlay */}
       <AnimatePresence>
         {isOpen && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[9998]">
-            {/* Dark mask with cutout */}
             <svg className="absolute inset-0 w-full h-full" style={{ pointerEvents: 'none' }}>
               <defs>
                 <mask id="tut-mask">
@@ -229,7 +197,6 @@ export default function TutorialGuide({ activeTab }) {
               <rect x="0" y="0" width="100%" height="100%" fill="rgba(0,0,0,0.45)" mask="url(#tut-mask)" />
             </svg>
 
-            {/* Highlight border glow */}
             {highlightRect && elementFound && (
               <motion.div
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }}
@@ -238,26 +205,8 @@ export default function TutorialGuide({ activeTab }) {
               />
             )}
 
-            {/* Backdrop click to close */}
             <div className="absolute inset-0" onClick={handleClose} />
 
-            {/* Connecting arrow line (desktop only) */}
-            {highlightRect && elementFound && arrowDir && window.innerWidth >= 640 && (
-              <motion.div
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                className="fixed z-[9999] pointer-events-none"
-                style={{
-                  left: highlightRect.left + highlightRect.width / 2 - 1,
-                  top: arrowDir === 'above' ? highlightRect.top + highlightRect.height : undefined,
-                  bottom: arrowDir === 'below' ? (window.innerHeight - highlightRect.top) : undefined,
-                  width: 2,
-                  height: 14,
-                  background: 'linear-gradient(to bottom, rgba(59,130,246,0.6), rgba(147,51,234,0.6))',
-                }}
-              />
-            )}
-
-            {/* Tooltip */}
             <motion.div
               ref={tooltipRef}
               key={`${activeTab}-${currentStep}`}
@@ -269,7 +218,6 @@ export default function TutorialGuide({ activeTab }) {
               style={{ ...tooltipPos, zIndex: 9999, pointerEvents: 'auto' }}
               onClick={e => e.stopPropagation()}
             >
-              {/* Header */}
               <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-4 py-2.5 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
                   <GraduationCap className="w-4 h-4 text-white/80" />
@@ -281,7 +229,6 @@ export default function TutorialGuide({ activeTab }) {
                 </button>
               </div>
 
-              {/* Content */}
               <div className="px-4 py-3 overflow-y-auto flex-1 min-h-0">
                 <div className="flex items-start gap-3">
                   <div className="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-sm font-bold text-blue-600 dark:text-blue-300 shrink-0 mt-0.5">
@@ -297,7 +244,6 @@ export default function TutorialGuide({ activeTab }) {
                 </div>
               </div>
 
-              {/* Footer */}
               <div className="border-t border-gray-100 dark:border-gray-700 px-4 py-2.5 flex items-center justify-between shrink-0">
                 <div className="flex gap-1.5">
                   {tutorial.steps.map((_, i) => (
