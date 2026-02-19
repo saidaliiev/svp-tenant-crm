@@ -51,7 +51,7 @@ export default function Layout({ children, currentPageName }) {
       </div>
 
       {/* Clippy Agent */}
-      {currentPageName !== 'Settings' && (
+      {currentTab !== 'settings' && (
         <ClippyAgent 
           currentPage={currentTab} 
           onStartGuide={() => setShowGuide(true)} 
