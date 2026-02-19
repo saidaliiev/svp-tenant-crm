@@ -223,10 +223,11 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       const creditAmt = Math.abs(finalTenantBalance);
       smartNote += `Your credit balance is now €${creditAmt.toFixed(2)}, this amount will be carried forward to ${nextMonthName}.`;
     } else if (finalTenantBalance > 0) {
-      const monthlyRentDue = totalRentDue;
-      const monthlyTotalWithRas = totalRentDue + totalRasReceived;
+      // Tenant portion = total rent due minus RAS portion
+      const tenantPortionRent = totalRentDue - totalRasReceived;
+      const totalRentWithRas = totalRentDue;
 
-      smartNote += `You have paid €${totalTenantPayments.toFixed(2)} this month, your rent for the month of ${monthName} is €${monthlyRentDue.toFixed(2)} (with RAS €${monthlyTotalWithRas.toFixed(2)}). Your arrears at the start of ${monthName} is €${debtAmt.toFixed(2)}.\n\n`;
+      smartNote += `You have paid €${totalTenantPayments.toFixed(2)} this month, your rent for the month of ${monthName} is €${tenantPortionRent.toFixed(2)} (with RAS €${totalRentWithRas.toFixed(2)}). Your arrears at the start of ${monthName} is €${debtAmt.toFixed(2)}.\n\n`;
 
       if (finalTenantBalance > 200) {
         const extraPayment = Math.round(weeklyTenant * 0.15);
