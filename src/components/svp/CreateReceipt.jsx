@@ -232,7 +232,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       const tenantPortionRent = totalRentDue - totalRasReceived;
       const totalRentWithRas = totalRentDue;
 
-      smartNote += `You have paid €${totalTenantPayments.toFixed(2)} this month, your rent for the month of ${monthName} is €${tenantPortionRent.toFixed(2)} (with RAS €${totalRentWithRas.toFixed(2)}). Your arrears at the start of ${monthName} is €${debtAmt.toFixed(2)}.\n\n`;
+      smartNote += `You have paid €${totalTenantPayments.toFixed(2)} this month, your rent for the month of ${monthName} is €${tenantPortionRent.toFixed(2)} (with RAS €${totalRentWithRas.toFixed(2)}).\nYour arrears at the start of ${monthName} is €${debtAmt.toFixed(2)}.\n\n`;
 
       if (finalTenantBalance > 200) {
         const extraPayment = Math.round(weeklyTenant * 0.15);
