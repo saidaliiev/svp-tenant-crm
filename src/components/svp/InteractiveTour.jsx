@@ -151,7 +151,7 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
             if (newElement) {
               setHighlightedElement(newElement);
               setElementRect(newElement.getBoundingClientRect());
-              newElement.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+              newElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
             } else {
               setHighlightedElement(null);
               setElementRect(null);
