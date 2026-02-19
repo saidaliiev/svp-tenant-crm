@@ -501,7 +501,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
         {/* Client Selection — grid of tenant cards */}
         <div className="space-y-2" data-tutorial="receipt-tenant-select">
           <Label className="text-base font-semibold">Select Tenant</Label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[320px] overflow-y-auto rounded-lg border p-2 bg-white">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {tenants.map(t => (
               <button
                 key={t.id}
