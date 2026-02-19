@@ -14,7 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Settings, Save, RotateCcw, Trash2, AlertTriangle, Sun, Moon, Monitor, Type } from 'lucide-react';
+import { Settings, Save, RotateCcw, Trash2, AlertTriangle, Type } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const DEFAULT_SETTINGS = {
@@ -36,17 +36,13 @@ export default function SettingsTab({ settings, setSettings }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  // Appearance prefs — loaded from user entity
-  const [theme, setTheme] = useState('system');
   const [fontSize, setFontSize] = useState('medium');
   const [prefsLoaded, setPrefsLoaded] = useState(false);
 
-  // Load preferences from user entity on mount
   useEffect(() => {
     const loadPrefs = async () => {
       try {
         const user = await base44.auth.me();
-        if (user.theme) setTheme(user.theme);
         if (user.fontSize) setFontSize(user.fontSize);
       } catch {}
       setPrefsLoaded(true);
@@ -54,25 +50,6 @@ export default function SettingsTab({ settings, setSettings }) {
     loadPrefs();
   }, []);
 
-  // Apply theme whenever it changes
-  useEffect(() => {
-    if (!prefsLoaded) return;
-    const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else if (theme === 'light') {
-      root.classList.remove('dark');
-    } else {
-      // system
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        root.classList.add('dark');
-      } else {
-        root.classList.remove('dark');
-      }
-    }
-  }, [theme, prefsLoaded]);
-
-  // Apply font size
   useEffect(() => {
     if (!prefsLoaded) return;
     const root = document.documentElement;
@@ -81,22 +58,13 @@ export default function SettingsTab({ settings, setSettings }) {
     root.classList.add(sizeClass);
   }, [fontSize, prefsLoaded]);
 
-  const saveAppearance = async (newTheme, newFontSize) => {
+  const handleFontSizeChange = async (newSize) => {
+    setFontSize(newSize);
     try {
-      await base44.auth.updateMe({ theme: newTheme, fontSize: newFontSize });
+      await base44.auth.updateMe({ fontSize: newSize });
     } catch (e) {
       console.error('Error saving preferences:', e);
     }
-  };
-
-  const handleThemeChange = (newTheme) => {
-    setTheme(newTheme);
-    saveAppearance(newTheme, fontSize);
-  };
-
-  const handleFontSizeChange = (newSize) => {
-    setFontSize(newSize);
-    saveAppearance(theme, newSize);
   };
 
   const handleSave = () => {
@@ -137,28 +105,27 @@ export default function SettingsTab({ settings, setSettings }) {
   return (
     <div className="space-y-6">
       {success && (
-        <Alert className="border-green-200 bg-green-50 dark:bg-green-950/30 dark:border-green-800">
-          <AlertDescription className="text-green-700 dark:text-green-400">{success}</AlertDescription>
+        <Alert className="border-green-200 bg-green-50">
+          <AlertDescription className="text-green-700">{success}</AlertDescription>
         </Alert>
       )}
 
-      {/* Two-column layout on desktop */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* LEFT: Receipt Settings */}
-        <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-xl border-0">
-          <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 p-4 sm:p-5">
+        <Card className="bg-white/90 backdrop-blur-sm shadow-xl border-0">
+          <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-purple-50 p-4 sm:p-5">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
                 <Settings className="w-5 h-5 text-white" />
               </div>
               <div>
                 <CardTitle className="text-lg">Receipt Settings</CardTitle>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Configure what appears on printed receipts</p>
+                <p className="text-xs text-slate-500 mt-0.5">Configure what appears on printed receipts</p>
               </div>
             </div>
           </CardHeader>
           <CardContent className="p-4 sm:p-5">
-            <div className="space-y-5" data-tutorial="settings-org">
+            <div className="space-y-5">
               <div className="space-y-1.5">
                 <Label htmlFor="organizationName" className="text-sm font-medium">Organization Name</Label>
                 <Input
@@ -168,7 +135,7 @@ export default function SettingsTab({ settings, setSettings }) {
                   placeholder="Enter organization name"
                   className="h-11"
                 />
-                <p className="text-xs text-slate-500 dark:text-slate-400">Displayed in the header and on receipts</p>
+                <p className="text-xs text-slate-500">Displayed in the header and on receipts</p>
               </div>
 
               <div className="space-y-1.5">
@@ -180,7 +147,7 @@ export default function SettingsTab({ settings, setSettings }) {
                   placeholder="Monthly Rent Statement"
                   className="h-11"
                 />
-                <p className="text-xs text-slate-500 dark:text-slate-400">Title for monthly rent statements</p>
+                <p className="text-xs text-slate-500">Title for monthly rent statements</p>
               </div>
 
               <div className="space-y-1.5">
@@ -192,7 +159,7 @@ export default function SettingsTab({ settings, setSettings }) {
                   placeholder="Enter contact phone"
                   className="h-11"
                 />
-                <p className="text-xs text-slate-500 dark:text-slate-400">Phone number for tenant inquiries</p>
+                <p className="text-xs text-slate-500">Phone number for tenant inquiries</p>
               </div>
 
               <div className="space-y-1.5">
@@ -204,10 +171,10 @@ export default function SettingsTab({ settings, setSettings }) {
                   placeholder="Enter system name"
                   className="h-11"
                 />
-                <p className="text-xs text-slate-500 dark:text-slate-400">Displayed in the app header and receipt footer</p>
+                <p className="text-xs text-slate-500">Displayed in the app header and receipt footer</p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-2 pt-3" data-tutorial="settings-save">
+              <div className="flex flex-col sm:flex-row gap-2 pt-3">
                 <Button
                   onClick={handleSave}
                   className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 w-full sm:w-auto"
@@ -215,7 +182,7 @@ export default function SettingsTab({ settings, setSettings }) {
                   <Save className="w-4 h-4 mr-2" />
                   Save Settings
                 </Button>
-                <Button variant="outline" onClick={handleReset} className="border-slate-300 dark:border-slate-600 w-full sm:w-auto">
+                <Button variant="outline" onClick={handleReset} className="border-slate-300 w-full sm:w-auto">
                   <RotateCcw className="w-4 h-4 mr-2" />
                   Reset to Defaults
                 </Button>
@@ -224,89 +191,58 @@ export default function SettingsTab({ settings, setSettings }) {
           </CardContent>
         </Card>
 
-        {/* RIGHT: Appearance + Danger Zone */}
+        {/* RIGHT: Text Size + Danger Zone */}
         <div className="space-y-6">
-          {/* Appearance Card */}
-          <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-xl border-0" data-tutorial="settings-appearance">
-            <CardHeader className="border-b bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 p-4 sm:p-5">
+          {/* Text Size Card */}
+          <Card className="bg-white/90 backdrop-blur-sm shadow-xl border-0">
+            <CardHeader className="border-b bg-gradient-to-r from-amber-50 to-orange-50 p-4 sm:p-5">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
-                  <Sun className="w-5 h-5 text-white" />
+                  <Type className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg">Appearance</CardTitle>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Customize how the app looks</p>
+                  <CardTitle className="text-lg">Text Size</CardTitle>
+                  <p className="text-xs text-slate-500 mt-0.5">Adjust the text size to your preference</p>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-4 sm:p-5 space-y-6">
-              {/* Theme Selection */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium">Theme</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { value: 'light', icon: Sun, label: 'Light' },
-                    { value: 'dark', icon: Moon, label: 'Dark' },
-                    { value: 'system', icon: Monitor, label: 'System' },
-                  ].map(opt => (
-                    <button
-                      key={opt.value}
-                      onClick={() => handleThemeChange(opt.value)}
-                      className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all ${
-                        theme === opt.value
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-600 dark:text-gray-400'
-                      }`}
-                    >
-                      <opt.icon className="w-5 h-5" />
-                      <span className="text-xs font-medium">{opt.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Font Size */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium flex items-center gap-2">
-                  <Type className="w-4 h-4" /> Text Size
-                </Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {FONT_SIZES.map(opt => (
-                    <button
-                      key={opt.value}
-                      onClick={() => handleFontSizeChange(opt.value)}
-                      className={`py-2.5 px-3 rounded-xl border-2 transition-all text-center ${
-                        fontSize === opt.value
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-600 dark:text-gray-400'
-                      }`}
-                    >
-                      <span className={`font-medium ${opt.value === 'small' ? 'text-xs' : opt.value === 'medium' ? 'text-sm' : 'text-base'}`}>
-                        {opt.label}
-                      </span>
-                    </button>
-                  ))}
-                </div>
+            <CardContent className="p-4 sm:p-5">
+              <div className="grid grid-cols-3 gap-2">
+                {FONT_SIZES.map(opt => (
+                  <button
+                    key={opt.value}
+                    onClick={() => handleFontSizeChange(opt.value)}
+                    className={`py-2.5 px-3 rounded-xl border-2 transition-all text-center ${
+                      fontSize === opt.value
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                    }`}
+                  >
+                    <span className={`font-medium ${opt.value === 'small' ? 'text-xs' : opt.value === 'medium' ? 'text-sm' : 'text-base'}`}>
+                      {opt.label}
+                    </span>
+                  </button>
+                ))}
               </div>
             </CardContent>
           </Card>
 
           {/* Danger Zone Card */}
-          <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-xl border-0 border-t-2 border-t-red-400" data-tutorial="settings-danger">
+          <Card className="bg-white/90 backdrop-blur-sm shadow-xl border-0 border-t-2 border-t-red-400">
             <CardHeader className="p-4 sm:p-5">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 bg-gradient-to-br from-red-500 to-rose-600 rounded-lg flex items-center justify-center">
                   <AlertTriangle className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg text-red-600 dark:text-red-400">Danger Zone</CardTitle>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Irreversible actions</p>
+                  <CardTitle className="text-lg text-red-600">Danger Zone</CardTitle>
+                  <p className="text-xs text-slate-500 mt-0.5">Irreversible actions</p>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="p-4 sm:p-5 pt-0">
-              <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-xl p-4">
-                <p className="text-sm text-slate-700 dark:text-slate-300 mb-4">
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                <p className="text-sm text-slate-700 mb-4">
                   Permanently delete your account and all associated data. This action cannot be undone.
                 </p>
                 <Button
