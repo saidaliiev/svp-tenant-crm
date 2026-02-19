@@ -666,15 +666,15 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
               <div className="grid grid-cols-1 gap-4 sm:gap-6">
                 <div className="space-y-2 sm:space-y-3 text-sm sm:text-base">
                     {includeDebt && (
-                      <div className="flex justify-between">
-                        <span className="text-slate-600 dark:text-gray-400">Previous Debt:</span>
-                        <span className="font-medium">{formatCurrency(startingDebt)}</span>
+                      <div className="flex justify-between text-red-600 dark:text-red-500 font-medium">
+                        <span>Previous Debt:</span>
+                        <span>{formatCurrency(startingDebt)}</span>
                       </div>
                     )}
                     {includeCredit && (
-                      <div className="flex justify-between text-green-600">
+                      <div className="flex justify-between text-green-600 dark:text-green-500 font-medium">
                         <span>– Credit:</span>
-                        <span className="font-medium">{formatCurrency(credit)}</span>
+                        <span>{formatCurrency(credit)}</span>
                       </div>
                     )}
                     <div className="flex justify-between">
