@@ -71,6 +71,10 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       loadLastStatement();
       setCredit(selectedTenant.credit || 0);
       initializeTransaction();
+      // Auto-scroll to tenant info section
+      setTimeout(() => {
+        tenantInfoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 150);
     }
   }, [clientId]);
   
