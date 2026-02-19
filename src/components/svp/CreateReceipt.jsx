@@ -50,6 +50,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
   const [showLoadDialog, setShowLoadDialog] = useState(false);
   const [lastStatement, setLastStatement] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
 
   // Lifted state for AutomaticPaymentDetection (persists across tab switches)
   const [uploadedFile, setUploadedFile] = useState(null);
