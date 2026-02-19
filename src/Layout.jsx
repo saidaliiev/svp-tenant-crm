@@ -41,23 +41,6 @@ export default function Layout({ children, currentPageName }) {
 
   const currentTab = new URLSearchParams(location.search).get('tab') || 'tenants';
 
-  const handleGuideClick = () => {
-    if (currentTab === 'settings') {
-      if (!showClippy) {
-        setShowClippy(true);
-        controls.start({
-          y: [0, -20, 0, -10, 0],
-          rotate: [0, -15, 15, -5, 0],
-          scale: [1, 1.1, 1.1, 1.05, 1],
-          transition: { duration: 0.5, ease: "easeInOut" }
-        });
-        setTimeout(() => setShowClippy(false), 6000);
-      }
-    } else {
-      setShowGuide(true);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       <Toaster position="bottom-center" />
