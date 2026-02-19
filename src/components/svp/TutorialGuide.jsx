@@ -261,9 +261,9 @@ export default function TutorialGuide({ activeTab }) {
       {/* Fixed Tutorial Button — always small circle with ?, hides after 40% scroll */}
       <AnimatePresence>
         {!hidden && (
-          <motion.button
-            onClick={handleOpen}
-            className="fixed top-3 right-3 z-[100] flex items-center justify-center w-8 h-8 rounded-full border-2 border-blue-500 bg-white text-blue-600 shadow-sm hover:shadow-md"
+                <motion.button
+                  onClick={handleOpen}
+                  className="fixed top-3 right-3 z-[100] sm:top-[18px] sm:right-5 flex items-center justify-center w-8 h-8 sm:w-7 sm:h-7 rounded-full border-2 border-blue-500/60 bg-white/90 dark:bg-gray-800/90 text-blue-600 dark:text-blue-400 shadow-sm hover:shadow-md hover:border-blue-500 backdrop-blur-sm"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{
               opacity: shouldBlink ? [1, 0.15, 1, 0.15, 1, 1, 1, 1] : 1,
