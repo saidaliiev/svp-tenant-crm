@@ -138,6 +138,15 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
       });
     };
 
+    const updateRect = () => {
+      if (highlightedElement) {
+        setElementRect(highlightedElement.getBoundingClientRect());
+      }
+    };
+
+    window.addEventListener('scroll', updateRect, true);
+    window.addEventListener('resize', updateRect);
+
     const findElement = () => {
       let element = getVisibleElement(currentTourStep.selector);
       
