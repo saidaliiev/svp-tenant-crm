@@ -213,7 +213,7 @@ export default function ExportClientsPDF({ tenants = [], settings }) {
       <Button
         onClick={handleExportPDF}
         variant="outline"
-        data-tutorial="btn-export"
+        data-tour="btn-export"
         className="bg-white dark:bg-gray-800 hover:bg-slate-50 dark:hover:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
       >
         <FileDown className="w-4 h-4 mr-2" />
