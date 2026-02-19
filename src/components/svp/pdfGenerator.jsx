@@ -112,28 +112,12 @@ export function generateReceiptPDF(receiptData, settings) {
         
         const dateFormatted = formatDateShort(t.date) || '-';
         
-        // Tenant Payment row
-        const tenantDesc = t.tenantPaid ? 'Tenant Payment' : 'Tenant Payment (NOT PAID)';
-        
         tableData.push([
           dateFormatted,
-          tenantDesc,
-          formatCurrency(rentDueVal),
+          rentDueVal > 0 ? formatCurrency(rentDueVal) : '-',
           t.tenantPaid ? formatCurrency(tenantPaymentVal) : '-',
-          '-'
+          rasPaymentVal > 0 && t.rasReceived ? formatCurrency(rasPaymentVal) : '-'
         ]);
-        
-        // RAS row 
-        if (rasPaymentVal > 0) {
-          const rasDesc = t.rasReceived ? 'RAS Payment' : 'RAS Payment (NOT PAID)';
-          tableData.push([
-            dateFormatted,
-            rasDesc,
-            '-',
-            t.rasReceived ? formatCurrency(rasPaymentVal) : '-',
-            '-'
-          ]);
-        }
       });
     }
 
