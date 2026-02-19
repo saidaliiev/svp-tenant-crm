@@ -83,8 +83,8 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
             <CardTitle className="text-lg sm:text-xl dark:text-gray-100">Receipt History</CardTitle>
           </div>
           
-          <div className="w-full sm:w-64" data-tutorial="history-filter">
-            <Select value={filterClientId} onValueChange={setFilterClientId}>
+          <div className="w-full sm:w-64" data-tour="tenant-filter">
+             <Select value={filterClientId} onValueChange={setFilterClientId}>
               <SelectTrigger>
                 <SelectValue placeholder="Filter by client" />
               </SelectTrigger>
@@ -112,7 +112,7 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
             {/* Mobile: Card layout */}
             <div className="sm:hidden space-y-2.5">
               {sortedStatements.map((receipt, index) => (
-                <div key={receipt.id} className="bg-white dark:bg-gray-800/60 rounded-xl border border-slate-200 dark:border-gray-700/50 p-3 shadow-sm" {...(index === 0 ? {'data-tutorial': 'history-actions'} : {})}>
+                <div key={receipt.id} className="bg-white dark:bg-gray-800/60 rounded-xl border border-slate-200 dark:border-gray-700/50 p-3 shadow-sm" data-tour={index === 0 ? "receipt-row" : undefined}>
                   <div className="flex items-center justify-between mb-1.5">
                     <div className="min-w-0">
                       <p className="font-medium text-slate-800 dark:text-gray-200 text-sm truncate">{receipt.clientName}</p>
@@ -124,10 +124,10 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
                   </div>
                   <p className="text-[10px] text-slate-500 dark:text-gray-500 mb-2">{formatDate(receipt.startDate)} – {formatDate(receipt.endDate)}</p>
                   <div className="flex gap-1.5">
-                    <Button size="sm" onClick={() => handleViewPDF(receipt)} className="flex-1 bg-blue-500 hover:bg-blue-600 text-white h-8 text-xs">
+                    <Button size="sm" onClick={() => handleViewPDF(receipt)} data-tour={index === 0 ? "btn-view-print" : undefined} className="flex-1 bg-blue-500 hover:bg-blue-600 text-white h-8 text-xs">
                       <Printer className="w-3.5 h-3.5 mr-1" /> Print
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => setDeleteReceipt(receipt)} className="border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 h-8 w-8 p-0">
+                    <Button size="sm" variant="outline" onClick={() => setDeleteReceipt(receipt)} data-tour={index === 0 ? "btn-delete-receipt" : undefined} className="border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 h-8 w-8 p-0">
                       <Trash2 className="w-3.5 h-3.5" />
                     </Button>
                   </div>
@@ -157,12 +157,12 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
                       <td className="py-3 px-4 text-slate-600 dark:text-gray-400 text-sm hidden lg:table-cell">{formatDate(receipt.startDate)} – {formatDate(receipt.endDate)}</td>
                       <td className={`py-3 px-4 text-right font-semibold text-sm ${receipt.finalBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>{formatCurrency(receipt.finalBalance)}</td>
                       <td className="py-3 px-4">
-                        <div className="flex justify-end gap-1" {...(index === 0 ? {'data-tutorial': 'history-actions'} : {})}>
-                          <Button size="sm" onClick={() => handleViewPDF(receipt)} className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white h-8 px-3 text-xs">
+                        <div className="flex justify-end gap-1">
+                          <Button size="sm" onClick={() => handleViewPDF(receipt)} data-tour={index === 0 ? "btn-view-print" : undefined} className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white h-8 px-3 text-xs">
                             <Printer className="w-4 h-4" />
                             <span className="hidden lg:inline ml-1">View/Print</span>
                           </Button>
-                          <Button size="sm" variant="outline" onClick={() => setDeleteReceipt(receipt)} className="border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 h-8 px-3">
+                          <Button size="sm" variant="outline" onClick={() => setDeleteReceipt(receipt)} data-tour={index === 0 ? "btn-delete-receipt" : undefined} className="border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 h-8 px-3">
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
