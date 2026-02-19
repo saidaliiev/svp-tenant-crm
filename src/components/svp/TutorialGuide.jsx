@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GraduationCap, X, ChevronLeft, ChevronRight, HelpCircle } from 'lucide-react';
+import { GraduationCap, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
 const TUTORIALS = {
@@ -28,7 +28,6 @@ const TUTORIALS = {
           rows: [
             { label: "Week 1 — 01 Jan", rent: "€143.40", tenant: "€40.00 ✓", ras: "€103.40 ✓" },
             { label: "Week 2 — 08 Jan", rent: "€143.40", tenant: "€40.00 ✓", ras: "€103.40 ✓" },
-            { label: "Week 3 — 15 Jan", rent: "€143.40", tenant: "€40.00 ✗", ras: "€103.40 ✓" },
           ]
         }
       },
@@ -49,7 +48,7 @@ const TUTORIALS = {
       },
       { 
         target: '[data-tutorial="receipt-generate"]', 
-        title: "Generate Receipt", 
+        title: "Print Receipt", 
         description: "Click to generate a PDF receipt. You can save it to the cloud for history tracking or just print it directly.",
       },
     ]
@@ -77,14 +76,13 @@ const SESSION_KEY = 'svp_tutorial_shown_tabs';
 function FallbackPreview({ preview }) {
   if (!preview) return null;
   
-  // Balance-style preview
   if (preview.rows[0]?.value) {
     return (
-      <div className="mt-3 bg-slate-50 dark:bg-slate-900 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
-        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">{preview.title}</p>
-        <div className="space-y-1">
+      <div className="mt-2 bg-slate-50 dark:bg-slate-900 rounded-lg p-2.5 border border-slate-200 dark:border-slate-700">
+        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">{preview.title}</p>
+        <div className="space-y-0.5">
           {preview.rows.map((row, i) => (
-            <div key={i} className={`flex justify-between text-xs ${row.bold ? 'font-bold border-t border-slate-300 dark:border-slate-600 pt-1 mt-1' : ''}`}>
+            <div key={i} className={`flex justify-between text-[11px] ${row.bold ? 'font-bold border-t border-slate-300 dark:border-slate-600 pt-1 mt-1' : ''}`}>
               <span className={`${row.color === 'green' ? 'text-green-600' : row.color === 'blue' ? 'text-blue-600' : row.color === 'red' ? 'text-red-600' : 'text-slate-600 dark:text-slate-400'}`}>{row.label}</span>
               <span className={`font-medium ${row.color === 'green' ? 'text-green-600' : row.color === 'blue' ? 'text-blue-600' : row.color === 'red' ? 'text-red-600' : 'text-slate-700 dark:text-slate-300'}`}>{row.value}</span>
             </div>
@@ -94,11 +92,10 @@ function FallbackPreview({ preview }) {
     );
   }
   
-  // Transaction-style preview
   return (
-    <div className="mt-3 bg-slate-50 dark:bg-slate-900 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
-      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">{preview.title}</p>
-      <div className="space-y-1.5">
+    <div className="mt-2 bg-slate-50 dark:bg-slate-900 rounded-lg p-2.5 border border-slate-200 dark:border-slate-700">
+      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">{preview.title}</p>
+      <div className="space-y-1">
         {preview.rows.map((row, i) => (
           <div key={i} className="flex items-center gap-2 text-[10px]">
             <span className="text-slate-500 w-24 shrink-0">{row.label}</span>
@@ -118,23 +115,7 @@ export default function TutorialGuide({ activeTab }) {
   const [shouldBlink, setShouldBlink] = useState(false);
   const [highlightRect, setHighlightRect] = useState(null);
   const [elementFound, setElementFound] = useState(true);
-  const [collapsed, setCollapsed] = useState(false);
   const overlayRef = useRef(null);
-  const lastScrollY = useRef(0);
-
-  // Hide button when scrolled past 40% of the page
-  const [hidden, setHidden] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-      if (scrollable <= 0) { setHidden(false); return; }
-      const pct = window.scrollY / scrollable;
-      setHidden(pct > 0.4);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const tutorial = TUTORIALS[activeTab] || TUTORIALS.tenants;
 
@@ -157,6 +138,18 @@ export default function TutorialGuide({ activeTab }) {
     setShouldBlink(false);
   }, [activeTab]);
 
+  const scrollToElement = useCallback((el) => {
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const viewportH = window.innerHeight;
+    // Check if element is not in the visible area (with some margin)
+    if (rect.top < 60 || rect.bottom > viewportH - 60) {
+      // Scroll so element is at ~35% from top (15% extra margin)
+      const targetScrollTop = window.scrollY + rect.top - viewportH * 0.35;
+      window.scrollTo({ top: Math.max(0, targetScrollTop), behavior: 'smooth' });
+    }
+  }, []);
+
   const updateHighlight = useCallback(() => {
     if (!isOpen) { setHighlightRect(null); return; }
     const step = tutorial.steps[currentStep];
@@ -171,20 +164,41 @@ export default function TutorialGuide({ activeTab }) {
         height: rect.height + 12,
       });
       setElementFound(true);
-      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     } else {
       setHighlightRect(null);
       setElementFound(false);
     }
   }, [isOpen, currentStep, tutorial]);
 
+  // Scroll to element on step change, then update highlight after scroll settles
   useEffect(() => {
-    updateHighlight();
-    if (isOpen) {
-      const interval = setInterval(updateHighlight, 500);
-      return () => clearInterval(interval);
+    if (!isOpen) return;
+    const step = tutorial.steps[currentStep];
+    if (!step?.target) return;
+    
+    const el = document.querySelector(step.target);
+    if (el) {
+      scrollToElement(el);
     }
-  }, [isOpen, currentStep, updateHighlight]);
+    
+    // Update highlight immediately and after scroll animation
+    updateHighlight();
+    const t1 = setTimeout(updateHighlight, 400);
+    const t2 = setTimeout(updateHighlight, 800);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [isOpen, currentStep, tutorial, scrollToElement, updateHighlight]);
+
+  // Keep highlight in sync during scroll/resize
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = () => updateHighlight();
+    window.addEventListener('scroll', handler, { passive: true });
+    window.addEventListener('resize', handler, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handler);
+      window.removeEventListener('resize', handler);
+    };
+  }, [isOpen, updateHighlight]);
 
   const handleOpen = () => {
     setIsOpen(true);
@@ -198,7 +212,9 @@ export default function TutorialGuide({ activeTab }) {
     setHighlightRect(null);
   };
 
-  const nextStep = () => {
+  const nextStep = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
     if (currentStep < tutorial.steps.length - 1) {
       setCurrentStep(prev => prev + 1);
     } else {
@@ -206,34 +222,33 @@ export default function TutorialGuide({ activeTab }) {
     }
   };
 
-  const prevStep = () => {
+  const prevStep = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
     if (currentStep > 0) setCurrentStep(prev => prev - 1);
   };
 
-  const getTooltipStyle = () => {
+  const getTooltipPosition = () => {
     const viewportH = window.innerHeight;
     const viewportW = window.innerWidth;
-    const isMobile = viewportW < 480;
-    const tooltipW = isMobile ? viewportW - 32 : Math.min(380, viewportW - 32);
+    const isMobile = viewportW < 640;
     
-    // On mobile, always center horizontally for best readability
+    // On mobile, always position at bottom of screen as a fixed panel
     if (isMobile) {
-      const centerLeft = (viewportW - tooltipW) / 2;
-      if (!highlightRect) {
-        return { top: '50%', left: centerLeft, transform: 'translateY(-50%)', width: tooltipW };
-      }
-      const tooltipH = 280;
-      // Place below highlight if room, otherwise above, otherwise center
-      if (highlightRect.top + highlightRect.height + tooltipH + 16 < viewportH) {
-        return { top: highlightRect.top + highlightRect.height + 12, left: centerLeft, width: tooltipW };
-      }
-      if (highlightRect.top - tooltipH - 16 > 0) {
-        return { top: highlightRect.top - tooltipH - 12, left: centerLeft, width: tooltipW };
-      }
-      return { top: 16, left: centerLeft, width: tooltipW };
+      return { 
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        maxHeight: '55vh',
+      };
     }
 
-    if (!highlightRect) return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' };
+    const tooltipW = Math.min(380, viewportW - 32);
+    
+    if (!highlightRect) {
+      return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)', maxWidth: tooltipW };
+    }
     
     const tooltipH = 240;
     if (highlightRect.top + highlightRect.height + tooltipH + 20 < viewportH) {
@@ -255,35 +270,30 @@ export default function TutorialGuide({ activeTab }) {
 
   const currentStepData = tutorial.steps[currentStep];
   const showFallback = !elementFound && currentStepData?.fallbackPreview;
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
 
   return (
     <>
-      {/* Fixed Tutorial Button — always small circle with ?, hides after 40% scroll */}
-      <AnimatePresence>
-        {!hidden && (
-                <motion.button
-                  onClick={handleOpen}
-                  className="fixed top-3 right-3 z-[100] sm:top-[18px] sm:right-5 flex items-center justify-center w-8 h-8 sm:w-7 sm:h-7 rounded-full border-2 border-blue-500/60 bg-white/90 dark:bg-gray-800/90 text-blue-600 dark:text-blue-400 shadow-sm hover:shadow-md hover:border-blue-500 backdrop-blur-sm"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{
-              opacity: shouldBlink ? [1, 0.15, 1, 0.15, 1, 1, 1, 1] : 1,
-              scale: 1,
-            }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{
-              opacity: shouldBlink
-                ? { duration: 2, repeat: Infinity, ease: "linear" }
-                : { duration: 0.4, ease: "easeInOut" },
-              scale: { duration: 0.4, ease: "easeInOut" },
-            }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            title="Open Tutorial"
-          >
-            <span className="text-sm font-bold">?</span>
-          </motion.button>
-        )}
-      </AnimatePresence>
+      {/* Fixed Tutorial Button — always visible */}
+      {!isOpen && (
+        <motion.button
+          onClick={handleOpen}
+          className="fixed top-3 right-3 z-[9999] sm:top-[18px] sm:right-5 flex items-center justify-center w-9 h-9 sm:w-7 sm:h-7 rounded-full border-2 border-blue-500/60 bg-white/90 dark:bg-gray-800/90 text-blue-600 dark:text-blue-400 shadow-md hover:shadow-lg hover:border-blue-500 backdrop-blur-sm"
+          animate={{
+            opacity: shouldBlink ? [1, 0.15, 1, 0.15, 1, 1, 1, 1] : 1,
+          }}
+          transition={{
+            opacity: shouldBlink
+              ? { duration: 2, repeat: Infinity, ease: "linear" }
+              : { duration: 0.4, ease: "easeInOut" },
+          }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          title="Open Tutorial"
+        >
+          <span className="text-sm font-bold">?</span>
+        </motion.button>
+      )}
 
       {/* Tutorial Overlay */}
       <AnimatePresence>
@@ -293,8 +303,7 @@ export default function TutorialGuide({ activeTab }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[90]"
-            style={{ pointerEvents: 'auto' }}
+            className="fixed inset-0 z-[9998]"
           >
             {/* Dark overlay with cutout */}
             <svg className="absolute inset-0 w-full h-full" style={{ pointerEvents: 'none' }}>
@@ -337,16 +346,16 @@ export default function TutorialGuide({ activeTab }) {
             )}
 
             {/* Click backdrop to close */}
-            <div className="absolute inset-0" onClick={handleClose} />
+            <div className="absolute inset-0" onClick={handleClose} style={{ zIndex: 0 }} />
 
             {/* Tooltip Card */}
             <motion.div
               key={currentStep}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: isMobile ? 30 : 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              className="absolute bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col"
-              style={{ ...getTooltipStyle(), pointerEvents: 'auto', zIndex: 95, maxHeight: window.innerWidth < 480 ? 'calc(50vh)' : undefined }}
+              exit={{ opacity: 0, y: isMobile ? 30 : 10 }}
+              className={`${isMobile ? 'fixed' : 'absolute'} bg-white dark:bg-gray-800 shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col ${isMobile ? 'rounded-t-2xl' : 'rounded-xl'}`}
+              style={{ ...getTooltipPosition(), zIndex: 9999, pointerEvents: 'auto' }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
@@ -355,12 +364,12 @@ export default function TutorialGuide({ activeTab }) {
                   <GraduationCap className="w-4 h-4 text-white/80" />
                   <span className="text-white text-xs font-medium">{tutorial.title}</span>
                 </div>
-                <button onClick={handleClose} className="text-white/60 hover:text-white">
+                <button onClick={handleClose} className="text-white/60 hover:text-white p-1 -mr-1">
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              {/* Content — scrollable on mobile */}
+              {/* Content — scrollable */}
               <div className="p-4 overflow-y-auto flex-1 min-h-0">
                 <div className="flex items-start gap-3">
                   <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-xs font-bold text-blue-600 dark:text-blue-300 shrink-0 mt-0.5">
@@ -370,7 +379,6 @@ export default function TutorialGuide({ activeTab }) {
                     <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm">{currentStepData.title}</h3>
                     <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mt-1">{currentStepData.description}</p>
                     
-                    {/* Show fallback preview if element not visible */}
                     {showFallback && (
                       <>
                         <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-2 italic">
@@ -383,20 +391,20 @@ export default function TutorialGuide({ activeTab }) {
                 </div>
               </div>
 
-              {/* Footer — always visible */}
-              <div className="border-t border-gray-100 dark:border-gray-700 px-4 py-2.5 flex items-center justify-between shrink-0">
-                <div className="flex gap-1">
+              {/* Footer — always visible, high z-index */}
+              <div className="border-t border-gray-100 dark:border-gray-700 px-4 py-3 flex items-center justify-between shrink-0 bg-white dark:bg-gray-800">
+                <div className="flex gap-1.5">
                   {tutorial.steps.map((_, i) => (
-                    <div key={i} className={`w-1.5 h-1.5 rounded-full transition-colors ${i === currentStep ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'}`} />
+                    <div key={i} className={`w-2 h-2 rounded-full transition-colors ${i === currentStep ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'}`} />
                   ))}
                 </div>
-                <div className="flex gap-1.5">
+                <div className="flex gap-2">
                   {currentStep > 0 && (
-                    <Button variant="ghost" size="sm" onClick={prevStep} className="h-7 px-2 text-xs">
+                    <Button variant="ghost" size="sm" onClick={prevStep} className="h-8 px-3 text-xs">
                       <ChevronLeft className="w-3 h-3 mr-0.5" /> Back
                     </Button>
                   )}
-                  <Button size="sm" onClick={nextStep} className="h-7 px-3 text-xs bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
+                  <Button size="sm" onClick={nextStep} className="h-8 px-4 text-xs bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white">
                     {currentStep < tutorial.steps.length - 1 ? (
                       <>Next <ChevronRight className="w-3 h-3 ml-0.5" /></>
                     ) : 'Done'}
