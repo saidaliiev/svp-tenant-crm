@@ -307,6 +307,10 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       })()
     };
 
+    // Wait for animation to show before opening dialog
+    await new Promise(resolve => setTimeout(resolve, 1200));
+    setIsGenerating(false);
+
     setPendingReceiptData(receiptData);
     setShowSaveDialog(true);
   };
