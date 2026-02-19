@@ -50,40 +50,12 @@ export default function Layout({ children, currentPageName }) {
         </div>
       </div>
 
-      {/* Help Button - Bottom Right */}
+      {/* Clippy Agent */}
       {currentPageName !== 'Settings' && (
-        <div className="fixed bottom-6 right-6 z-30 flex flex-col items-end pointer-events-none">
-          <AnimatePresence>
-            {showClippy && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.8, y: 20 }}
-                className="mb-4 bg-[#ffffe1] text-black p-4 rounded-xl shadow-xl border border-gray-400 max-w-[250px] relative origin-bottom-right pointer-events-auto"
-                style={{ fontFamily: '"Comic Sans MS", "Chalkboard SE", "Marker Felt", sans-serif' }}
-              >
-                <div className="absolute -bottom-2 right-4 w-4 h-4 bg-[#ffffe1] border-b border-r border-gray-400 transform rotate-45"></div>
-                <p className="text-sm font-medium leading-relaxed text-center">
-                  Похоже, вы ищете гайд по настройкам?<br/><br/>
-                  Здесь его нет! 📎<br/>
-                  Попробуйте на других страницах.
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <motion.button
-            animate={controls}
-            onClick={handleGuideClick}
-            className={`pointer-events-auto w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 ${
-              showClippy ? 'bg-yellow-100 text-black border-2 border-yellow-400' : 'bg-blue-500 hover:bg-blue-600 text-white'
-            }`}
-            aria-label="Start interactive tour"
-            title="Help"
-          >
-            {showClippy ? <Paperclip className="w-6 h-6 animate-pulse" /> : <HelpCircle className="w-6 h-6" />}
-          </motion.button>
-        </div>
+        <ClippyAgent 
+          currentPage={currentTab} 
+          onStartGuide={() => setShowGuide(true)} 
+        />
       )}
 
       <SecretFooter onReveal={handleReveal} />
