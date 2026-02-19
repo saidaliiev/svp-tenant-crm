@@ -3,6 +3,7 @@ import TutorialGuide from '@/components/svp/TutorialGuide';
 import SecretFooter from '@/components/svp/SecretFooter';
 import DevPortfolio from '@/components/svp/DevPortfolio';
 import MobilePortfolioTrigger from '@/components/svp/MobilePortfolioTrigger';
+import { base44 } from '@/api/base44Client';
 
 function useActiveTab(pageName) {
   const [tab, setTab] = useState(() => {
@@ -34,6 +35,36 @@ function useActiveTab(pageName) {
 export default function Layout({ children, currentPageName }) {
   const activeTab = useActiveTab(currentPageName);
   const [showPortfolio, setShowPortfolio] = useState(false);
+
+  // Load user appearance prefs on mount
+  useEffect(() => {
+    const loadUserPrefs = async () => {
+      try {
+        const user = await base44.auth.me();
+        const root = document.documentElement;
+        
+        // Apply theme
+        const theme = user.theme || 'system';
+        if (theme === 'dark') {
+          root.classList.add('dark');
+        } else if (theme === 'light') {
+          root.classList.remove('dark');
+        } else {
+          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            root.classList.add('dark');
+          } else {
+            root.classList.remove('dark');
+          }
+        }
+
+        // Apply font size
+        const fontSize = user.fontSize || 'medium';
+        root.classList.remove('text-sm', 'text-base', 'text-lg');
+        root.classList.add(fontSize === 'small' ? 'text-sm' : fontSize === 'large' ? 'text-lg' : 'text-base');
+      } catch {}
+    };
+    loadUserPrefs();
+  }, []);
 
   const handleReveal = useCallback(() => {
     if (showPortfolio) return;
