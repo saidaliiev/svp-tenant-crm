@@ -56,6 +56,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
   const [autoStatementDateRange, setAutoStatementDateRange] = useState(null);
 
   const selectedTenant = tenants.find(t => t.id === clientId);
+  const tenantInfoRef = React.useRef(null);
 
   // When selectedTenantId prop changes (from tenant management)
   useEffect(() => {
