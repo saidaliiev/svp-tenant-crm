@@ -148,7 +148,7 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
                 </thead>
                 <tbody>
                   {sortedStatements.map((receipt, index) => (
-                    <tr key={receipt.id} className={`border-b border-slate-100 dark:border-gray-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-950/20 dark:hover:to-purple-950/20 transition-colors ${index % 2 === 0 ? 'bg-white dark:bg-transparent' : 'bg-slate-50/50 dark:bg-gray-800/30'}`}>
+                    <tr key={receipt.id} data-tour={index === 0 ? "receipt-row" : undefined} className={`border-b border-slate-100 dark:border-gray-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-950/20 dark:hover:to-purple-950/20 transition-colors ${index % 2 === 0 ? 'bg-white dark:bg-transparent' : 'bg-slate-50/50 dark:bg-gray-800/30'}`}>
                       <td className="py-3 px-4">
                         <p className="font-medium text-slate-800 dark:text-gray-200 text-sm">{receipt.clientName}</p>
                         <p className="text-xs text-slate-500 dark:text-gray-500">{receipt.receiptId}</p>
