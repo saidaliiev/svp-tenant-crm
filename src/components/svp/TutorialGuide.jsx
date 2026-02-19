@@ -126,6 +126,13 @@ export default function TutorialGuide({ activeTab }) {
   const currentStepData = tutorial.steps[currentStep];
   const showFallback = !elementFound && currentStepData?.fallbackPreview;
 
+  // Close tutorial and reset step when tab changes
+  useEffect(() => {
+    setIsOpen(false);
+    setCurrentStep(0);
+    setHighlightRect(null);
+  }, [activeTab]);
+
   useEffect(() => {
     const shownTabs = JSON.parse(sessionStorage.getItem(SESSION_KEY) || '[]');
     if (!shownTabs.includes(activeTab)) {
