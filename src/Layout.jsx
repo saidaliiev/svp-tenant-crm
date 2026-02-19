@@ -64,8 +64,8 @@ export default function Layout({ children, currentPageName }) {
         isOpen={showGuide} 
         onClose={() => setShowGuide(false)} 
         currentPage={currentPageName}
-        currentTab={new URLSearchParams(window.location.search).get('tab') || 'tenants'}
-        currentMode={new URLSearchParams(window.location.search).get('mode') || 'manual'}
+        currentTab={new URLSearchParams(location.search).get('tab') || 'tenants'}
+        currentMode={new URLSearchParams(location.search).get('mode') || 'manual'}
       />
     </div>
   );
