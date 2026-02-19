@@ -226,51 +226,64 @@ export default function TutorialGuide({ activeTab }) {
     if (currentStep > 0) setCurrentStep(prev => prev - 1);
   };
 
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+
   // Calculate tooltip position and max height so it NEVER overflows the viewport
   const getTooltipStyle = () => {
     const vH = window.innerHeight;
     const vW = window.innerWidth;
+
+    // Mobile: fixed bottom panel (above mobile nav bar ~64px + safe area)
+    if (vW < 640) {
+      return {
+        position: 'fixed',
+        bottom: 72,
+        left: 8,
+        right: 8,
+        width: 'auto',
+        maxHeight: '50vh',
+      };
+    }
+
+    // Desktop
     const tooltipW = Math.min(380, vW - 32);
     const margin = 16;
 
-    // No highlight — center on screen
     if (!highlightRect) {
-      const maxH = vH - margin * 2;
       return {
+        position: 'absolute',
         top: margin,
         left: Math.max(margin, (vW - tooltipW) / 2),
         width: tooltipW,
-        maxHeight: maxH,
+        maxHeight: vH - margin * 2,
       };
     }
 
     const leftPos = Math.max(margin, Math.min(highlightRect.left, vW - tooltipW - margin));
-
-    // Space below and above highlight
     const spaceBelow = vH - (highlightRect.top + highlightRect.height + margin);
     const spaceAbove = highlightRect.top - margin;
 
-    // Prefer below
     if (spaceBelow >= 180) {
       return {
+        position: 'absolute',
         top: highlightRect.top + highlightRect.height + 12,
         left: leftPos,
         width: tooltipW,
         maxHeight: spaceBelow - 4,
       };
     }
-    // Try above
     if (spaceAbove >= 180) {
       const maxH = spaceAbove - 4;
       return {
+        position: 'absolute',
         top: Math.max(margin, highlightRect.top - Math.min(maxH, 500) - 12),
         left: leftPos,
         width: tooltipW,
         maxHeight: maxH,
       };
     }
-    // Fallback: place at top of viewport
     return {
+      position: 'absolute',
       top: margin,
       left: leftPos,
       width: tooltipW,
