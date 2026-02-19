@@ -131,19 +131,43 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
     if (!isOpen || !currentTourStep || currentPage === 'Settings') return;
 
     const findElement = () => {
-      const element = document.querySelector(currentTourStep.selector);
+      let element = document.querySelector(currentTourStep.selector);
+      
+      // Smart detection for CreateReceipt (Steps 4+ need a tenant selected)
+      if (!element && tourKey === 'Home_CreateReceipt' && currentStep >= 3) {
+        const firstTenantBtn = document.querySelector('[data-tour="tenant-selector"] button');
+        if (firstTenantBtn) {
+          firstTenantBtn.click(); // Auto-select to demonstrate
+          setTimeout(() => {
+            const newElement = document.querySelector(currentTourStep.selector);
+            if (newElement) {
+              setHighlightedElement(newElement);
+              setElementRect(newElement.getBoundingClientRect());
+              newElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+              setHighlightedElement(null);
+              setElementRect(null);
+            }
+          }, 150);
+          return;
+        }
+      }
+
       if (element) {
         setHighlightedElement(element);
         const rect = element.getBoundingClientRect();
         setElementRect(rect);
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        setHighlightedElement(null);
+        setElementRect(null);
       }
     };
 
     findElement();
-    const timer = setTimeout(findElement, 100);
+    const timer = setTimeout(findElement, 200);
     return () => clearTimeout(timer);
-  }, [currentStep, isOpen, currentTourStep, currentPage]);
+  }, [currentStep, isOpen, currentTourStep, currentPage, currentTab, tourKey]);
 
   const handleNext = () => {
     if (currentStep < tourSteps.length - 1) {
