@@ -90,11 +90,11 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/50 to-purple-50/50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
         {/* Desktop Tab Navigation */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="hidden sm:grid w-full grid-cols-4 mb-4 sm:mb-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg rounded-lg sm:rounded-xl p-0.5 sm:p-1 h-auto select-none">
+          <TabsList className="hidden sm:grid w-full grid-cols-4 mb-4 sm:mb-6 bg-white/80 dark:bg-gray-800/60 backdrop-blur-sm shadow-lg dark:shadow-gray-950/30 rounded-lg sm:rounded-xl p-0.5 sm:p-1 h-auto select-none border-0 dark:border dark:border-gray-700/50">
             <TabsTrigger 
               value="tenants" 
               className="flex flex-row items-center gap-2 py-3 px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all text-sm"
@@ -174,7 +174,7 @@ export default function HomePage() {
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-t border-gray-200 dark:border-gray-700 z-50 pb-safe">
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-t border-gray-200 dark:border-gray-800 z-50 pb-safe">
         <div className="grid grid-cols-4 h-16">
           <button
             onClick={() => handleTabChange('tenants')}

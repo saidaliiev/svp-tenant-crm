@@ -320,14 +320,14 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
   };
 
   return (
-    <Card className="bg-white/90 backdrop-blur-sm shadow-xl border-0">
-      <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-purple-50 p-4 sm:p-6">
+    <Card className="bg-white/90 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl dark:shadow-gray-950/20 border-0 dark:border dark:border-gray-700/50">
+      <CardHeader className="border-b dark:border-gray-700/50 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-2 sm:gap-3" data-tutorial="tenant-header">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
               <Users className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <CardTitle className="text-lg sm:text-xl">Tenant Management</CardTitle>
+            <CardTitle className="text-lg sm:text-xl dark:text-gray-100">Tenant Management</CardTitle>
           </div>
           <div className="flex flex-wrap gap-1.5 sm:gap-2">
             <Button 
@@ -345,7 +345,7 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
               size="sm"
               data-tutorial="btn-import"
               onClick={() => fileInputRef.current?.click()}
-              className="border-blue-300 text-blue-700 hover:bg-blue-50 text-xs sm:text-sm"
+              className="border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 text-xs sm:text-sm"
             >
               <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Import CSV/Excel</span>
@@ -371,15 +371,15 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
         )}
         
         {success && (
-          <Alert className="mb-4 border-green-200 bg-green-50">
-            <AlertDescription className="text-green-700">{success}</AlertDescription>
+          <Alert className="mb-4 border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/30">
+            <AlertDescription className="text-green-700 dark:text-green-400">{success}</AlertDescription>
           </Alert>
         )}
 
         {tenantsLoading ? (
-          <div className="text-center py-12 text-slate-500">Loading tenants...</div>
+          <div className="text-center py-12 text-slate-500 dark:text-gray-400">Loading tenants...</div>
         ) : tenants.length === 0 ? (
-          <div className="text-center py-12 text-slate-500">
+          <div className="text-center py-12 text-slate-500 dark:text-gray-400">
             <Users className="w-16 h-16 mx-auto mb-4 opacity-30" />
             <p className="text-lg">No tenants yet</p>
             <p className="text-sm">Add your first tenant or import from a file</p>
@@ -405,24 +405,24 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
             <div className="hidden sm:block overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b-2 border-slate-200">
-                    <th className="text-left py-3 px-4 font-semibold text-slate-700 text-sm whitespace-nowrap">ID</th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-700 text-sm whitespace-nowrap">Full Name</th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-700 text-sm whitespace-nowrap">Address</th>
-                    <th className="text-right py-3 px-4 font-semibold text-slate-700 text-sm whitespace-nowrap">Balance</th>
-                    <th className="text-right py-3 px-4 font-semibold text-slate-700 text-sm whitespace-nowrap">Actions</th>
+                  <tr className="border-b-2 border-slate-200 dark:border-gray-700">
+                    <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">ID</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Full Name</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Address</th>
+                    <th className="text-right py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Balance</th>
+                    <th className="text-right py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {tenants.map((tenant, index) => (
                     <tr 
                       key={tenant.id} 
-                      className={`border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-colors cursor-pointer ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
+                      className={`border-b border-slate-100 dark:border-gray-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-950/20 dark:hover:to-purple-950/20 transition-colors cursor-pointer ${index % 2 === 0 ? 'bg-white dark:bg-transparent' : 'bg-slate-50/50 dark:bg-gray-800/30'}`}
                       onClick={() => setProfileTenant(tenant)}
                     >
-                      <td className="py-3 px-4 font-mono text-sm text-slate-600 whitespace-nowrap">{tenant.displayId || tenant.id}</td>
-                      <td className="py-3 px-4 font-medium text-slate-800 text-sm whitespace-nowrap">{tenant.fullName}</td>
-                      <td className="py-3 px-4 text-slate-600 text-sm whitespace-nowrap">{tenant.address}</td>
+                      <td className="py-3 px-4 font-mono text-sm text-slate-600 dark:text-gray-400 whitespace-nowrap">{tenant.displayId || tenant.id}</td>
+                      <td className="py-3 px-4 font-medium text-slate-800 dark:text-gray-200 text-sm whitespace-nowrap">{tenant.fullName}</td>
+                      <td className="py-3 px-4 text-slate-600 dark:text-gray-400 text-sm whitespace-nowrap">{tenant.address}</td>
                       <td className={`py-3 px-4 text-right font-semibold text-sm whitespace-nowrap ${(tenant.currentBalance || 0) > 0 ? 'text-red-600' : 'text-green-600'}`}>
                         {formatCurrency(tenant.currentBalance || 0)}
                       </td>
@@ -436,10 +436,10 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                             <UserCheck className="w-4 h-4" />
                             <span className="hidden lg:inline ml-1">Select</span>
                           </Button>
-                          <Button size="sm" variant="outline" onClick={() => handleOpenEdit(tenant)} className="border-blue-300 text-blue-600 hover:bg-blue-50 h-8 px-3">
+                          <Button size="sm" variant="outline" onClick={() => handleOpenEdit(tenant)} className="border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 h-8 px-3">
                             <Pencil className="w-4 h-4" />
                           </Button>
-                          <Button size="sm" variant="outline" onClick={() => setDeleteTenant(tenant)} className="border-red-300 text-red-600 hover:bg-red-50 h-8 px-3">
+                          <Button size="sm" variant="outline" onClick={() => setDeleteTenant(tenant)} className="border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 h-8 px-3">
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
@@ -546,7 +546,7 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
               
               {/* Automatic Payment Detection Fields */}
               <div className="pt-4 border-t">
-                <h4 className="font-semibold text-sm text-slate-700 mb-3">Automatic Payment Detection</h4>
+                <h4 className="font-semibold text-sm text-slate-700 dark:text-gray-300 mb-3">Automatic Payment Detection</h4>
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="lodgmentRange">Lodgment Range (for cash payments)</Label>
