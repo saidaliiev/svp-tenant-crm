@@ -110,7 +110,7 @@ const TOUR_CONFIG = {
   ]
 };
 
-export default function InteractiveTour({ isOpen, onClose, currentPage, currentTab }) {
+export default function InteractiveTour({ isOpen, onClose, currentPage, currentTab, currentMode }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [highlightedElement, setHighlightedElement] = useState(null);
   const [elementRect, setElementRect] = useState(null);
@@ -119,7 +119,9 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
   let tourKey = currentPage;
   if (currentPage === 'Home') {
     if (currentTab === 'tenants') tourKey = 'Home_TenantManagement';
-    else if (currentTab === 'receipt') tourKey = 'Home_CreateReceipt';
+    else if (currentTab === 'receipt') {
+      tourKey = currentMode === 'automatic' ? 'Home_AutomaticMode' : 'Home_CreateReceipt';
+    }
     else if (currentTab === 'history') tourKey = 'Home_ReceiptHistory';
   }
 
