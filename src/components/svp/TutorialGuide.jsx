@@ -7,22 +7,22 @@ const TUTORIALS = {
   tenants: {
     title: "Tenant Management",
     steps: [
-      { target: '[data-tutorial="tenant-header"]', title: "Tenant List", description: "View all your tenants — their IDs, names, addresses, and current balances." },
-      { target: '[data-tutorial="btn-add-tenant"]', title: "Add Tenant", description: "Click here to add a new tenant with their personal and payment details." },
-      { target: '[data-tutorial="btn-import"]', title: "Import Data", description: "Bulk-import tenants from a CSV or Excel file." },
-      { target: '[data-tutorial="btn-export"]', title: "Export to PDF", description: "Download a PDF list of all tenants for printing or sharing." },
-      { target: '[data-tutorial="tenant-actions"]', title: "Tenant Actions", description: "For each tenant: view Profile, Select for receipt, Edit details, or Delete." },
+      { target: '[data-tutorial="tenant-header"]', title: "Tenant List", description: "This is your main tenant dashboard. Here you can see all tenants with their unique IDs, full names, addresses, and current account balances at a glance." },
+      { target: '[data-tutorial="btn-add-tenant"]', title: "Add a New Tenant", description: "Click this button to add a new tenant. You'll be able to enter their name, address, rent amount, weekly payments, RAS details, and more." },
+      { target: '[data-tutorial="btn-import"]', title: "Import from File", description: "Need to add many tenants at once? Upload a CSV or Excel file to bulk-import tenant data and payment records automatically." },
+      { target: '[data-tutorial="btn-export"]', title: "Export to PDF", description: "Generate a professional PDF document with the full list of all your tenants. Great for printing or sharing with colleagues." },
+      { target: '[data-tutorial="tenant-actions"]', title: "Tenant Actions", description: "Each tenant row has action buttons:\n• Profile — view full tenant details and payment history\n• Select — choose this tenant and go to Create Receipt\n• Edit — update tenant information\n• Delete — remove tenant permanently" },
     ]
   },
   receipt: {
     title: "Create Receipt",
     steps: [
-      { target: '[data-tutorial="receipt-modes"]', title: "Manual & Automatic", description: "Switch between Manual Mode (enter transactions by hand) and Automatic Mode (upload a bank statement PDF to auto-detect payments)." },
-      { target: '[data-tutorial="receipt-tenant-select"]', title: "Select Tenant", description: "Pick which tenant to create a receipt for. Once selected, you'll see their details and can set the period dates." },
+      { target: '[data-tutorial="receipt-modes"]', title: "Manual & Automatic Modes", description: "You have two ways to create receipts:\n• Manual Mode — enter each week's transactions by hand\n• Automatic Mode — upload a bank statement PDF and let the system detect payments automatically" },
+      { target: '[data-tutorial="receipt-tenant-select"]', title: "Select a Tenant", description: "Choose which tenant you want to create a receipt for. Once selected, their details will appear and you can set the statement period dates." },
       { 
         target: '[data-tutorial="receipt-transactions"]', 
-        title: "Transactions", 
-        description: "Add weekly transactions — rent due, tenant payments, and RAS amounts. Each row represents one week.",
+        title: "Weekly Transactions", 
+        description: "Add one row per week. Each row includes the rent due, how much the tenant paid, and the RAS amount. You can mark payments as received or not.",
         fallbackPreview: {
           title: "Example: Weekly Transactions",
           rows: [
@@ -34,7 +34,7 @@ const TUTORIALS = {
       { 
         target: '[data-tutorial="receipt-balance"]', 
         title: "Balance Preview", 
-        description: "See the calculated final balance before generating the receipt.",
+        description: "This section shows you the calculated final balance in real-time. It factors in previous debt, credit, rent due, tenant payments, and RAS amounts.",
         fallbackPreview: {
           title: "Example: Balance Preview",
           rows: [
@@ -48,25 +48,25 @@ const TUTORIALS = {
       },
       { 
         target: '[data-tutorial="receipt-generate"]', 
-        title: "Print Receipt", 
-        description: "Click to generate a PDF receipt. You can save it to the cloud for history tracking or just print it directly.",
+        title: "Generate & Print Receipt", 
+        description: "When everything looks correct, click this button to generate the receipt PDF. You'll be asked whether to save it to the cloud for future reference or just print it directly.",
       },
     ]
   },
   history: {
     title: "Receipt History",
     steps: [
-      { target: '[data-tutorial="history-header"]', title: "All Receipts", description: "View all previously generated and saved receipts sorted by date." },
-      { target: '[data-tutorial="history-filter"]', title: "Filter by Tenant", description: "Use this dropdown to show receipts for a specific tenant." },
-      { target: '[data-tutorial="history-actions"]', title: "Actions", description: "Reprint any receipt as PDF or delete it permanently." },
+      { target: '[data-tutorial="history-header"]', title: "All Saved Receipts", description: "This page shows every receipt you've saved to the cloud. Receipts are sorted by date with the most recent at the top." },
+      { target: '[data-tutorial="history-filter"]', title: "Filter by Tenant", description: "Use this dropdown to filter receipts for a specific tenant. Select 'All Tenants' to see everything." },
+      { target: '[data-tutorial="history-actions"]', title: "Receipt Actions", description: "For each saved receipt you can:\n• Print — re-open the receipt as a PDF for printing or viewing\n• Delete — permanently remove the receipt from the cloud" },
     ]
   },
   settings: {
     title: "Settings",
     steps: [
-      { target: '[data-tutorial="settings-org"]', title: "Organization Details", description: "Customize your organization name, receipt title, and contact info — these appear on printed receipts." },
-      { target: '[data-tutorial="settings-save"]', title: "Save & Reset", description: "Save your changes or reset everything back to defaults." },
-      { target: '[data-tutorial="settings-danger"]', title: "Danger Zone", description: "Permanently delete your account and all data. This cannot be undone!" },
+      { target: '[data-tutorial="settings-org"]', title: "Organization Details", description: "Configure your organization name, receipt title, contact phone number, and system name. These details appear on all printed receipts." },
+      { target: '[data-tutorial="settings-save"]', title: "Save & Reset", description: "Click 'Save Settings' to apply your changes, or 'Reset to Defaults' to restore the original settings." },
+      { target: '[data-tutorial="settings-danger"]', title: "Danger Zone", description: "This section allows you to permanently delete your account and ALL associated data — tenants, receipts, and settings. This action cannot be undone!" },
     ]
   }
 };
@@ -78,11 +78,11 @@ function FallbackPreview({ preview }) {
   
   if (preview.rows[0]?.value) {
     return (
-      <div className="mt-2 bg-slate-50 dark:bg-slate-900 rounded-lg p-2.5 border border-slate-200 dark:border-slate-700">
-        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">{preview.title}</p>
-        <div className="space-y-0.5">
+      <div className="mt-3 bg-slate-50 dark:bg-slate-900 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+        <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">{preview.title}</p>
+        <div className="space-y-1">
           {preview.rows.map((row, i) => (
-            <div key={i} className={`flex justify-between text-[11px] ${row.bold ? 'font-bold border-t border-slate-300 dark:border-slate-600 pt-1 mt-1' : ''}`}>
+            <div key={i} className={`flex justify-between text-xs ${row.bold ? 'font-bold border-t border-slate-300 dark:border-slate-600 pt-1 mt-1' : ''}`}>
               <span className={`${row.color === 'green' ? 'text-green-600' : row.color === 'blue' ? 'text-blue-600' : row.color === 'red' ? 'text-red-600' : 'text-slate-600 dark:text-slate-400'}`}>{row.label}</span>
               <span className={`font-medium ${row.color === 'green' ? 'text-green-600' : row.color === 'blue' ? 'text-blue-600' : row.color === 'red' ? 'text-red-600' : 'text-slate-700 dark:text-slate-300'}`}>{row.value}</span>
             </div>
@@ -93,11 +93,11 @@ function FallbackPreview({ preview }) {
   }
   
   return (
-    <div className="mt-2 bg-slate-50 dark:bg-slate-900 rounded-lg p-2.5 border border-slate-200 dark:border-slate-700">
-      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">{preview.title}</p>
+    <div className="mt-3 bg-slate-50 dark:bg-slate-900 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+      <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">{preview.title}</p>
       <div className="space-y-1">
         {preview.rows.map((row, i) => (
-          <div key={i} className="flex items-center gap-2 text-[10px]">
+          <div key={i} className="flex items-center gap-2 text-[11px]">
             <span className="text-slate-500 w-24 shrink-0">{row.label}</span>
             <span className="text-slate-700 dark:text-slate-300">Rent {row.rent}</span>
             <span className="text-green-600">Paid {row.tenant}</span>
@@ -109,11 +109,6 @@ function FallbackPreview({ preview }) {
   );
 }
 
-// Footer height constant for positioning calculations
-const FOOTER_H = 52;
-const HEADER_H = 40;
-const PADDING = 16;
-
 export default function TutorialGuide({ activeTab }) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -121,12 +116,21 @@ export default function TutorialGuide({ activeTab }) {
   const [highlightRect, setHighlightRect] = useState(null);
   const [elementFound, setElementFound] = useState(true);
   const tooltipRef = useRef(null);
+  const [viewportSize, setViewportSize] = useState({ w: window.innerWidth, h: window.innerHeight });
 
   const tutorial = TUTORIALS[activeTab] || TUTORIALS.tenants;
   const currentStepData = tutorial.steps[currentStep];
   const showFallback = !elementFound && currentStepData?.fallbackPreview;
+  const isMobile = viewportSize.w < 640;
 
-  // Close tutorial and reset step when tab changes
+  // Track viewport size
+  useEffect(() => {
+    const onResize = () => setViewportSize({ w: window.innerWidth, h: window.innerHeight });
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // Close tutorial when tab changes
   useEffect(() => {
     setIsOpen(false);
     setCurrentStep(0);
@@ -156,8 +160,8 @@ export default function TutorialGuide({ activeTab }) {
     if (!el) return;
     const rect = el.getBoundingClientRect();
     const viewportH = window.innerHeight;
-    if (rect.top < 60 || rect.bottom > viewportH - 60) {
-      const targetScrollTop = window.scrollY + rect.top - viewportH * 0.35;
+    if (rect.top < 80 || rect.bottom > viewportH - 200) {
+      const targetScrollTop = window.scrollY + rect.top - viewportH * 0.3;
       window.scrollTo({ top: Math.max(0, targetScrollTop), behavior: 'smooth' });
     }
   }, []);
@@ -233,14 +237,13 @@ export default function TutorialGuide({ activeTab }) {
     if (currentStep > 0) setCurrentStep(prev => prev - 1);
   };
 
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
-
-  // Calculate tooltip position and max height so it NEVER overflows the viewport
+  // Position tooltip NEAR the highlighted element
   const getTooltipStyle = () => {
-    const vH = window.innerHeight;
-    const vW = window.innerWidth;
+    const vH = viewportSize.h;
+    const vW = viewportSize.w;
+    const margin = 12;
 
-    // Mobile: fixed bottom panel (above mobile nav bar ~64px + safe area)
+    // Mobile: fixed bottom panel above nav bar
     if (vW < 640) {
       return {
         position: 'fixed',
@@ -253,42 +256,52 @@ export default function TutorialGuide({ activeTab }) {
     }
 
     // Desktop
-    const tooltipW = Math.min(380, vW - 32);
-    const margin = 16;
+    const tooltipW = Math.min(400, vW - 32);
 
+    // No highlight — center on screen
     if (!highlightRect) {
       return {
         position: 'absolute',
-        top: margin,
+        top: Math.max(margin, vH * 0.2),
         left: Math.max(margin, (vW - tooltipW) / 2),
         width: tooltipW,
         maxHeight: vH - margin * 2,
       };
     }
 
-    const leftPos = Math.max(margin, Math.min(highlightRect.left, vW - tooltipW - margin));
+    // Calculate center X of highlight
+    const hlCenterX = highlightRect.left + highlightRect.width / 2;
+    
+    // Position tooltip horizontally: try to center it on the highlight element
+    let leftPos = hlCenterX - tooltipW / 2;
+    // Clamp within viewport
+    leftPos = Math.max(margin, Math.min(leftPos, vW - tooltipW - margin));
+
     const spaceBelow = vH - (highlightRect.top + highlightRect.height + margin);
     const spaceAbove = highlightRect.top - margin;
 
-    if (spaceBelow >= 180) {
+    // Prefer below highlight
+    if (spaceBelow >= 160) {
       return {
         position: 'absolute',
         top: highlightRect.top + highlightRect.height + 12,
         left: leftPos,
         width: tooltipW,
-        maxHeight: spaceBelow - 4,
+        maxHeight: Math.min(spaceBelow - 4, 400),
       };
     }
-    if (spaceAbove >= 180) {
-      const maxH = spaceAbove - 4;
+    // Try above highlight
+    if (spaceAbove >= 160) {
+      const maxH = Math.min(spaceAbove - 4, 400);
       return {
         position: 'absolute',
-        top: Math.max(margin, highlightRect.top - Math.min(maxH, 500) - 12),
+        top: highlightRect.top - maxH - 12,
         left: leftPos,
         width: tooltipW,
         maxHeight: maxH,
       };
     }
+    // Fallback: side positioning or top of screen
     return {
       position: 'absolute',
       top: margin,
@@ -355,13 +368,14 @@ export default function TutorialGuide({ activeTab }) {
             {/* Click backdrop to close */}
             <div className="absolute inset-0" onClick={handleClose} style={{ zIndex: 0 }} />
 
-            {/* Tooltip Card — flex column with maxHeight from getTooltipStyle */}
+            {/* Tooltip Card */}
             <motion.div
               ref={tooltipRef}
               key={currentStep}
-              initial={{ opacity: 0, y: isMobile ? 20 : 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: isMobile ? 20 : 10 }}
+              initial={{ opacity: 0, y: isMobile ? 20 : 8, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: isMobile ? 20 : 8, scale: 0.97 }}
+              transition={{ duration: 0.2 }}
               className={`bg-white dark:bg-gray-800 shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col ${isMobile ? 'rounded-2xl' : 'rounded-xl'}`}
               style={{ ...tooltipStyle, zIndex: 9999, pointerEvents: 'auto', overflow: 'hidden' }}
               onClick={(e) => e.stopPropagation()}
@@ -370,25 +384,26 @@ export default function TutorialGuide({ activeTab }) {
               <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-4 py-2.5 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
                   <GraduationCap className="w-4 h-4 text-white/80" />
-                  <span className="text-white text-xs font-medium">{tutorial.title}</span>
+                  <span className="text-white text-sm font-medium">{tutorial.title}</span>
+                  <span className="text-white/60 text-xs">({currentStep + 1}/{tutorial.steps.length})</span>
                 </div>
                 <button onClick={handleClose} className="text-white/60 hover:text-white p-1 -mr-1">
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              {/* Content — scrollable, takes remaining space */}
-              <div className="p-4 overflow-y-auto flex-1 min-h-0">
+              {/* Content — scrollable */}
+              <div className="px-4 py-3 overflow-y-auto flex-1 min-h-0">
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-xs font-bold text-blue-600 dark:text-blue-300 shrink-0 mt-0.5">
+                  <div className="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-sm font-bold text-blue-600 dark:text-blue-300 shrink-0 mt-0.5">
                     {currentStep + 1}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm">{currentStepData.title}</h3>
-                    <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mt-1">{currentStepData.description}</p>
+                    <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-base leading-tight">{currentStepData.title}</h3>
+                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mt-1.5 whitespace-pre-line">{currentStepData.description}</p>
                     {showFallback && (
                       <>
-                        <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-2 italic">
+                        <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 italic">
                           ↳ Select a tenant first to see this in action. Here's an example:
                         </p>
                         <FallbackPreview preview={currentStepData.fallbackPreview} />
@@ -398,23 +413,23 @@ export default function TutorialGuide({ activeTab }) {
                 </div>
               </div>
 
-              {/* Footer — always visible */}
+              {/* Footer */}
               <div className="border-t border-gray-100 dark:border-gray-700 px-4 py-2.5 flex items-center justify-between shrink-0 bg-white dark:bg-gray-800">
                 <div className="flex gap-1.5">
                   {tutorial.steps.map((_, i) => (
-                    <div key={i} className={`w-2 h-2 rounded-full transition-colors ${i === currentStep ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'}`} />
+                    <div key={i} className={`w-2.5 h-2.5 rounded-full transition-colors ${i === currentStep ? 'bg-blue-500 scale-110' : i < currentStep ? 'bg-blue-300' : 'bg-gray-300 dark:bg-gray-600'}`} />
                   ))}
                 </div>
                 <div className="flex gap-2">
                   {currentStep > 0 && (
-                    <Button variant="ghost" size="sm" onClick={prevStep} className="h-8 px-3 text-xs">
-                      <ChevronLeft className="w-3 h-3 mr-0.5" /> Back
+                    <Button variant="ghost" size="sm" onClick={prevStep} className="h-9 px-3 text-sm">
+                      <ChevronLeft className="w-4 h-4 mr-0.5" /> Back
                     </Button>
                   )}
-                  <Button size="sm" onClick={nextStep} className="h-8 px-4 text-xs bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white">
+                  <Button size="sm" onClick={nextStep} className="h-9 px-5 text-sm bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white">
                     {currentStep < tutorial.steps.length - 1 ? (
-                      <>Next <ChevronRight className="w-3 h-3 ml-0.5" /></>
-                    ) : 'Done'}
+                      <>Next <ChevronRight className="w-4 h-4 ml-0.5" /></>
+                    ) : 'Done ✓'}
                   </Button>
                 </div>
               </div>
