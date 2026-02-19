@@ -109,15 +109,22 @@ function FallbackPreview({ preview }) {
   );
 }
 
+// Footer height constant for positioning calculations
+const FOOTER_H = 52;
+const HEADER_H = 40;
+const PADDING = 16;
+
 export default function TutorialGuide({ activeTab }) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [shouldBlink, setShouldBlink] = useState(false);
   const [highlightRect, setHighlightRect] = useState(null);
   const [elementFound, setElementFound] = useState(true);
-  const overlayRef = useRef(null);
+  const tooltipRef = useRef(null);
 
   const tutorial = TUTORIALS[activeTab] || TUTORIALS.tenants;
+  const currentStepData = tutorial.steps[currentStep];
+  const showFallback = !elementFound && currentStepData?.fallbackPreview;
 
   useEffect(() => {
     const shownTabs = JSON.parse(sessionStorage.getItem(SESSION_KEY) || '[]');
@@ -142,9 +149,7 @@ export default function TutorialGuide({ activeTab }) {
     if (!el) return;
     const rect = el.getBoundingClientRect();
     const viewportH = window.innerHeight;
-    // Check if element is not in the visible area (with some margin)
     if (rect.top < 60 || rect.bottom > viewportH - 60) {
-      // Scroll so element is at ~35% from top (15% extra margin)
       const targetScrollTop = window.scrollY + rect.top - viewportH * 0.35;
       window.scrollTo({ top: Math.max(0, targetScrollTop), behavior: 'smooth' });
     }
@@ -170,25 +175,18 @@ export default function TutorialGuide({ activeTab }) {
     }
   }, [isOpen, currentStep, tutorial]);
 
-  // Scroll to element on step change, then update highlight after scroll settles
   useEffect(() => {
     if (!isOpen) return;
     const step = tutorial.steps[currentStep];
     if (!step?.target) return;
-    
     const el = document.querySelector(step.target);
-    if (el) {
-      scrollToElement(el);
-    }
-    
-    // Update highlight immediately and after scroll animation
+    if (el) scrollToElement(el);
     updateHighlight();
     const t1 = setTimeout(updateHighlight, 400);
     const t2 = setTimeout(updateHighlight, 800);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [isOpen, currentStep, tutorial, scrollToElement, updateHighlight]);
 
-  // Keep highlight in sync during scroll/resize
   useEffect(() => {
     if (!isOpen) return;
     const handler = () => updateHighlight();
@@ -228,82 +226,69 @@ export default function TutorialGuide({ activeTab }) {
     if (currentStep > 0) setCurrentStep(prev => prev - 1);
   };
 
-  const getTooltipPosition = () => {
-    const viewportH = window.innerHeight;
-    const viewportW = window.innerWidth;
-    const isMobile = viewportW < 640;
-    
-    // On mobile, always position at bottom of screen as a fixed panel
-    if (isMobile) {
-      return { 
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        maxHeight: '55vh',
+  // Calculate tooltip position and max height so it NEVER overflows the viewport
+  const getTooltipStyle = () => {
+    const vH = window.innerHeight;
+    const vW = window.innerWidth;
+    const tooltipW = Math.min(380, vW - 32);
+    const margin = 16;
+
+    // No highlight — center on screen
+    if (!highlightRect) {
+      const maxH = vH - margin * 2;
+      return {
+        top: margin,
+        left: Math.max(margin, (vW - tooltipW) / 2),
+        width: tooltipW,
+        maxHeight: maxH,
       };
     }
 
-    const tooltipW = Math.min(380, viewportW - 32);
-    // Estimate tooltip height — taller when fallback preview is shown
-    const hasFallback = !elementFound && currentStepData?.fallbackPreview;
-    const tooltipH = hasFallback ? 380 : 200;
-    
-    if (!highlightRect) {
-      return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)', maxWidth: tooltipW, maxHeight: viewportH - 32, overflow: 'hidden' };
-    }
-    
-    const leftPos = Math.max(16, Math.min(highlightRect.left, viewportW - tooltipW - 16));
-    
-    // Try below highlight
-    if (highlightRect.top + highlightRect.height + tooltipH + 20 < viewportH) {
+    const leftPos = Math.max(margin, Math.min(highlightRect.left, vW - tooltipW - margin));
+
+    // Space below and above highlight
+    const spaceBelow = vH - (highlightRect.top + highlightRect.height + margin);
+    const spaceAbove = highlightRect.top - margin;
+
+    // Prefer below
+    if (spaceBelow >= 180) {
       return {
-        top: highlightRect.top + highlightRect.height + 16,
+        top: highlightRect.top + highlightRect.height + 12,
         left: leftPos,
-        maxWidth: tooltipW,
-        maxHeight: viewportH - (highlightRect.top + highlightRect.height + 32),
-        overflow: 'hidden',
+        width: tooltipW,
+        maxHeight: spaceBelow - 4,
       };
     }
-    // Try above highlight
-    if (highlightRect.top - tooltipH - 20 > 0) {
+    // Try above
+    if (spaceAbove >= 180) {
+      const maxH = spaceAbove - 4;
       return {
-        top: Math.max(16, highlightRect.top - tooltipH - 16),
+        top: Math.max(margin, highlightRect.top - Math.min(maxH, 500) - 12),
         left: leftPos,
-        maxWidth: tooltipW,
-        maxHeight: highlightRect.top - 32,
-        overflow: 'hidden',
+        width: tooltipW,
+        maxHeight: maxH,
       };
     }
-    // Fallback: center but constrain to viewport
-    return { top: 16, left: leftPos, maxWidth: tooltipW, maxHeight: viewportH - 32, overflow: 'hidden' };
+    // Fallback: place at top of viewport
+    return {
+      top: margin,
+      left: leftPos,
+      width: tooltipW,
+      maxHeight: vH - margin * 2,
+    };
   };
 
-  const currentStepData = tutorial.steps[currentStep];
-  const showFallback = !elementFound && currentStepData?.fallbackPreview;
-  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640);
-  
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 640);
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
+  const tooltipStyle = isOpen ? getTooltipStyle() : {};
 
   return (
     <>
-      {/* Fixed Tutorial Button — always visible */}
+      {/* Tutorial ? button */}
       {!isOpen && (
         <motion.button
           onClick={handleOpen}
           className="fixed top-3 right-3 z-[9999] sm:top-[18px] sm:right-5 flex items-center justify-center w-9 h-9 sm:w-7 sm:h-7 rounded-full border-2 border-blue-500/60 bg-white/90 dark:bg-gray-800/90 text-blue-600 dark:text-blue-400 shadow-md hover:shadow-lg hover:border-blue-500 backdrop-blur-sm"
-          animate={{
-            opacity: shouldBlink ? [1, 0.15, 1, 0.15, 1, 1, 1, 1] : 1,
-          }}
-          transition={{
-            opacity: shouldBlink
-              ? { duration: 2, repeat: Infinity, ease: "linear" }
-              : { duration: 0.4, ease: "easeInOut" },
-          }}
+          animate={{ opacity: shouldBlink ? [1, 0.15, 1, 0.15, 1, 1, 1, 1] : 1 }}
+          transition={{ opacity: shouldBlink ? { duration: 2, repeat: Infinity, ease: "linear" } : { duration: 0.4 } }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           title="Open Tutorial"
@@ -316,7 +301,6 @@ export default function TutorialGuide({ activeTab }) {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            ref={overlayRef}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -329,50 +313,37 @@ export default function TutorialGuide({ activeTab }) {
                   <rect x="0" y="0" width="100%" height="100%" fill="white" />
                   {highlightRect && (
                     <rect
-                      x={highlightRect.left}
-                      y={highlightRect.top}
-                      width={highlightRect.width}
-                      height={highlightRect.height}
-                      rx="8"
-                      fill="black"
+                      x={highlightRect.left} y={highlightRect.top}
+                      width={highlightRect.width} height={highlightRect.height}
+                      rx="8" fill="black"
                     />
                   )}
                 </mask>
               </defs>
-              <rect
-                x="0" y="0" width="100%" height="100%"
-                fill="rgba(0,0,0,0.5)"
-                mask="url(#tutorial-mask)"
-              />
+              <rect x="0" y="0" width="100%" height="100%" fill="rgba(0,0,0,0.5)" mask="url(#tutorial-mask)" />
             </svg>
 
             {/* Highlight border */}
             {highlightRect && (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                 className="absolute rounded-lg border-2 border-blue-400 shadow-[0_0_0_4px_rgba(59,130,246,0.2)]"
-                style={{
-                  top: highlightRect.top,
-                  left: highlightRect.left,
-                  width: highlightRect.width,
-                  height: highlightRect.height,
-                  pointerEvents: 'none',
-                }}
+                style={{ top: highlightRect.top, left: highlightRect.left, width: highlightRect.width, height: highlightRect.height, pointerEvents: 'none' }}
               />
             )}
 
             {/* Click backdrop to close */}
             <div className="absolute inset-0" onClick={handleClose} style={{ zIndex: 0 }} />
 
-            {/* Tooltip Card */}
+            {/* Tooltip Card — flex column with maxHeight from getTooltipStyle */}
             <motion.div
+              ref={tooltipRef}
               key={currentStep}
-              initial={{ opacity: 0, y: isMobile ? 30 : 10 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: isMobile ? 30 : 10 }}
-              className={`${isMobile ? 'fixed' : 'absolute'} bg-white dark:bg-gray-800 shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col ${isMobile ? 'rounded-t-2xl' : 'rounded-xl'}`}
-              style={{ ...getTooltipPosition(), zIndex: 9999, pointerEvents: 'auto' }}
+              exit={{ opacity: 0, y: 10 }}
+              className="absolute bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col"
+              style={{ ...tooltipStyle, zIndex: 9999, pointerEvents: 'auto', overflow: 'hidden' }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
@@ -386,7 +357,7 @@ export default function TutorialGuide({ activeTab }) {
                 </button>
               </div>
 
-              {/* Content — scrollable */}
+              {/* Content — scrollable, takes remaining space */}
               <div className="p-4 overflow-y-auto flex-1 min-h-0">
                 <div className="flex items-start gap-3">
                   <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-xs font-bold text-blue-600 dark:text-blue-300 shrink-0 mt-0.5">
@@ -395,7 +366,6 @@ export default function TutorialGuide({ activeTab }) {
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm">{currentStepData.title}</h3>
                     <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mt-1">{currentStepData.description}</p>
-                    
                     {showFallback && (
                       <>
                         <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-2 italic">
@@ -408,8 +378,8 @@ export default function TutorialGuide({ activeTab }) {
                 </div>
               </div>
 
-              {/* Footer — always visible, safe area padding on mobile */}
-              <div className="border-t border-gray-100 dark:border-gray-700 px-4 py-3 pb-safe flex items-center justify-between shrink-0 bg-white dark:bg-gray-800" style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 16px)' }}>
+              {/* Footer — always visible */}
+              <div className="border-t border-gray-100 dark:border-gray-700 px-4 py-2.5 flex items-center justify-between shrink-0 bg-white dark:bg-gray-800">
                 <div className="flex gap-1.5">
                   {tutorial.steps.map((_, i) => (
                     <div key={i} className={`w-2 h-2 rounded-full transition-colors ${i === currentStep ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'}`} />
