@@ -26,7 +26,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { FileText, Plus, Trash2, Printer, AlertCircle, Calculator, User } from 'lucide-react';
+import { FileText, Plus, Trash2, Printer, AlertCircle, Calculator, User, Sparkles, Wand2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import TransactionRow from './TransactionRow';
 import { generateReceiptPDF } from './pdfGenerator';
 import { format } from 'date-fns';
