@@ -47,11 +47,11 @@ export default function Layout({ children, currentPageName }) {
       {currentPageName !== 'Settings' && (
         <button
           onClick={() => setShowGuide(true)}
-          className="fixed bottom-6 right-6 w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 z-30"
+          className="fixed bottom-6 right-6 w-4 h-4 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 z-30"
           aria-label="Start interactive tour"
           title="Help"
         >
-          <HelpCircle className="w-6 h-6" />
+          <HelpCircle className="w-2 h-2" />
         </button>
       )}
 
