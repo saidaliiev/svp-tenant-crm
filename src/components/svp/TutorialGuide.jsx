@@ -391,8 +391,8 @@ export default function TutorialGuide({ activeTab }) {
                 </div>
               </div>
 
-              {/* Footer — always visible, high z-index */}
-              <div className="border-t border-gray-100 dark:border-gray-700 px-4 py-3 flex items-center justify-between shrink-0 bg-white dark:bg-gray-800">
+              {/* Footer — always visible, safe area padding on mobile */}
+              <div className="border-t border-gray-100 dark:border-gray-700 px-4 py-3 pb-safe flex items-center justify-between shrink-0 bg-white dark:bg-gray-800" style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 16px)' }}>
                 <div className="flex gap-1.5">
                   {tutorial.steps.map((_, i) => (
                     <div key={i} className={`w-2 h-2 rounded-full transition-colors ${i === currentStep ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'}`} />
