@@ -127,6 +127,17 @@ export default function DevPortfolio({ isOpen, onClose }) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 }}
               >
+                {/* Desktop close text above avatar */}
+                <button
+                  onClick={onClose}
+                  className="hidden md:flex items-center justify-center gap-1.5 text-white/30 hover:text-white/50 text-xs transition-colors mb-3 mx-auto"
+                  aria-label="Close portfolio"
+                >
+                  <X className="w-3 h-3" />
+                  <span>Close</span>
+                  <kbd className="ml-1 px-1.5 py-0.5 rounded bg-white/5 text-[9px] text-white/20 font-mono">Esc</kbd>
+                </button>
+
                 <motion.div
                   className="w-24 h-24 mx-auto mb-5 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 p-[2px]"
                   initial={{ scale: 0, rotate: -180 }}
