@@ -205,21 +205,23 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
 
   return (
     <>
-      {/* Overlay */}
-      <div className="fixed inset-0 bg-black/50 z-40 pointer-events-none" />
+      {/* Global Overlay (Only if spotlight is missing to avoid double darkening) */}
+      {isElementMissing && (
+        <div className="fixed inset-0 bg-black/50 z-40 pointer-events-none" />
+      )}
 
-      {/* Spotlight - highlight the element */}
+      {/* Spotlight - highlight the element (provides its own darkness via box-shadow) */}
       {!isElementMissing && (
         <div
           className="fixed z-41 pointer-events-none"
           style={{
-            left: `${elementRect.left - 2}px`,
-            top: `${elementRect.top - 2}px`,
-            width: `${elementRect.width + 4}px`,
-            height: `${elementRect.height + 4}px`,
-            boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.5)',
-            borderRadius: '12px',
-            border: '1px solid #3B82F6',
+            left: `${elementRect.left - 4}px`,
+            top: `${elementRect.top - 4}px`,
+            width: `${elementRect.width + 8}px`,
+            height: `${elementRect.height + 8}px`,
+            boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.7)',
+            borderRadius: '8px',
+            border: '2px solid #3B82F6',
             animation: 'tourPulse 2s ease-in-out infinite'
           }}
         />
