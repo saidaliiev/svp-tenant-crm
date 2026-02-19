@@ -86,6 +86,23 @@ const TOUR_CONFIG = {
       description: 'Add any additional notes that will appear on the printed receipt. Optional but useful for special instructions.'
     }
   ],
+  Home_AutomaticMode: [
+    {
+      selector: '[data-tour="auto-upload"]',
+      title: '📄 Upload Bank Statement',
+      description: 'Click here to upload your monthly BOI PDF bank statement. The system will automatically parse and detect tenant payments.'
+    },
+    {
+      selector: '[data-tour="auto-payments"]',
+      title: '✅ Detected Payments',
+      description: 'Once uploaded, you will see a list of detected payments. The system tries to match them with tenants automatically using keywords or IDs.'
+    },
+    {
+      selector: '[data-tour="auto-apply"]',
+      title: '🚀 Apply Payments',
+      description: 'Select a tenant from the dropdown and click Apply. This will transfer their matched payments into a new receipt for you to review and save.'
+    }
+  ],
   Home_ReceiptHistory: [
     {
       selector: '[data-tour="tenant-filter"]',
