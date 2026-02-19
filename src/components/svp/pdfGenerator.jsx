@@ -142,9 +142,9 @@ export function generateReceiptPDF(receiptData, settings) {
       },
       columnStyles: {
         0: { cellWidth: 30, halign: 'left' },
-        1: { halign: 'center' },
-        2: { halign: 'center' },
-        3: { halign: 'center' }
+        1: { halign: 'left' },
+        2: { halign: 'left' },
+        3: { halign: 'left' }
       },
       didParseCell: function(data) {
         if (data.section === 'body' && data.row.index % 2 === 1) {
