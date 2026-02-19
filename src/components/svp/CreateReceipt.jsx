@@ -498,21 +498,30 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
           </Alert>
         )}
 
-        {/* Client Selection */}
+        {/* Client Selection — grid of tenant cards */}
         <div className="space-y-2" data-tutorial="receipt-tenant-select">
           <Label className="text-base font-semibold">Select Tenant</Label>
-          <Select value={clientId} onValueChange={setClientId}>
-            <SelectTrigger className="h-12">
-              <SelectValue placeholder="Choose a tenant..." />
-            </SelectTrigger>
-            <SelectContent>
-              {tenants.map(tenant => (
-                <SelectItem key={tenant.id} value={tenant.id}>
-                  {tenant.fullName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[320px] overflow-y-auto rounded-lg border p-2 bg-white">
+            {tenants.map(t => (
+              <button
+                key={t.id}
+                onClick={() => setClientId(t.id)}
+                className={`flex items-center gap-3 p-3 rounded-lg border text-left transition-all text-sm ${
+                  clientId === t.id
+                    ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500'
+                    : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/50'
+                }`}
+              >
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                  {t.displayId || t.fullName?.charAt(0)}
+                </div>
+                <div className="min-w-0">
+                  <div className="font-medium text-slate-800 truncate">{t.fullName}</div>
+                  {t.address && <div className="text-xs text-slate-500 truncate">{t.address}</div>}
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Tenant Info Display */}
