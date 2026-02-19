@@ -117,16 +117,7 @@ export default function DevPortfolio({ isOpen, onClose }) {
               </button>
             </div>
 
-            {/* Desktop close — fixed top center, subtle */}
-            <button
-              onClick={onClose}
-              className="hidden md:flex fixed top-5 left-1/2 -translate-x-1/2 z-30 items-center gap-1.5 text-white/30 hover:text-white/60 text-xs transition-colors px-3 py-1.5 rounded-full"
-              aria-label="Close portfolio"
-            >
-              <X className="w-3.5 h-3.5" />
-              <span>Close</span>
-              <kbd className="ml-1 px-1.5 py-0.5 rounded bg-white/5 text-[9px] text-white/20 font-mono">Esc</kbd>
-            </button>
+
 
             <div className="px-6 pb-24 max-w-lg mx-auto">
               {/* Hero */}
