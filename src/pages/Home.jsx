@@ -96,21 +96,24 @@ export default function HomePage() {
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="hidden sm:grid w-full grid-cols-4 mb-4 sm:mb-6 bg-white/80 dark:bg-gray-800/60 backdrop-blur-sm shadow-lg dark:shadow-gray-950/30 rounded-lg sm:rounded-xl p-0.5 sm:p-1 h-auto select-none border-0 dark:border dark:border-gray-700/50">
             <TabsTrigger 
-              value="tenants" 
+              value="tenants"
+              data-tour="tab-tenants"
               className="flex flex-row items-center gap-2 py-3 px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all text-sm"
             >
               <Home className="w-4 h-4" />
               <span>Tenant Management</span>
             </TabsTrigger>
             <TabsTrigger 
-              value="receipt" 
+              value="receipt"
+              data-tour="tab-receipt"
               className="flex flex-row items-center gap-2 py-3 px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all text-sm"
             >
               <FileText className="w-4 h-4" />
               <span>Create Receipt</span>
             </TabsTrigger>
             <TabsTrigger 
-              value="history" 
+              value="history"
+              data-tour="tab-history"
               className="flex flex-row items-center gap-2 py-3 px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all text-sm"
             >
               <History className="w-4 h-4" />
