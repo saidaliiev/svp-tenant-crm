@@ -93,7 +93,7 @@ export default function ClippyAgent({ currentPage, onStartGuide }) {
         transition={mode === 'agent' ? {
           rotate: { repeat: Infinity, duration: 2, ease: "easeInOut" }
         } : {}}
-        className={`relative w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-colors duration-500 overflow-hidden ${
+        className={`relative w-12 h-12 rounded-full shadow-xl flex items-center justify-center transition-colors duration-500 overflow-hidden ${
           mode === 'agent' ? 'bg-transparent shadow-none' : 'bg-blue-600 hover:bg-blue-700 text-white'
         }`}
       >
