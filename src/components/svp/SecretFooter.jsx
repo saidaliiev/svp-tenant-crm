@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { ArrowDown } from 'lucide-react';
 
 export default function SecretFooter({ onReveal }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -34,10 +34,10 @@ export default function SecretFooter({ onReveal }) {
           Iskan
         </span>
         <motion.span
-          animate={isHovered ? { x: [0, 4, 0] } : { x: 0 }}
+          animate={isHovered ? { y: [0, 4, 0] } : { y: 0 }}
           transition={isHovered ? { duration: 0.8, repeat: Infinity } : {}}
         >
-          <ArrowRight className="w-3 h-3 text-gray-400 group-hover:text-blue-400 transition-colors" />
+          <ArrowDown className="w-3 h-3 text-gray-400 group-hover:text-blue-400 transition-colors" />
         </motion.span>
       </button>
     </footer>
