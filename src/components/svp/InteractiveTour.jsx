@@ -2,23 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 const TOUR_CONFIG = {
-  Home: [
-    {
-      selector: '[data-tour="tab-tenants"]',
-      title: '👥 Tenant Management',
-      description: 'Manage all your tenants. Add new tenants, edit their details, track payments, and view their current balance.'
-    },
-    {
-      selector: '[data-tour="tab-receipt"]',
-      title: '📄 Create Receipt',
-      description: 'Generate rent statements for tenants. Track payments, RAS amounts, and calculate final balances.'
-    },
-    {
-      selector: '[data-tour="tab-history"]',
-      title: '📋 Receipt History',
-      description: 'View all previously generated receipts and statements. Download or delete as needed.'
-    }
-  ],
   Home_TenantManagement: [
     {
       selector: '[data-tour="btn-add-tenant"]',
@@ -130,89 +113,94 @@ const TOUR_CONFIG = {
 export default function InteractiveTour({ isOpen, onClose, currentPage, currentTab }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [highlightedElement, setHighlightedElement] = useState(null);
-  const [showTabsTour, setShowTabsTour] = useState(true);
+  const [elementRect, setElementRect] = useState(null);
+
+  // Only show if not on Settings page
+  if (!isOpen || currentPage === 'Settings') return null;
 
   // Determine which tour to show
   let tourKey = currentPage;
-  if (currentPage === 'Home' && !showTabsTour && currentTab) {
-    tourKey = `Home_${currentTab.charAt(0).toUpperCase() + currentTab.slice(1).replace(/([A-Z])/g, m => m)}`;
+  if (currentPage === 'Home') {
     if (currentTab === 'tenants') tourKey = 'Home_TenantManagement';
-    if (currentTab === 'receipt') tourKey = 'Home_CreateReceipt';
-    if (currentTab === 'history') tourKey = 'Home_ReceiptHistory';
+    else if (currentTab === 'receipt') tourKey = 'Home_CreateReceipt';
+    else if (currentTab === 'history') tourKey = 'Home_ReceiptHistory';
   }
 
-  const tourSteps = TOUR_CONFIG[tourKey] || TOUR_CONFIG[currentPage] || [];
+  const tourSteps = TOUR_CONFIG[tourKey] || [];
+  if (tourSteps.length === 0) return null;
+
   const currentTourStep = tourSteps[currentStep];
 
+  // Update highlighted element and its position
   useEffect(() => {
     if (!isOpen || !currentTourStep) return;
 
-    const element = document.querySelector(currentTourStep.selector);
-    setHighlightedElement(element);
+    const findElement = () => {
+      const element = document.querySelector(currentTourStep.selector);
+      if (element) {
+        setHighlightedElement(element);
+        const rect = element.getBoundingClientRect();
+        setElementRect(rect);
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    };
 
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    findElement();
+    const timer = setTimeout(findElement, 100);
+    return () => clearTimeout(timer);
   }, [currentStep, isOpen, currentTourStep]);
 
   const handleNext = () => {
-    if (currentPage === 'Home' && showTabsTour && currentStep === tourSteps.length - 1) {
-      // Switch to detailed tab tour
-      setShowTabsTour(false);
-      setCurrentStep(0);
-    } else if (currentStep < tourSteps.length - 1) {
+    if (currentStep < tourSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
 
   const handlePrev = () => {
-    if (currentPage === 'Home' && !showTabsTour && currentStep === 0) {
-      // Go back to tabs overview
-      setShowTabsTour(true);
-      setCurrentStep(2); // Back to last tab overview
-    } else if (currentStep > 0) {
+    if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
 
   const handleClose = () => {
     setCurrentStep(0);
-    setShowTabsTour(true);
     onClose();
   };
 
-  if (!isOpen || !currentTourStep) return null;
+  if (!currentTourStep || !elementRect) return null;
+
+  // Calculate tooltip position
+  const tooltipTop = Math.min(
+    elementRect.bottom + 20,
+    window.innerHeight - 250
+  );
 
   return (
     <>
       {/* Overlay */}
-      <div className="fixed inset-0 bg-black/40 z-40 pointer-events-none" />
+      <div className="fixed inset-0 bg-black/50 z-40 pointer-events-none" />
 
-      {/* Spotlight on Element */}
-      {highlightedElement && (
-        <div
-          className="fixed z-41 pointer-events-none"
-          style={{
-            left: highlightedElement.getBoundingClientRect().left - 8,
-            top: highlightedElement.getBoundingClientRect().top - 8,
-            width: highlightedElement.getBoundingClientRect().width + 16,
-            height: highlightedElement.getBoundingClientRect().height + 16,
-            boxShadow: '0 0 0 4000px rgba(0, 0, 0, 0.4)',
-            borderRadius: '8px',
-            border: '2px solid rgb(59, 130, 246)',
-            animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
-          }}
-        />
-      )}
+      {/* Spotlight - highlight the element */}
+      <div
+        className="fixed z-41 pointer-events-none"
+        style={{
+          left: `${elementRect.left - 4}px`,
+          top: `${elementRect.top - 4}px`,
+          width: `${elementRect.width + 8}px`,
+          height: `${elementRect.height + 8}px`,
+          boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.5)',
+          borderRadius: '12px',
+          border: '2px solid #3B82F6',
+          animation: 'tourPulse 2s ease-in-out infinite'
+        }}
+      />
 
       {/* Tooltip */}
       <div
-        className="fixed z-50 bg-white rounded-lg shadow-2xl p-5 max-w-sm"
+        className="fixed z-50 bg-white rounded-xl shadow-2xl p-6 max-w-sm"
         style={{
           left: '50%',
-          top: highlightedElement
-            ? Math.min(highlightedElement.getBoundingClientRect().bottom + 20, window.innerHeight - 250)
-            : '50%',
+          top: `${tooltipTop}px`,
           transform: 'translateX(-50%)',
           animation: 'slideUp 0.3s ease-out'
         }}
@@ -221,36 +209,36 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
           <h3 className="font-bold text-gray-900 text-lg">{currentTourStep.title}</h3>
           <button
             onClick={handleClose}
-            className="p-1 hover:bg-gray-100 rounded transition"
+            className="p-1 hover:bg-gray-100 rounded transition-colors"
             aria-label="Close tour"
           >
-            <X className="w-4 h-4 text-gray-500" />
+            <X className="w-5 h-5 text-gray-500 hover:text-gray-700" />
           </button>
         </div>
 
-        <p className="text-gray-600 text-sm mb-4">{currentTourStep.description}</p>
+        <p className="text-gray-600 text-sm mb-5 leading-relaxed">{currentTourStep.description}</p>
 
         {/* Navigation */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <button
             onClick={handlePrev}
-            disabled={currentStep === 0 && showTabsTour}
-            className="flex items-center gap-1 px-3 py-2 text-sm rounded transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+            disabled={currentStep === 0}
+            className="flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 text-gray-700"
           >
             <ChevronLeft className="w-4 h-4" />
             Back
           </button>
 
-          <span className="text-xs text-gray-500 font-medium">
+          <span className="text-xs text-gray-500 font-semibold px-2 py-1 bg-gray-100 rounded-lg">
             {currentStep + 1} / {tourSteps.length}
           </span>
 
           <button
             onClick={handleNext}
-            disabled={currentStep === tourSteps.length - 1 && (currentPage !== 'Home' || !showTabsTour)}
-            className="flex items-center gap-1 px-3 py-2 text-sm rounded transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+            disabled={currentStep === tourSteps.length - 1}
+            className="flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-50 text-blue-700"
           >
-            {currentPage === 'Home' && showTabsTour && currentStep === tourSteps.length - 1 ? 'Details →' : 'Next'}
+            Next
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
@@ -267,9 +255,9 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
             transform: translateX(-50%) translateY(0);
           }
         }
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.7; }
+        @keyframes tourPulse {
+          0%, 100% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5), 0 0 0 3px #3B82F6; }
+          50% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5), 0 0 0 8px #3B82F6; }
         }
       `}</style>
     </>
