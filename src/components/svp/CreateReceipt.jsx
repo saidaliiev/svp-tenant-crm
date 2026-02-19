@@ -33,7 +33,16 @@ import { generateReceiptPDF } from './pdfGenerator';
 import { format } from 'date-fns';
 
 export default function CreateReceipt({ tenants = [], statements, settings, selectedTenantId, onReceiptCreated }) {
-  const [mode, setMode] = useState('manual');
+  const searchParams = new URLSearchParams(window.location.search);
+  const initialMode = searchParams.get('mode') || 'manual';
+  const [mode, setModeState] = useState(initialMode);
+
+  const setMode = (newMode) => {
+    setModeState(newMode);
+    const newParams = new URLSearchParams(window.location.search);
+    newParams.set('mode', newMode);
+    window.history.replaceState(null, '', '?' + newParams.toString());
+  };
   const [clientId, setClientId] = useState('');
   const [startingDebt, setStartingDebt] = useState(0);
   const [credit, setCredit] = useState(0);
