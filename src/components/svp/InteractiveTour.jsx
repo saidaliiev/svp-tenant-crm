@@ -231,9 +231,22 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
 
   // Calculate tooltip position
   const isElementMissing = !elementRect;
-  const tooltipTop = isElementMissing 
-    ? window.innerHeight / 2 - 100 
-    : Math.min(elementRect.bottom + 20, window.innerHeight - 250);
+  
+  let tooltipTop = window.innerHeight / 2 - 100;
+  if (!isElementMissing) {
+    const spaceBelow = window.innerHeight - elementRect.bottom;
+    const spaceAbove = elementRect.top;
+    
+    // Prefer placing below, but if not enough space and more space above, place above
+    if (spaceBelow < 250 && spaceAbove > 250) {
+      tooltipTop = elementRect.top - 200; // approximate height + padding
+    } else {
+      tooltipTop = elementRect.bottom + 20;
+    }
+    
+    // Final clamp to keep it on screen
+    tooltipTop = Math.max(20, Math.min(tooltipTop, window.innerHeight - 250));
+  }
 
   return (
     <>
