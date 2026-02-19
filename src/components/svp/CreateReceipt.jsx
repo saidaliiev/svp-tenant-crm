@@ -575,7 +575,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
             {/* Starting Debt and Credit */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" data-tour="starting-debt">
               <div className="space-y-2">
-                <Label>Starting Debt (Previous Balance)</Label>
+                <Label className="text-red-600 dark:text-red-500 font-bold">Starting Debt (Previous Balance)</Label>
                 <div className="flex gap-2 items-center">
                   <Input
                     type="number"
