@@ -699,16 +699,55 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
             </div>
 
             {/* Generate Button */}
-            <Button
-              onClick={handleGenerateReceipt}
-              size="lg"
-              data-tutorial="receipt-generate"
-              className="w-full h-12 sm:h-14 text-base sm:text-lg bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 shadow-lg"
+            <motion.div
+              whileTap={{ scale: 0.97 }}
+              className="w-full"
             >
-              <Printer className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-              <span className="hidden sm:inline">Generate and Print Receipt</span>
-              <span className="sm:hidden">Generate Receipt</span>
-            </Button>
+              <Button
+                onClick={handleGenerateReceipt}
+                size="lg"
+                disabled={isGenerating}
+                data-tutorial="receipt-generate"
+                className="w-full h-12 sm:h-14 text-base sm:text-lg bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500 hover:from-violet-600 hover:via-purple-600 hover:to-indigo-600 shadow-lg shadow-purple-200 transition-all duration-300 relative overflow-hidden"
+              >
+                <AnimatePresence mode="wait">
+                  {isGenerating ? (
+                    <motion.div
+                      key="generating"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="flex items-center gap-2"
+                    >
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                      >
+                        <Sparkles className="w-5 h-5" />
+                      </motion.div>
+                      <span>Creating Magic...</span>
+                      <motion.div
+                        animate={{ rotate: -360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                      >
+                        <Sparkles className="w-5 h-5" />
+                      </motion.div>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="idle"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="flex items-center gap-2"
+                    >
+                      <Wand2 className="w-5 h-5" />
+                      <span>Print Receipt</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </Button>
+            </motion.div>
           </>
         )}
 
