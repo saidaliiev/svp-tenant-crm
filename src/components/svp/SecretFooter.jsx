@@ -49,7 +49,7 @@ export default function SecretFooter({ onReveal }) {
           className="inline-block text-sm leading-none"
           style={{ originX: 0.5, originY: 0.5 }}
         >
-          🫶
+          ❤️
         </motion.span>
         <span className="text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors">
           by
