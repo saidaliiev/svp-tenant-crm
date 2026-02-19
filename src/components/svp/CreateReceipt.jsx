@@ -595,7 +595,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>Credit</Label>
+                <Label className="text-green-600 dark:text-green-500 font-bold">Credit</Label>
                 <div className="flex gap-2 items-center">
                   <Input
                     type="number"
