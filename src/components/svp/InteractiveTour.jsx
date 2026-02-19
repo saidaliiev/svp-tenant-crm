@@ -115,9 +115,6 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
   const [highlightedElement, setHighlightedElement] = useState(null);
   const [elementRect, setElementRect] = useState(null);
 
-  // Only show if not on Settings page
-  if (!isOpen || currentPage === 'Settings') return null;
-
   // Determine which tour to show
   let tourKey = currentPage;
   if (currentPage === 'Home') {
@@ -127,13 +124,11 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
   }
 
   const tourSteps = TOUR_CONFIG[tourKey] || [];
-  if (tourSteps.length === 0) return null;
-
   const currentTourStep = tourSteps[currentStep];
 
   // Update highlighted element and its position
   useEffect(() => {
-    if (!isOpen || !currentTourStep) return;
+    if (!isOpen || !currentTourStep || currentPage === 'Settings') return;
 
     const findElement = () => {
       const element = document.querySelector(currentTourStep.selector);
@@ -148,7 +143,7 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
     findElement();
     const timer = setTimeout(findElement, 100);
     return () => clearTimeout(timer);
-  }, [currentStep, isOpen, currentTourStep]);
+  }, [currentStep, isOpen, currentTourStep, currentPage]);
 
   const handleNext = () => {
     if (currentStep < tourSteps.length - 1) {
@@ -167,7 +162,8 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
     onClose();
   };
 
-  if (!currentTourStep || !elementRect) return null;
+  // Don't show if not open, on Settings page, or no tour steps
+  if (!isOpen || currentPage === 'Settings' || tourSteps.length === 0 || !currentTourStep || !elementRect) return null;
 
   // Calculate tooltip position
   const tooltipTop = Math.min(
