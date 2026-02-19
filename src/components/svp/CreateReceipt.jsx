@@ -31,17 +31,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import TransactionRow from './TransactionRow';
 import { generateReceiptPDF } from './pdfGenerator';
 import { format } from 'date-fns';
+import { useSearchParams } from 'react-router-dom';
 
 export default function CreateReceipt({ tenants = [], statements, settings, selectedTenantId, onReceiptCreated }) {
-  const searchParams = new URLSearchParams(window.location.search);
+  const [searchParams, setSearchParams] = useSearchParams();
   const initialMode = searchParams.get('mode') || 'manual';
   const [mode, setModeState] = useState(initialMode);
 
   const setMode = (newMode) => {
     setModeState(newMode);
-    const newParams = new URLSearchParams(window.location.search);
+    const newParams = new URLSearchParams(searchParams);
     newParams.set('mode', newMode);
-    window.history.replaceState(null, '', '?' + newParams.toString());
+    setSearchParams(newParams, { replace: true });
   };
   const [clientId, setClientId] = useState('');
   const [startingDebt, setStartingDebt] = useState(0);
