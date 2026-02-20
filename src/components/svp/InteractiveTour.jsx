@@ -286,37 +286,42 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
           <h3 className="font-bold text-gray-900 text-lg sm:text-xl leading-tight pr-8">{currentTourStep.title}</h3>
           <button
             onClick={handleClose}
-            className="p-1 hover:bg-gray-100 rounded transition-colors"
+            className="absolute top-0 right-0 p-1.5 hover:bg-gray-100/80 rounded-full transition-colors bg-gray-50/50 text-gray-400 hover:text-gray-900"
             aria-label="Close tour"
           >
-            <X className="w-5 h-5 text-gray-500 hover:text-gray-700" />
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
 
-        <p className="text-gray-600 text-sm mb-5 leading-relaxed">{currentTourStep.description}</p>
+        <p className="text-gray-600 text-sm sm:text-base mb-6 leading-relaxed">{currentTourStep.description}</p>
 
         {/* Navigation */}
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between pt-4 border-t border-gray-100/50">
           <button
             onClick={handlePrev}
             disabled={currentStep === 0}
-            className="flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 text-gray-700"
+            className="flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-xl transition-all active:scale-95 disabled:opacity-30 disabled:active:scale-100 hover:bg-gray-100 text-gray-700"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-4 h-4" strokeWidth={2.5} />
             Back
           </button>
 
-          <span className="text-xs text-gray-500 font-semibold px-2 py-1 bg-gray-100 rounded-lg">
-            {currentStep + 1} / {tourSteps.length}
-          </span>
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-xs font-bold tracking-widest text-gray-400 uppercase">
+              STEP
+            </span>
+            <span className="text-sm font-bold text-gray-900 bg-gray-100/80 px-2.5 py-0.5 rounded-full">
+              {currentStep + 1} / {tourSteps.length}
+            </span>
+          </div>
 
           <button
             onClick={handleNext}
             disabled={currentStep === tourSteps.length - 1}
-            className="flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-50 text-blue-700"
+            className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-xl transition-all active:scale-95 disabled:opacity-30 disabled:active:scale-100 bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20"
           >
             Next
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4" strokeWidth={2.5} />
           </button>
         </div>
       </div>
@@ -325,11 +330,11 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
         @keyframes slideUp {
           from {
             opacity: 0;
-            transform: translateX(-50%) translateY(10px);
+            transform: translateX(-50%) translateY(20px) scale(0.95);
           }
           to {
             opacity: 1;
-            transform: translateX(-50%) translateY(0);
+            transform: translateX(-50%) translateY(0) scale(1);
           }
         }
         @keyframes tourPulse {
