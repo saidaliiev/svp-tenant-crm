@@ -274,16 +274,16 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
 
       {/* Tooltip */}
       <div
-        className="fixed z-[9999] bg-white rounded-xl shadow-2xl p-6 max-w-sm"
+        className="fixed z-[9999] bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] p-5 sm:p-6 w-[90%] max-w-sm border border-gray-100/50 backdrop-blur-xl"
         style={{
           left: '50%',
           top: `${tooltipTop}px`,
           transform: 'translateX(-50%)',
-          animation: 'slideUp 0.3s ease-out'
+          animation: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
         }}
       >
-        <div className="flex items-start justify-between mb-3">
-          <h3 className="font-bold text-gray-900 text-lg">{currentTourStep.title}</h3>
+        <div className="flex items-start justify-between mb-4 relative">
+          <h3 className="font-bold text-gray-900 text-lg sm:text-xl leading-tight pr-8">{currentTourStep.title}</h3>
           <button
             onClick={handleClose}
             className="p-1 hover:bg-gray-100 rounded transition-colors"
