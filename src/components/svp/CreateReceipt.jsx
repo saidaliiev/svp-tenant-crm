@@ -525,14 +525,14 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
         <div className="space-y-2" data-tour="tenant-selector">
           <Label className="text-base font-semibold">Select Tenant</Label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {tenants.map(t => (
+            {tenants.map((t, index) => (
               <button
                 key={t.id}
                 onClick={() => setClientId(t.id)}
                 className={`p-3 rounded-lg border text-left transition-all text-sm ${
                   clientId === t.id
                     ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30 ring-1 ring-blue-500'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-950/20'
+                    : `border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 ${index % 2 === 1 ? 'bg-gray-50/80 dark:bg-gray-800/50' : 'bg-white dark:bg-gray-800'}`
                 }`}
               >
                 <div className="font-medium text-slate-800 dark:text-gray-200 truncate">{t.fullName}</div>
