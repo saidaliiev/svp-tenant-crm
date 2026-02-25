@@ -33,7 +33,7 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
     : statements.filter(s => s.clientId === filterClientId);
 
   const sortedStatements = [...filteredStatements].sort(
-    (a, b) => new Date(b.created_date || b.createdDate) - new Date(a.created_date || a.createdDate)
+    (a, b) => new Date(b.createdDate || b.created_date) - new Date(a.createdDate || a.created_date)
   );
 
   const handleViewPDF = (receipt) => {
@@ -116,7 +116,7 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
                   <div className="flex items-center justify-between mb-1.5">
                     <div className="min-w-0">
                       <p className="font-medium text-slate-800 dark:text-gray-200 text-sm truncate">{receipt.clientName}</p>
-                      <p className="text-[10px] text-slate-400 dark:text-gray-500">{receipt.receiptId} · {formatDate(receipt.created_date || receipt.createdDate)}</p>
+                      <p className="text-[10px] text-slate-400 dark:text-gray-500">{receipt.receiptId} · {formatDate(receipt.createdDate || receipt.created_date)}</p>
                     </div>
                     <span className={`text-sm font-bold shrink-0 ml-2 ${receipt.finalBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>
                       {formatCurrency(receipt.finalBalance)}
@@ -153,7 +153,7 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
                         <p className="font-medium text-slate-800 dark:text-gray-200 text-sm">{receipt.clientName}</p>
                         <p className="text-xs text-slate-500 dark:text-gray-500">{receipt.receiptId}</p>
                       </td>
-                      <td className="py-3 px-4 text-slate-600 dark:text-gray-400 text-sm hidden md:table-cell">{formatDate(receipt.created_date || receipt.createdDate)}</td>
+                      <td className="py-3 px-4 text-slate-600 dark:text-gray-400 text-sm hidden md:table-cell">{formatDate(receipt.createdDate || receipt.created_date)}</td>
                       <td className="py-3 px-4 text-slate-600 dark:text-gray-400 text-sm hidden lg:table-cell">{formatDate(receipt.startDate)} – {formatDate(receipt.endDate)}</td>
                       <td className={`py-3 px-4 text-right font-semibold text-sm ${receipt.finalBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>{formatCurrency(receipt.finalBalance)}</td>
                       <td className="py-3 px-4">
