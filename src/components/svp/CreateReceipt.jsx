@@ -525,20 +525,43 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
         <div className="space-y-2" data-tour="tenant-selector">
           <Label className="text-base font-semibold">Select Tenant</Label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {tenants.map((t, index) => (
-              <button
-                key={t.id}
-                onClick={() => setClientId(t.id)}
-                className={`p-3 rounded-lg border text-left transition-all text-sm ${
-                  clientId === t.id
-                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30 ring-1 ring-blue-500'
-                    : `border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 ${index % 2 === 1 ? 'bg-gray-50/80 dark:bg-gray-800/50' : 'bg-white dark:bg-gray-800'}`
-                }`}
-              >
-                <div className="font-medium text-slate-800 dark:text-gray-200 truncate">{t.fullName}</div>
-                {t.address && <div className="text-xs text-slate-500 dark:text-gray-500 truncate">{t.address}</div>}
-              </button>
-            ))}
+            {tenants.map((t, index) => {
+              const nameParts = t.fullName.trim().split(' ');
+              const initials = nameParts.length > 1 
+                ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase()
+                : `${nameParts[0]?.[0] || '?'}`.toUpperCase();
+              
+              const colors = [
+                'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300',
+                'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300',
+                'bg-violet-100 text-violet-700 dark:bg-violet-900/50 dark:text-violet-300',
+                'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300',
+                'bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300',
+                'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/50 dark:text-cyan-300'
+              ];
+              const colorIndex = t.fullName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length;
+              const avatarColor = colors[colorIndex];
+
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => setClientId(t.id)}
+                  className={`p-3 rounded-lg border text-left transition-all text-sm flex items-center gap-3 ${
+                    clientId === t.id
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30 ring-1 ring-blue-500'
+                      : `border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 ${index % 2 === 1 ? 'bg-gray-50/80 dark:bg-gray-800/50' : 'bg-white dark:bg-gray-800'}`
+                  }`}
+                >
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shrink-0 ${avatarColor}`}>
+                    {initials}
+                  </div>
+                  <div className="overflow-hidden">
+                    <div className="font-medium text-slate-800 dark:text-gray-200 truncate">{t.fullName}</div>
+                    {t.address && <div className="text-xs text-slate-500 dark:text-gray-500 truncate">{t.address}</div>}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
 
