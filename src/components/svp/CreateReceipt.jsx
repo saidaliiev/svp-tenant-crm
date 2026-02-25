@@ -224,8 +224,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
 
     const endDateObj = new Date(endDate);
     const monthName = endDateObj.toLocaleDateString('en-US', { month: 'long' });
-    const nextMonth = new Date(endDateObj);
-    nextMonth.setMonth(nextMonth.getMonth() + 1);
+    const nextMonth = new Date(endDateObj.getFullYear(), endDateObj.getMonth() + 1, 1);
     const nextMonthName = nextMonth.toLocaleDateString('en-US', { month: 'long' });
 
     const debtAmt = includeDebt ? (parseFloat(startingDebt) || 0) : 0;
