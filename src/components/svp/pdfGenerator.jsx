@@ -83,7 +83,7 @@ export function generateReceiptPDF(receiptData, settings) {
     doc.text('Date Issued:', rightColLabel, rightY);
     doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'normal');
-    doc.text(formatDate(receiptData.createdDate), rightColValue, rightY, { align: 'right' });
+    doc.text(formatDate(receiptData.createdDate || receiptData.created_date), rightColValue, rightY, { align: 'right' });
     
     yPos = Math.max(addressY, rightY) + 8;
 
