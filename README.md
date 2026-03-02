@@ -1,39 +1,29 @@
-**Welcome to your Base44 project** 
+# RentFlow – Tenant & Rent Receipt Manager
 
-**About**
+**RentFlow** is a complete system for managing tenants, tracking rent payments, and generating professional PDF receipts/statements. Ideal for housing organizations, social charities, hostels, cooperatives, and private landlords.
 
-View and Edit  your app on [Base44.com](http://Base44.com) 
+### Key Features
+- Add, edit, and delete tenants (name, full address, phone, rent amount, starting balance/debt/credit)
+- Import/export tenant lists via CSV or Excel
+- Two receipt creation modes:
+  - Manual mode — full control over dates, amounts, notes, and adjustments
+  - Automatic mode — upload bank statements → auto-match payments using keywords, amount ranges, and references
+- Real-time balance preview (red = owed, green = overpayment/credit)
+- Full receipt history with filters by tenant and date range
+- Detailed tenant profile showing monthly payment history
+- Generate clean, branded PDF receipts ready for printing or emailing
+- Organization settings: custom name, contact info, text size on receipts
 
-This project contains everything you need to run your app locally.
+### Tech Stack
+- Frontend: React + Vite
+- Backend: Node.js (Express)
+- Database: SQLite (dev) / PostgreSQL (production)
+- PDF generation: pdf-lib / jsPDF
+- Styling: Tailwind CSS
 
-**Edit the code in your local development environment**
+### Local Development Setup
 
-Any change pushed to the repo will also be reflected in the Base44 Builder.
-
-**Prerequisites:** 
-
-1. Clone the repository using the project's Git URL 
-2. Navigate to the project directory
-3. Install dependencies: `npm install`
-4. Create an `.env.local` file and set the right environment variables
-
-```
-VITE_BASE44_APP_ID=your_app_id
-VITE_BASE44_APP_BASE_URL=your_backend_url
-
-e.g.
-VITE_BASE44_APP_ID=cbef744a8545c389ef439ea6
-VITE_BASE44_APP_BASE_URL=https://my-to-do-list-81bfaad7.base44.app
-```
-
-Run the app: `npm run dev`
-
-**Publish your changes**
-
-Open [Base44.com](http://Base44.com) and click on Publish.
-
-**Docs & Support**
-
-Documentation: [https://docs.base44.com/Integrations/Using-GitHub](https://docs.base44.com/Integrations/Using-GitHub)
-
-Support: [https://app.base44.com/support](https://app.base44.com/support)
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/rentflow.git
+   cd rentflow
