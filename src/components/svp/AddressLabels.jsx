@@ -147,7 +147,7 @@ export default function AddressLabels({ tenants, settings }) {
           </div>
 
           {/* Config Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3">
             {[
               { key: 'cols', label: 'Columns' },
               { key: 'rows', label: 'Rows / page' },
@@ -158,13 +158,13 @@ export default function AddressLabels({ tenants, settings }) {
               { key: 'marginL', label: 'Margin Left (mm)' },
               { key: 'marginR', label: 'Margin Right (mm)' },
             ].map(field => (
-              <div key={field.key} className="space-y-1.5">
-                <Label className="text-xs font-medium text-slate-500 dark:text-gray-400">{field.label}</Label>
+              <div key={field.key} className="flex flex-col gap-1.5">
+                <Label className="text-xs font-medium text-slate-500 dark:text-gray-400 whitespace-nowrap">{field.label}</Label>
                 <Input
                   type="number"
                   value={config[field.key]}
                   onChange={e => updateConfig(field.key, e.target.value)}
-                  className="h-9 text-sm"
+                  className="h-9 text-sm w-full"
                 />
               </div>
             ))}
