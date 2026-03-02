@@ -25,6 +25,7 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState(tabFromUrl);
   const [selectedTenantId, setSelectedTenantId] = useState(null);
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+  const [showSettings, setShowSettings] = useState(false);
   
   const queryClient = useQueryClient();
 
