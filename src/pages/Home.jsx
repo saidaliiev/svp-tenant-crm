@@ -178,15 +178,19 @@ export default function HomePage() {
                 />
               </TabsContent>
 
-              <TabsContent value="settings" className="mt-0">
-                <SettingsTab 
-                  settings={settings}
-                  setSettings={setSettings}
-                />
+              <TabsContent value="tools" className="mt-0">
+                <ToolsTab tenants={tenants} settings={settings} />
               </TabsContent>
             </motion.div>
           </AnimatePresence>
         </Tabs>
+
+        <SettingsDrawer
+          open={showSettings}
+          onClose={() => setShowSettings(false)}
+          settings={settings}
+          setSettings={setSettings}
+        />
       </div>
 
       {/* Mobile Bottom Navigation */}
