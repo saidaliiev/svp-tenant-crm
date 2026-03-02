@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Home, FileText, History, Settings } from 'lucide-react';
+import { Home, FileText, History, Settings, Wrench } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import ClientManagement from '@/components/svp/ClientManagement';
 import CreateReceipt from '@/components/svp/CreateReceipt';
 import ReceiptHistory from '@/components/svp/ReceiptHistory';
-import SettingsTab from '@/components/svp/SettingsTab';
+import SettingsDrawer from '@/components/svp/SettingsDrawer';
+import ToolsTab from '@/components/svp/ToolsTab';
 
 
 const DEFAULT_SETTINGS = {
