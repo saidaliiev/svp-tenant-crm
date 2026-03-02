@@ -504,7 +504,10 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
         <Tabs value={mode} onValueChange={setMode} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="manual" data-tour="manual-mode">Manual Mode</TabsTrigger>
-            <TabsTrigger value="automatic" data-tour="automatic-mode">Automatic Mode</TabsTrigger>
+            <TabsTrigger value="automatic" data-tour="automatic-mode" className="gap-2">
+              Automatic Mode
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300 ml-1">BETA</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="manual" className="space-y-4 sm:space-y-6 mt-6">
