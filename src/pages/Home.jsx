@@ -98,39 +98,48 @@ export default function HomePage() {
       <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
         {/* Desktop Tab Navigation */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="hidden sm:grid w-full grid-cols-4 mb-4 sm:mb-6 bg-white/80 dark:bg-gray-800/60 backdrop-blur-sm shadow-lg dark:shadow-gray-950/30 rounded-lg sm:rounded-xl p-0.5 sm:p-1 h-auto select-none border-0 dark:border dark:border-gray-700/50">
-            <TabsTrigger 
-              value="tenants"
-              data-tour="tab-tenants"
-              className="flex flex-row items-center gap-2 py-3 px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all text-sm"
+          <div className="hidden sm:flex items-center gap-2 mb-4 sm:mb-6">
+            <TabsList className="flex-1 grid grid-cols-4 bg-white/80 dark:bg-gray-800/60 backdrop-blur-sm shadow-lg dark:shadow-gray-950/30 rounded-lg sm:rounded-xl p-0.5 sm:p-1 h-auto select-none border-0 dark:border dark:border-gray-700/50">
+              <TabsTrigger
+                value="tenants"
+                data-tour="tab-tenants"
+                className="flex flex-row items-center gap-2 py-3 px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all text-sm"
+              >
+                <Home className="w-4 h-4" />
+                <span>Tenants</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="receipt"
+                data-tour="tab-receipt"
+                className="flex flex-row items-center gap-2 py-3 px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all text-sm"
+              >
+                <FileText className="w-4 h-4" />
+                <span>Create Receipt</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="history"
+                data-tour="tab-history"
+                className="flex flex-row items-center gap-2 py-3 px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all text-sm"
+              >
+                <History className="w-4 h-4" />
+                <span>History</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="tools"
+                className="flex flex-row items-center gap-2 py-3 px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all text-sm"
+              >
+                <Wrench className="w-4 h-4" />
+                <span>Tools</span>
+              </TabsTrigger>
+            </TabsList>
+            {/* Settings Icon */}
+            <button
+              onClick={() => setShowSettings(true)}
+              className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/80 dark:bg-gray-800/60 backdrop-blur-sm shadow-lg dark:shadow-gray-950/30 border-0 dark:border dark:border-gray-700/50 text-slate-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
             >
-              <Home className="w-4 h-4" />
-              <span>Tenant Management</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="receipt"
-              data-tour="tab-receipt"
-              className="flex flex-row items-center gap-2 py-3 px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all text-sm"
-            >
-              <FileText className="w-4 h-4" />
-              <span>Create Receipt</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="history"
-              data-tour="tab-history"
-              className="flex flex-row items-center gap-2 py-3 px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all text-sm"
-            >
-              <History className="w-4 h-4" />
-              <span>Receipt History</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="settings" 
-              className="flex flex-row items-center gap-2 py-3 px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all text-sm"
-            >
-              <Settings className="w-4 h-4" />
-              <span>Settings</span>
-            </TabsTrigger>
-          </TabsList>
+              <Settings className="w-5 h-5" />
+            </button>
+          </div>
 
           <AnimatePresence mode="wait">
             <motion.div
