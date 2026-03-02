@@ -147,7 +147,7 @@ export default function AddressLabels({ tenants, settings }) {
           </div>
 
           {/* Config Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
               { key: 'cols', label: 'Columns' },
               { key: 'rows', label: 'Rows / page' },
@@ -158,8 +158,8 @@ export default function AddressLabels({ tenants, settings }) {
               { key: 'marginL', label: 'Margin Left (mm)' },
               { key: 'marginR', label: 'Margin Right (mm)' },
             ].map(field => (
-              <div key={field.key} className="space-y-1">
-                <Label className="text-xs text-slate-500">{field.label}</Label>
+              <div key={field.key} className="space-y-1.5">
+                <Label className="text-xs font-medium text-slate-500 dark:text-gray-400">{field.label}</Label>
                 <Input
                   type="number"
                   value={config[field.key]}
