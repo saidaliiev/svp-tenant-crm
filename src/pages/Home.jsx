@@ -195,48 +195,24 @@ export default function HomePage() {
 
       {/* Mobile Bottom Navigation */}
       <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-t border-gray-200 dark:border-gray-800 z-50 pb-safe">
-        <div className="grid grid-cols-4 h-16">
-          <button
-            onClick={() => handleTabChange('tenants')}
-            className={`flex flex-col items-center justify-center gap-1 transition-colors select-none ${
-              activeTab === 'tenants' 
-                ? 'text-blue-600 dark:text-blue-400' 
-                : 'text-gray-500 dark:text-gray-400'
-            }`}
-          >
+        <div className="grid grid-cols-5 h-16">
+          <button onClick={() => handleTabChange('tenants')} className={`flex flex-col items-center justify-center gap-1 transition-colors select-none ${activeTab === 'tenants' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>
             <Home className="w-5 h-5" />
             <span className="text-[10px] font-medium">Tenants</span>
           </button>
-          <button
-            onClick={() => handleTabChange('receipt')}
-            className={`flex flex-col items-center justify-center gap-1 transition-colors select-none ${
-              activeTab === 'receipt' 
-                ? 'text-blue-600 dark:text-blue-400' 
-                : 'text-gray-500 dark:text-gray-400'
-            }`}
-          >
+          <button onClick={() => handleTabChange('receipt')} className={`flex flex-col items-center justify-center gap-1 transition-colors select-none ${activeTab === 'receipt' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>
             <FileText className="w-5 h-5" />
             <span className="text-[10px] font-medium">Receipt</span>
           </button>
-          <button
-            onClick={() => handleTabChange('history')}
-            className={`flex flex-col items-center justify-center gap-1 transition-colors select-none ${
-              activeTab === 'history' 
-                ? 'text-blue-600 dark:text-blue-400' 
-                : 'text-gray-500 dark:text-gray-400'
-            }`}
-          >
+          <button onClick={() => handleTabChange('history')} className={`flex flex-col items-center justify-center gap-1 transition-colors select-none ${activeTab === 'history' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>
             <History className="w-5 h-5" />
             <span className="text-[10px] font-medium">History</span>
           </button>
-          <button
-            onClick={() => handleTabChange('settings')}
-            className={`flex flex-col items-center justify-center gap-1 transition-colors select-none ${
-              activeTab === 'settings' 
-                ? 'text-blue-600 dark:text-blue-400' 
-                : 'text-gray-500 dark:text-gray-400'
-            }`}
-          >
+          <button onClick={() => handleTabChange('tools')} className={`flex flex-col items-center justify-center gap-1 transition-colors select-none ${activeTab === 'tools' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>
+            <Wrench className="w-5 h-5" />
+            <span className="text-[10px] font-medium">Tools</span>
+          </button>
+          <button onClick={() => setShowSettings(true)} className="flex flex-col items-center justify-center gap-1 transition-colors select-none text-gray-500 dark:text-gray-400 hover:text-blue-600">
             <Settings className="w-5 h-5" />
             <span className="text-[10px] font-medium">Settings</span>
           </button>
