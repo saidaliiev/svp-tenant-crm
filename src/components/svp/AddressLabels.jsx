@@ -222,27 +222,28 @@ export default function AddressLabels({ tenants, settings }) {
             <p className="text-sm font-medium text-slate-600 dark:text-gray-300 mb-3">
               Label preview ({selectedTenants.length} labels, {totalPages} page{totalPages > 1 ? 's' : ''}):
             </p>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto bg-slate-100 dark:bg-gray-950 p-6 sm:p-8 rounded-xl flex justify-center border border-slate-200 dark:border-gray-800 shadow-inner">
               <div
-                className="border-2 border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 relative"
-                style={{ width: '210mm', maxWidth: '100%', minHeight: '100px', padding: `${config.marginT}mm ${config.marginR}mm ${config.marginB}mm ${config.marginL}mm` }}
+                className="bg-white relative shadow-md"
+                style={{ width: '210mm', minHeight: '297mm', padding: `${config.marginT}mm ${config.marginR}mm ${config.marginB}mm ${config.marginL}mm` }}
               >
                 <div
                   className="grid"
                   style={{
                     gridTemplateColumns: `repeat(${config.cols}, ${config.labelW}mm)`,
+                    gridAutoRows: `${config.labelH}mm`,
                     gap: '0',
                   }}
                 >
                   {selectedTenants.slice(0, labelsPerPage).map(t => (
                     <div
                       key={t.id}
-                      className="border border-dashed border-gray-300 dark:border-gray-600 p-2 overflow-hidden"
+                      className="border border-dashed border-gray-200 p-4 overflow-hidden relative flex flex-col justify-center"
                       style={{ width: `${config.labelW}mm`, height: `${config.labelH}mm` }}
                     >
-                      <div className="font-bold text-xs text-slate-800 dark:text-gray-100 truncate">{t.fullName}</div>
-                      <div className="text-[10px] text-slate-500 dark:text-gray-400 mt-0.5 leading-tight line-clamp-3">{t.address}</div>
-                      <div className="text-[8px] text-slate-400 dark:text-gray-500 mt-1">
+                      <div className="font-bold text-[13px] text-slate-900 leading-tight truncate">{t.fullName}</div>
+                      <div className="text-[11px] text-slate-700 mt-1 leading-snug line-clamp-3">{t.address}</div>
+                      <div className="text-[9px] text-slate-400 absolute bottom-3 left-4">
                         {settings?.organizationName || 'Society of Saint Vincent de Paul'}
                       </div>
                     </div>
@@ -251,7 +252,7 @@ export default function AddressLabels({ tenants, settings }) {
               </div>
             </div>
             {totalPages > 1 && (
-              <p className="text-xs text-slate-400 mt-2">Showing page 1 of {totalPages} — remaining {selectedTenants.length - labelsPerPage} labels on next page{totalPages > 2 ? 's' : ''}</p>
+              <p className="text-sm text-center font-medium text-slate-500 mt-4">Showing page 1 of {totalPages} — remaining {selectedTenants.length - labelsPerPage} labels on next page{totalPages > 2 ? 's' : ''}</p>
             )}
           </CardContent>
         </Card>

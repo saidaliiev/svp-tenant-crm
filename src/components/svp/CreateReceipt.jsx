@@ -364,6 +364,14 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
     
     setTimeout(() => setSuccess(''), 3000);
     setShowSaveDialog(false);
+    
+    if (parsedPayments && parsedPayments.length > 0) {
+      setParsedPayments(prev => prev.map(p => 
+        p.matchedTenant?.id === pendingReceiptData.clientId ? { ...p, ignored: true } : p
+      ));
+      setMode('automatic');
+    }
+    
     setPendingReceiptData(null);
   };
 
