@@ -179,7 +179,7 @@ export default function HomePage() {
               </TabsContent>
 
               <TabsContent value="tools" className="mt-0">
-                <ToolsTab tenants={tenants} settings={settings} />
+                <ToolsTab tenants={tenants} settings={settings} statements={statements} />
               </TabsContent>
             </motion.div>
           </AnimatePresence>
