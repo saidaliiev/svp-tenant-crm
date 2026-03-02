@@ -4,6 +4,10 @@ import AddressLabels from './AddressLabels';
 import RentReport from './RentReport';
 import ArrearsOverview from './ArrearsOverview';
 import ArrearsAlert from './ArrearsAlert';
+import BulkLetters from './BulkLetters';
+import PaymentLookup from './PaymentLookup';
+import StatementCalendar from './StatementCalendar';
+import ExportExcel from './ExportExcel';
 
 const TOOLS = [
   {
@@ -44,7 +48,7 @@ const TOOLS = [
     bg: 'bg-orange-50 dark:bg-orange-950/40',
     title: 'Bulk Letters',
     description: 'Generate debt notification letters for multiple tenants',
-    ready: false,
+    ready: true,
   },
   {
     id: 'payment-lookup',
@@ -52,7 +56,7 @@ const TOOLS = [
     bg: 'bg-cyan-50 dark:bg-cyan-950/40',
     title: 'Payment Lookup',
     description: 'Search for a specific payment across all statements',
-    ready: false,
+    ready: true,
   },
   {
     id: 'statement-calendar',
@@ -60,15 +64,15 @@ const TOOLS = [
     bg: 'bg-violet-50 dark:bg-violet-950/40',
     title: 'Statement Calendar',
     description: 'See which months are closed for each tenant',
-    ready: false,
+    ready: true,
   },
   {
     id: 'export-excel',
     icon: <Download className="w-6 h-6 text-teal-500" />,
     bg: 'bg-teal-50 dark:bg-teal-950/40',
     title: 'Export to Excel',
-    description: 'Export all receipts and transactions to .xlsx',
-    ready: false,
+    description: 'Export all receipts and transactions to .csv',
+    ready: true,
   },
 ];
 
@@ -77,6 +81,10 @@ const TOOL_COMPONENTS = {
   'rent-report': RentReport,
   'arrears-overview': ArrearsOverview,
   'arrears-alert': ArrearsAlert,
+  'bulk-letters': BulkLetters,
+  'payment-lookup': PaymentLookup,
+  'statement-calendar': StatementCalendar,
+  'export-excel': ExportExcel,
 };
 
 export default function ToolsTab({ tenants, settings, statements }) {
