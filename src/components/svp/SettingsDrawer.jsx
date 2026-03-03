@@ -7,7 +7,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Settings, Save, RotateCcw, Trash2, AlertTriangle, Type } from 'lucide-react';
+import { Settings, Save, RotateCcw, Trash2, AlertTriangle, Type, Droplets, Layers } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const DEFAULT_SETTINGS = {
@@ -29,6 +29,7 @@ export default function SettingsDrawer({ open, onClose, settings, setSettings })
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [fontSize, setFontSize] = useState('medium');
+  const [designStyle, setDesignStyle] = useState('default');
 
   useEffect(() => {
     setFormData(settings);
@@ -39,6 +40,7 @@ export default function SettingsDrawer({ open, onClose, settings, setSettings })
       try {
         const user = await base44.auth.me();
         if (user.fontSize) setFontSize(user.fontSize);
+        if (user.designStyle) setDesignStyle(user.designStyle);
       } catch {}
     };
     loadPrefs();
@@ -50,6 +52,17 @@ export default function SettingsDrawer({ open, onClose, settings, setSettings })
     root.classList.remove('text-sm', 'text-base', 'text-lg');
     root.classList.add(newSize === 'small' ? 'text-sm' : newSize === 'large' ? 'text-lg' : 'text-base');
     try { await base44.auth.updateMe({ fontSize: newSize }); } catch {}
+  };
+
+  const handleDesignStyleChange = async (newStyle) => {
+    setDesignStyle(newStyle);
+    const root = document.documentElement;
+    if (newStyle === 'liquid') {
+      root.classList.add('theme-liquid');
+    } else {
+      root.classList.remove('theme-liquid');
+    }
+    try { await base44.auth.updateMe({ designStyle: newStyle }); } catch {}
   };
 
   const handleSave = () => {
