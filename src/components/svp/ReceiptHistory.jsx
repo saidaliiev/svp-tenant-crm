@@ -3,6 +3,8 @@ import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -27,6 +29,7 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
   const queryClient = useQueryClient();
   const [filterClientId, setFilterClientId] = useState('all');
   const [deleteReceipt, setDeleteReceipt] = useState(null);
+  const [deleteReason, setDeleteReason] = useState('');
 
   const filteredStatements = filterClientId === 'all' 
     ? statements 
@@ -46,10 +49,11 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
   });
 
   const handleDeleteReceipt = async () => {
-    if (deleteReceipt) {
+    if (deleteReceipt && deleteReason.trim().length >= 6) {
       try {
         await deleteStatementMutation.mutateAsync(deleteReceipt.id);
         setDeleteReceipt(null);
+        setDeleteReason('');
       } catch (err) {
         console.error('Error deleting statement:', err);
       }
@@ -176,19 +180,41 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
         )}
 
         {/* Delete Confirmation Dialog */}
-        <AlertDialog open={!!deleteReceipt} onOpenChange={(open) => !open && setDeleteReceipt(null)}>
+        <AlertDialog open={!!deleteReceipt} onOpenChange={(open) => {
+          if (!open) {
+            setDeleteReceipt(null);
+            setDeleteReason('');
+          }
+        }}>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Delete Receipt</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to delete receipt <strong>{deleteReceipt?.receiptId}</strong> for {deleteReceipt?.clientName}? This action cannot be undone.
+              <AlertDialogDescription asChild>
+                <div>
+                  <p className="mb-4">
+                    Are you sure you want to delete receipt <strong>{deleteReceipt?.receiptId}</strong> for {deleteReceipt?.clientName}? This action cannot be undone.
+                  </p>
+                  <div className="space-y-2 text-left">
+                    <Label htmlFor="reason" className="text-slate-700 dark:text-slate-300">
+                      Reason for deletion (min. 6 characters)
+                    </Label>
+                    <Input
+                      id="reason"
+                      value={deleteReason}
+                      onChange={(e) => setDeleteReason(e.target.value)}
+                      placeholder="E.g., Created by mistake"
+                      className="w-full"
+                    />
+                  </div>
+                </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction 
                 onClick={handleDeleteReceipt}
-                className="bg-red-500 hover:bg-red-600"
+                disabled={deleteReason.trim().length < 6}
+                className="bg-red-500 hover:bg-red-600 disabled:opacity-50"
               >
                 Delete
               </AlertDialogAction>
