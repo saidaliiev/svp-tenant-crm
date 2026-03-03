@@ -318,7 +318,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       totalRasReceived,
       netTenantObligation,
       finalBalance: finalTenantBalance,
-      notes: smartNotes,
+      notes: notes.trim() || smartNotes,
       createdDate: (() => {
         const end = new Date(endDate);
         const today = new Date();
