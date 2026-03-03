@@ -99,7 +99,7 @@ export default function HomePage() {
         {/* Desktop Tab Navigation */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <div className="hidden sm:flex items-stretch gap-2 mb-4 sm:mb-6">
-            <TabsList className="flex-1 grid grid-cols-4 bg-white/80 dark:bg-gray-800/60 backdrop-blur-sm shadow-lg dark:shadow-gray-950/30 rounded-lg sm:rounded-xl p-0.5 sm:p-1 h-auto select-none border-0 dark:border dark:border-gray-700/50">
+            <TabsList className="flex-1 grid grid-cols-4 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl saturate-[180%] shadow-[0_8px_32px_rgba(0,0,0,0.05)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.2)] rounded-lg sm:rounded-xl p-1 h-auto select-none border border-white/60 dark:border-white/10">
               <TabsTrigger
                 value="tenants"
                 data-tour="tab-tenants"
@@ -194,41 +194,45 @@ export default function HomePage() {
       </div>
 
       {/* Mobile Bottom Navigation - optimized for Liquid Glass */}
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-2xl border-t border-gray-200/40 dark:border-gray-800/40 z-50 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.05)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.2)]">
-        <div className="grid grid-cols-5 h-[3.5rem] items-center">
-          <button onClick={() => handleTabChange('tenants')} className={`relative flex flex-col items-center justify-center gap-1 py-1 transition-all duration-300 select-none ${activeTab === 'tenants' ? 'text-blue-600 dark:text-blue-400 -translate-y-1' : 'text-slate-500 dark:text-slate-400'}`}>
-            {activeTab === 'tenants' && <motion.div layoutId="mobileNavIndicator" className="absolute -top-3 w-8 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-b-full shadow-[0_2px_8px_rgba(59,130,246,0.5)]" />}
-            <div className={`p-1.5 rounded-xl transition-all ${activeTab === 'tenants' ? 'bg-blue-100/50 dark:bg-blue-900/30' : ''}`}>
-              <Home className={`w-5 h-5 ${activeTab === 'tenants' ? 'fill-blue-500/20' : ''}`} />
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white/70 dark:bg-slate-900/70 backdrop-blur-[32px] saturate-[200%] border-t border-white/60 dark:border-white/10 z-50 pb-safe shadow-[0_-4px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_-4px_32px_rgba(0,0,0,0.3)]">
+        <div className="grid grid-cols-5 h-[4.5rem] items-center px-2">
+          <button onClick={() => handleTabChange('tenants')} className="relative flex flex-col items-center justify-center w-full h-full transition-all duration-300 select-none group outline-none">
+            <div className="relative flex items-center justify-center w-12 h-8 mb-1">
+              {activeTab === 'tenants' && <motion.div layoutId="mobileNavBg" className="absolute inset-0 bg-blue-500/15 dark:bg-blue-400/20 rounded-xl -z-10" transition={{ type: "spring", bounce: 0.2, duration: 0.5 }} />}
+              <Home className={`w-6 h-6 transition-all duration-300 ${activeTab === 'tenants' ? 'text-blue-600 dark:text-blue-400 fill-blue-500/20' : 'text-slate-500 dark:text-slate-400 group-hover:scale-110'}`} strokeWidth={activeTab === 'tenants' ? 2.5 : 2} />
             </div>
-            <span className="text-[10px] font-semibold">Tenants</span>
+            <span className={`text-[10px] transition-all duration-300 ${activeTab === 'tenants' ? 'text-blue-700 dark:text-blue-300 font-bold' : 'text-slate-500 dark:text-slate-400 font-medium'}`}>Tenants</span>
           </button>
-          <button onClick={() => handleTabChange('receipt')} className={`relative flex flex-col items-center justify-center gap-1 py-1 transition-all duration-300 select-none ${activeTab === 'receipt' ? 'text-purple-600 dark:text-purple-400 -translate-y-1' : 'text-slate-500 dark:text-slate-400'}`}>
-            {activeTab === 'receipt' && <motion.div layoutId="mobileNavIndicator" className="absolute -top-3 w-8 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-b-full shadow-[0_2px_8px_rgba(168,85,247,0.5)]" />}
-            <div className={`p-1.5 rounded-xl transition-all ${activeTab === 'receipt' ? 'bg-purple-100/50 dark:bg-purple-900/30' : ''}`}>
-              <FileText className={`w-5 h-5 ${activeTab === 'receipt' ? 'fill-purple-500/20' : ''}`} />
+          
+          <button onClick={() => handleTabChange('receipt')} className="relative flex flex-col items-center justify-center w-full h-full transition-all duration-300 select-none group outline-none">
+            <div className="relative flex items-center justify-center w-12 h-8 mb-1">
+              {activeTab === 'receipt' && <motion.div layoutId="mobileNavBg" className="absolute inset-0 bg-purple-500/15 dark:bg-purple-400/20 rounded-xl -z-10" transition={{ type: "spring", bounce: 0.2, duration: 0.5 }} />}
+              <FileText className={`w-6 h-6 transition-all duration-300 ${activeTab === 'receipt' ? 'text-purple-600 dark:text-purple-400 fill-purple-500/20' : 'text-slate-500 dark:text-slate-400 group-hover:scale-110'}`} strokeWidth={activeTab === 'receipt' ? 2.5 : 2} />
             </div>
-            <span className="text-[10px] font-semibold">Receipt</span>
+            <span className={`text-[10px] transition-all duration-300 ${activeTab === 'receipt' ? 'text-purple-700 dark:text-purple-300 font-bold' : 'text-slate-500 dark:text-slate-400 font-medium'}`}>Receipt</span>
           </button>
-          <button onClick={() => handleTabChange('history')} className={`relative flex flex-col items-center justify-center gap-1 py-1 transition-all duration-300 select-none ${activeTab === 'history' ? 'text-blue-600 dark:text-blue-400 -translate-y-1' : 'text-slate-500 dark:text-slate-400'}`}>
-            {activeTab === 'history' && <motion.div layoutId="mobileNavIndicator" className="absolute -top-3 w-8 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-b-full shadow-[0_2px_8px_rgba(59,130,246,0.5)]" />}
-            <div className={`p-1.5 rounded-xl transition-all ${activeTab === 'history' ? 'bg-blue-100/50 dark:bg-blue-900/30' : ''}`}>
-              <History className={`w-5 h-5 ${activeTab === 'history' ? 'fill-blue-500/20' : ''}`} />
+
+          <button onClick={() => handleTabChange('history')} className="relative flex flex-col items-center justify-center w-full h-full transition-all duration-300 select-none group outline-none">
+            <div className="relative flex items-center justify-center w-12 h-8 mb-1">
+              {activeTab === 'history' && <motion.div layoutId="mobileNavBg" className="absolute inset-0 bg-blue-500/15 dark:bg-blue-400/20 rounded-xl -z-10" transition={{ type: "spring", bounce: 0.2, duration: 0.5 }} />}
+              <History className={`w-6 h-6 transition-all duration-300 ${activeTab === 'history' ? 'text-blue-600 dark:text-blue-400 fill-blue-500/20' : 'text-slate-500 dark:text-slate-400 group-hover:scale-110'}`} strokeWidth={activeTab === 'history' ? 2.5 : 2} />
             </div>
-            <span className="text-[10px] font-semibold">History</span>
+            <span className={`text-[10px] transition-all duration-300 ${activeTab === 'history' ? 'text-blue-700 dark:text-blue-300 font-bold' : 'text-slate-500 dark:text-slate-400 font-medium'}`}>History</span>
           </button>
-          <button onClick={() => handleTabChange('tools')} className={`relative flex flex-col items-center justify-center gap-1 py-1 transition-all duration-300 select-none ${activeTab === 'tools' ? 'text-purple-600 dark:text-purple-400 -translate-y-1' : 'text-slate-500 dark:text-slate-400'}`}>
-            {activeTab === 'tools' && <motion.div layoutId="mobileNavIndicator" className="absolute -top-3 w-8 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-b-full shadow-[0_2px_8px_rgba(168,85,247,0.5)]" />}
-             <div className={`p-1.5 rounded-xl transition-all ${activeTab === 'tools' ? 'bg-purple-100/50 dark:bg-purple-900/30' : ''}`}>
-              <Wrench className={`w-5 h-5 ${activeTab === 'tools' ? 'fill-purple-500/20' : ''}`} />
+
+          <button onClick={() => handleTabChange('tools')} className="relative flex flex-col items-center justify-center w-full h-full transition-all duration-300 select-none group outline-none">
+            <div className="relative flex items-center justify-center w-12 h-8 mb-1">
+              {activeTab === 'tools' && <motion.div layoutId="mobileNavBg" className="absolute inset-0 bg-purple-500/15 dark:bg-purple-400/20 rounded-xl -z-10" transition={{ type: "spring", bounce: 0.2, duration: 0.5 }} />}
+              <Wrench className={`w-6 h-6 transition-all duration-300 ${activeTab === 'tools' ? 'text-purple-600 dark:text-purple-400 fill-purple-500/20' : 'text-slate-500 dark:text-slate-400 group-hover:scale-110'}`} strokeWidth={activeTab === 'tools' ? 2.5 : 2} />
             </div>
-            <span className="text-[10px] font-semibold">Tools</span>
+            <span className={`text-[10px] transition-all duration-300 ${activeTab === 'tools' ? 'text-purple-700 dark:text-purple-300 font-bold' : 'text-slate-500 dark:text-slate-400 font-medium'}`}>Tools</span>
           </button>
-          <button onClick={() => setShowSettings(true)} className="relative flex flex-col items-center justify-center gap-1 py-1 transition-all duration-300 select-none text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200">
-            <div className="p-1.5 rounded-xl">
-              <Settings className="w-5 h-5" />
+
+          <button onClick={() => setShowSettings(true)} className="relative flex flex-col items-center justify-center w-full h-full transition-all duration-300 select-none group outline-none">
+            <div className="relative flex items-center justify-center w-12 h-8 mb-1">
+              <Settings className={`w-6 h-6 transition-all duration-300 text-slate-500 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200 group-hover:scale-110`} strokeWidth={2} />
             </div>
-            <span className="text-[10px] font-medium">Settings</span>
+            <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200">Settings</span>
           </button>
         </div>
       </div>
