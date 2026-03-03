@@ -158,19 +158,43 @@ export default function AddressLabels({ tenants, settings }) {
           <div>
             <Label className="text-sm font-semibold mb-2 block">Label Sheet Layout</Label>
             <div className="flex flex-wrap gap-2">
-              {PRESETS.map((p, i) => (
-                <button
-                  key={i}
-                  onClick={() => handlePreset(i)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
-                    preset === i
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-blue-400'
-                  }`}
-                >
-                  {p.name}
-                </button>
+              {allPresets.map((p, i) => (
+                <div key={i} className="flex items-stretch">
+                  <button
+                    onClick={() => handlePreset(i)}
+                    className={`px-3 py-1.5 text-xs font-medium border transition-all ${
+                      preset === i
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-blue-400'
+                    } ${i >= PRESETS.length ? 'rounded-l-full border-r-0' : 'rounded-full'}`}
+                  >
+                    {p.name}
+                  </button>
+                  {i >= PRESETS.length && (
+                    <button
+                      onClick={() => deleteCustomPreset(i)}
+                      className={`px-2 py-1.5 border transition-all rounded-r-full flex items-center justify-center ${
+                        preset === i
+                          ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700 border-l-blue-500'
+                          : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30'
+                      }`}
+                      title="Delete preset"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
               ))}
+              <button
+                onClick={() => setPreset(-1)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                  preset === -1
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-blue-400'
+                }`}
+              >
+                Custom
+              </button>
             </div>
           </div>
 
