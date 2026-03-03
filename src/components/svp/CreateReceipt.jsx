@@ -30,6 +30,7 @@ import { FileText, Plus, Trash2, Printer, AlertCircle, Calculator, User, Sparkle
 import { motion, AnimatePresence } from 'framer-motion';
 import TransactionRow from './TransactionRow';
 import { generateReceiptPDF } from './pdfGenerator';
+import { DatePickerWithRange } from './DatePickerWithRange';
 import { format } from 'date-fns';
 import { useSearchParams } from 'react-router-dom';
 
@@ -49,8 +50,13 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
   const [credit, setCredit] = useState(0);
   const [includeDebt, setIncludeDebt] = useState(true);
   const [includeCredit, setIncludeCredit] = useState(true);
-  const [startDate, setStartDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString().split('T')[0]);
-  const [endDate, setEndDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 0).toISOString().split('T')[0]);
+  const [dateRange, setDateRange] = useState({
+    from: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
+    to: new Date(new Date().getFullYear(), new Date().getMonth(), 0)
+  });
+  
+  const startDate = dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : '';
+  const endDate = dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : '';
   const [notes, setNotes] = useState('');
   const [transactions, setTransactions] = useState([]);
   const [error, setError] = useState('');
@@ -122,8 +128,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       const newStartDate = new Date(year, month - 1, 1);
       const newEndDate = new Date(year, month, 0);
       
-      setStartDate(newStartDate.toISOString().split('T')[0]);
-      setEndDate(newEndDate.toISOString().split('T')[0]);
+      setDateRange({ from: newStartDate, to: newEndDate });
       setStartingDebt(lastStatement.finalBalance || 0);
 
       const daysInMonth = newEndDate.getDate();
@@ -385,8 +390,10 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
     
     // Set date range from statement dates
     if (statementDateRange) {
-      setStartDate(statementDateRange.startDate.toISOString().split('T')[0]);
-      setEndDate(statementDateRange.endDate.toISOString().split('T')[0]);
+      setDateRange({
+        from: new Date(statementDateRange.startDate),
+        to: new Date(statementDateRange.endDate)
+      });
     }
 
     // Collect all payments for this tenant
@@ -571,28 +578,8 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
         {selectedTenant && (
         <>
         <div className="space-y-2" data-tour="period-dates">
-        <Label>Statement Period</Label>
-        <div className="flex flex-col sm:flex-row gap-2">
-         <div className="relative flex-1">
-           <Input
-             type="date"
-             value={startDate}
-             onChange={(e) => setStartDate(e.target.value)}
-             className="h-11 pl-4"
-           />
-           <span className="absolute -top-2.5 left-2 bg-white dark:bg-gray-800 px-1 text-xs text-slate-500">From</span>
-         </div>
-         <div className="hidden sm:flex items-center justify-center text-slate-400">—</div>
-         <div className="relative flex-1">
-           <Input
-             type="date"
-             value={endDate}
-             onChange={(e) => setEndDate(e.target.value)}
-             className="h-11 pl-4"
-           />
-           <span className="absolute -top-2.5 left-2 bg-white dark:bg-gray-800 px-1 text-xs text-slate-500">To</span>
-         </div>
-        </div>
+          <Label>Statement Period</Label>
+          <DatePickerWithRange date={dateRange} setDate={setDateRange} />
         </div>
 
             {/* Starting Debt and Credit */}
