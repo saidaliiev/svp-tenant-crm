@@ -73,7 +73,12 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
                   {tenant.phoneNumber}
                 </p>
               )}
-              <Badge className="mt-2">ID: {tenant.displayId || tenant.id}</Badge>
+              <div className="flex gap-2 mt-2">
+                <Badge>ID: {tenant.displayId || tenant.id}</Badge>
+                {tenant.lodgmentRange && (
+                  <Badge variant="outline" className="font-mono">Lodgment ID: {tenant.lodgmentRange}</Badge>
+                )}
+              </div>
             </div>
           </div>
 

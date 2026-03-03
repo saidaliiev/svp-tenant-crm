@@ -20,7 +20,10 @@ export default function TenantCardMobile({ tenant, index, onProfile, onSelect, o
           {formatCurrency(tenant.currentBalance || 0)}
         </span>
       </div>
-      <p className="text-xs text-slate-500 dark:text-gray-500 truncate mb-2.5">{tenant.address}</p>
+      <p className={`text-xs text-slate-500 dark:text-gray-500 truncate ${tenant.lodgmentRange ? 'mb-1' : 'mb-2.5'}`}>{tenant.address}</p>
+      {tenant.lodgmentRange && (
+        <p className="text-[10px] font-mono text-slate-400 dark:text-gray-500 truncate mb-2.5">Lodgment ID: {tenant.lodgmentRange}</p>
+      )}
       <div className="flex gap-1.5" onClick={(e) => e.stopPropagation()}>
         <Button size="sm" onClick={() => onProfile(tenant)} data-tour={index === 0 ? "btn-profile" : undefined} className="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white h-8 text-xs">
           <User className="w-3.5 h-3.5 mr-1" /> Profile
