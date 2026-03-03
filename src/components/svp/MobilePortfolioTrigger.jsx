@@ -21,9 +21,10 @@ export default function MobilePortfolioTrigger({ onReveal }) {
 
   return (
     <div className="sm:hidden flex justify-center py-5 mb-4">
-      <button
+      <motion.button
         onClick={handleTap}
-        className="relative overflow-hidden inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-sm text-xs active:scale-95 transition-all group"
+        whileTap={{ scale: 0.96 }}
+        className="relative group flex items-center gap-1.5 px-4 py-2.5 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-gray-200/60 dark:border-gray-700/60 rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.2)] text-xs transition-all overflow-hidden"
         aria-label="View developer portfolio"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-500/10 dark:to-purple-500/10" />
@@ -35,10 +36,10 @@ export default function MobilePortfolioTrigger({ onReveal }) {
         <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 relative z-10">
           Iskan
         </span>
-        <div className="relative z-10 flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-full p-1 group-active:bg-blue-100 transition-colors">
+        <div className="relative z-10 flex items-center justify-center bg-gray-50/80 dark:bg-gray-700/80 rounded-full p-1 ml-0.5 group-active:bg-blue-100 transition-colors">
           <ArrowRight className="w-3 h-3 text-gray-400 group-active:text-blue-600" />
         </div>
-      </button>
+      </motion.button>
     </div>
   );
 }

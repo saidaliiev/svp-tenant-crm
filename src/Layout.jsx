@@ -15,16 +15,23 @@ export default function Layout({ children, currentPageName }) {
   const location = useLocation();
   const controls = useAnimation();
 
-  // Load user font size pref on mount
+  // Load user prefs on mount
   useEffect(() => {
     const loadUserPrefs = async () => {
       try {
         const user = await base44.auth.me();
         const root = document.documentElement;
-        root.classList.remove('dark');
         const fontSize = user.fontSize || 'medium';
+        const designStyle = user.designStyle || 'default';
+        
         root.classList.remove('text-sm', 'text-base', 'text-lg');
         root.classList.add(fontSize === 'small' ? 'text-sm' : fontSize === 'large' ? 'text-lg' : 'text-base');
+        
+        if (designStyle === 'liquid') {
+          root.classList.add('theme-liquid');
+        } else {
+          root.classList.remove('theme-liquid');
+        }
       } catch {}
     };
     loadUserPrefs();
