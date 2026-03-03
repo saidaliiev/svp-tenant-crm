@@ -15,10 +15,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Input } from "@/components/ui/input";
 
 export default function ExportClientsPDF({ tenants = [], settings }) {
   const [showDialog, setShowDialog] = React.useState(false);
   const [orientation, setOrientation] = React.useState('landscape');
+  const [period, setPeriod] = React.useState('');
 
   const handleExportPDF = () => {
     if (!tenants || tenants.length === 0) {
@@ -53,7 +55,7 @@ export default function ExportClientsPDF({ tenants = [], settings }) {
       doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
       doc.setFontSize(18);
       doc.setFont('helvetica', 'bold');
-      doc.text('TENANT LIST', margin, yPos);
+      doc.text(period ? `TENANT LIST - ${period}` : 'TENANT LIST', margin, yPos);
       
       yPos += 5;
       doc.setDrawColor(200, 200, 200);
@@ -229,6 +231,16 @@ export default function ExportClientsPDF({ tenants = [], settings }) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           
+          <div className="flex flex-col space-y-2 mt-4">
+            <Label htmlFor="period">Payment Period</Label>
+            <Input 
+              id="period" 
+              placeholder="e.g. March 2026" 
+              value={period} 
+              onChange={(e) => setPeriod(e.target.value)} 
+            />
+          </div>
+
           <RadioGroup value={orientation} onValueChange={setOrientation} className="gap-4 py-4">
             <div className="flex items-center space-x-3 border rounded-lg p-4 cursor-pointer hover:bg-slate-50" onClick={() => setOrientation('landscape')}>
               <RadioGroupItem value="landscape" id="landscape" />
