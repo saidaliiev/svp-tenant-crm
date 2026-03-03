@@ -222,11 +222,19 @@ export default function AddressLabels({ tenants, settings }) {
             <p className="text-sm font-medium text-slate-600 dark:text-gray-300 mb-3">
               Label preview ({selectedTenants.length} labels, {totalPages} page{totalPages > 1 ? 's' : ''}):
             </p>
-            <div className="overflow-x-auto bg-slate-100 dark:bg-gray-950 p-6 sm:p-8 rounded-xl flex justify-center border border-slate-200 dark:border-gray-800 shadow-inner" style={{ minWidth: 'min-content' }}>
-              <div
-                className="bg-white relative shadow-md"
-                style={{ width: '210mm', minHeight: '297mm', padding: `${config.marginT}mm ${config.marginR}mm ${config.marginB}mm ${config.marginL}mm`, boxSizing: 'border-box' }}
-              >
+            <div className="overflow-x-auto bg-slate-100 dark:bg-gray-950 p-6 sm:p-8 rounded-xl border border-slate-200 dark:border-gray-800 shadow-inner">
+              <div className="flex justify-center min-w-min">
+                <div
+                  className="bg-white relative shadow-md"
+                  style={{ 
+                    minWidth: '210mm', 
+                    width: 'max-content',
+                    minHeight: '297mm', 
+                    height: 'max-content',
+                    padding: `${config.marginT}mm ${config.marginR}mm ${config.marginB}mm ${config.marginL}mm`, 
+                    boxSizing: 'border-box' 
+                  }}
+                >
                 <div
                   className="grid"
                   style={{
