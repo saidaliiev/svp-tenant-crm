@@ -93,10 +93,13 @@ export default function DevPortfolio({ isOpen, onClose }) {
                     <Code2 className="w-64 h-64 text-blue-500" />
                   </div>
                   <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-8">
-                    <div className="w-32 h-32 rounded-[2rem] bg-gradient-to-br from-blue-500 to-purple-600 p-[3px] shadow-xl shrink-0 rotate-3 group-hover:rotate-0 transition-transform duration-500">
-                      <div className="w-full h-full rounded-[1.8rem] bg-slate-900 flex items-center justify-center overflow-hidden relative">
-                         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 mix-blend-overlay"></div>
-                         <div className="text-4xl font-black text-white tracking-tighter z-10">IS</div>
+                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 p-[3px] shadow-xl shrink-0 rotate-3 group-hover:rotate-0 transition-transform duration-500">
+                      <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center overflow-hidden relative">
+                         <img 
+                            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/4eb575439_IMG_7239.jpeg" 
+                            alt="Iskander Saidaliiev" 
+                            className="w-full h-full object-cover"
+                         />
                       </div>
                     </div>
                     <div className="text-center md:text-left flex-1">
