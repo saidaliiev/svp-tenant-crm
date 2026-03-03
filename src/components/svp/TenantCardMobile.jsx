@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { User, UserCheck, Pencil, Trash2 } from 'lucide-react';
+import { getRandomAvatar } from './avatars';
 
 export default function TenantCardMobile({ tenant, index, onProfile, onSelect, onEdit, onDelete, formatCurrency }) {
   return (
@@ -11,10 +12,13 @@ export default function TenantCardMobile({ tenant, index, onProfile, onSelect, o
     >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-[10px] font-mono text-slate-400 dark:text-gray-500 bg-slate-100 dark:bg-gray-700 px-1.5 py-0.5 rounded shrink-0">
-            {tenant.displayId || tenant.id}
-          </span>
-          <span className="font-medium text-slate-800 dark:text-gray-200 text-sm truncate">{tenant.fullName}</span>
+          <img src={tenant.avatarUrl || getRandomAvatar(tenant.id)} alt={tenant.fullName} className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm border border-gray-100 dark:border-gray-700" />
+          <div>
+            <span className="font-medium text-slate-800 dark:text-gray-200 text-sm block truncate">{tenant.fullName}</span>
+            <span className="text-[10px] font-mono text-slate-400 dark:text-gray-500">
+              ID: {tenant.displayId || tenant.id}
+            </span>
+          </div>
         </div>
         <span className={`text-sm font-bold shrink-0 ml-2 ${(tenant.currentBalance || 0) > 0 ? 'text-red-600' : 'text-green-600'}`}>
           {formatCurrency(tenant.currentBalance || 0)}

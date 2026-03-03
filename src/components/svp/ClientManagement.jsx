@@ -29,6 +29,7 @@ import Papa from 'papaparse';
 import ExportClientsPDF from './ExportClientsPDF';
 import TenantProfile from './TenantProfile';
 import TenantCardMobile from './TenantCardMobile';
+import { TENANT_AVATARS, getRandomAvatar } from './avatars';
 
 export default function ClientManagement({ tenants = [], tenantsLoading, statements, onSelectTenant, settings }) {
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -68,7 +69,8 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
     weeklyTenantPayment: 40,
     lodgmentRange: '',
     paymentKeywords: '',
-    expectedMonthlyTenantPayment: 0
+    expectedMonthlyTenantPayment: 0,
+    avatarUrl: ''
   });
 
   const generateDisplayId = () => {
@@ -89,7 +91,8 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
       weeklyTenantPayment: 40,
       lodgmentRange: '',
       paymentKeywords: '',
-      expectedMonthlyTenantPayment: 0
+      expectedMonthlyTenantPayment: 0,
+      avatarUrl: ''
     });
     setEditingTenant(null);
     setError('');
@@ -114,7 +117,8 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
       weeklyTenantPayment: tenant.weeklyTenantPayment ?? 40,
       lodgmentRange: tenant.lodgmentRange ?? '',
       paymentKeywords: (tenant.paymentKeywords || []).join(', '),
-      expectedMonthlyTenantPayment: tenant.expectedMonthlyTenantPayment ?? (tenant.weeklyTenantPayment * 4.3) ?? 0
+      expectedMonthlyTenantPayment: tenant.expectedMonthlyTenantPayment ?? (tenant.weeklyTenantPayment * 4.3) ?? 0,
+      avatarUrl: tenant.avatarUrl || ''
     });
     setEditingTenant(tenant);
     setShowAddDialog(true);
@@ -143,7 +147,8 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
       weeklyTenantPayment: parseFloat(formData.weeklyTenantPayment) || 0,
       lodgmentRange: formData.lodgmentRange.trim() || null,
       paymentKeywords: formData.paymentKeywords ? formData.paymentKeywords.split(',').map(k => k.trim()).filter(k => k) : [],
-      expectedMonthlyTenantPayment: parseFloat(formData.expectedMonthlyTenantPayment) || 0
+      expectedMonthlyTenantPayment: parseFloat(formData.expectedMonthlyTenantPayment) || 0,
+      avatarUrl: formData.avatarUrl || null
     };
     
     try {
@@ -435,7 +440,12 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                       className={`border-b border-slate-100 dark:border-gray-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-950/20 dark:hover:to-purple-950/20 transition-colors cursor-pointer ${index % 2 === 0 ? 'bg-white dark:bg-transparent' : 'bg-slate-50/50 dark:bg-gray-800/30'}`}
                       onClick={() => setProfileTenant(tenant)}
                     >
-                      <td className="py-3 px-4 font-medium text-slate-800 dark:text-gray-200 text-sm whitespace-nowrap">{tenant.fullName}</td>
+                      <td className="py-3 px-4 font-medium text-slate-800 dark:text-gray-200 text-sm whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <img src={tenant.avatarUrl || getRandomAvatar(tenant.id)} alt="" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm" />
+                          {tenant.fullName}
+                        </div>
+                      </td>
                       <td className="py-3 px-4 text-slate-600 dark:text-gray-400 text-sm whitespace-nowrap">{tenant.address}</td>
                       <td className={`py-3 px-4 text-right font-semibold text-sm whitespace-nowrap ${(tenant.currentBalance || 0) > 0 ? 'text-red-600' : 'text-green-600'}`}>
                         {formatCurrency(tenant.currentBalance || 0)}
@@ -488,6 +498,28 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                   placeholder="Enter full name"
                 />
               </div>
+
+              <div className="space-y-2">
+                <Label>Avatar (Optional)</Label>
+                <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
+                  <button
+                    onClick={() => setFormData(prev => ({ ...prev, avatarUrl: '' }))}
+                    className={`w-12 h-12 rounded-full shrink-0 flex items-center justify-center border-2 transition-all ${!formData.avatarUrl ? 'border-blue-500 bg-blue-50 text-blue-500 dark:bg-blue-900/30' : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-400 hover:border-blue-300'}`}
+                  >
+                    <User className="w-5 h-5" />
+                  </button>
+                  {TENANT_AVATARS.map((url, idx) => (
+                    <img
+                      key={idx}
+                      src={url}
+                      alt={`Avatar ${idx}`}
+                      onClick={() => setFormData(prev => ({ ...prev, avatarUrl: url }))}
+                      className={`w-12 h-12 rounded-full shrink-0 object-cover cursor-pointer border-2 transition-all hover:scale-105 ${formData.avatarUrl === url ? 'border-blue-500 shadow-md scale-105' : 'border-transparent'}`}
+                    />
+                  ))}
+                </div>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="phoneNumber">Phone Number</Label>

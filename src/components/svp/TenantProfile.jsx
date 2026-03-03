@@ -8,19 +8,10 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Phone, Home, CreditCard, TrendingDown, TrendingUp, Calendar, FileText } from 'lucide-react';
+import { getRandomAvatar } from './avatars';
 
 export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
   if (!tenant) return null;
-
-  // Get tenant initials for avatar
-  const getInitials = (name) => {
-    if (!name) return '?';
-    const parts = name.trim().split(' ');
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-    }
-    return name.substring(0, 2).toUpperCase();
-  };
 
   // Get tenant statements history - sorted newest first
   const tenantStatements = statements
@@ -58,9 +49,11 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
         <div className="space-y-6">
           {/* Header with Avatar */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 p-6 rounded-2xl bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-950/20 dark:to-purple-950/20 border border-blue-100 dark:border-blue-900/30">
-            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-xl shadow-blue-500/20 shrink-0">
-              {getInitials(tenant.fullName)}
-            </div>
+            <img 
+              src={tenant.avatarUrl || getRandomAvatar(tenant.id)} 
+              alt={tenant.fullName} 
+              className="w-24 h-24 rounded-full object-cover shadow-xl shadow-blue-500/20 shrink-0 border-4 border-white dark:border-gray-800" 
+            />
             <div className="flex-1 space-y-3 w-full">
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
                 <h2 className="text-3xl font-bold text-slate-800 dark:text-gray-100 tracking-tight">{tenant.fullName}</h2>

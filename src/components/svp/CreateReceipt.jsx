@@ -33,6 +33,7 @@ import { generateReceiptPDF } from './pdfGenerator';
 import { DatePickerWithRange } from './DatePickerWithRange';
 import { format } from 'date-fns';
 import { useSearchParams } from 'react-router-dom';
+import { getRandomAvatar } from './avatars';
 
 export default function CreateReceipt({ tenants = [], statements, settings, selectedTenantId, onReceiptCreated }) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -537,6 +538,8 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
               const colorIndex = t.fullName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length;
               const avatarColor = colors[colorIndex];
 
+              const tenantAvatar = t.avatarUrl || getRandomAvatar(t.id);
+
               return (
                 <button
                   key={t.id}
@@ -547,9 +550,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
                       : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 bg-white dark:bg-gray-800'
                   }`}
                 >
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shrink-0 ${avatarColor}`}>
-                    {initials}
-                  </div>
+                  <img src={tenantAvatar} alt={t.fullName} className="w-10 h-10 rounded-full object-cover shrink-0 shadow-sm border border-gray-100 dark:border-gray-700" />
                   <div className="overflow-hidden">
                     <div className="font-medium text-slate-800 dark:text-gray-200 truncate">{t.fullName}</div>
                     {t.address && <div className="text-xs text-slate-500 dark:text-gray-500 truncate">{t.address}</div>}
@@ -564,9 +565,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
         {selectedTenant && (
             <div ref={tenantInfoRef} className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 rounded-xl p-4 border border-blue-100 dark:border-blue-800/40">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-full flex items-center justify-center shadow-sm">
-                <User className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-              </div>
+              <img src={selectedTenant.avatarUrl || getRandomAvatar(selectedTenant.id)} alt={selectedTenant.fullName} className="w-10 h-10 rounded-full object-cover shadow-sm border border-white dark:border-gray-700" />
               <div>
                 <h3 className="font-semibold text-slate-800 dark:text-gray-100">{selectedTenant.fullName}</h3>
                 <p className="text-sm text-slate-600 dark:text-gray-400">{selectedTenant.address}</p>
