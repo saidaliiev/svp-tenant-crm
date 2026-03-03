@@ -91,6 +91,7 @@ export default function AddressLabels({ tenants, settings }) {
   const printLabels = () => {
     const doc = new jsPDF('portrait', 'mm', 'a4');
     const orgName = settings?.organizationName || 'Society of Saint Vincent de Paul';
+    const pageHeight = doc.internal.pageSize.getHeight();
 
     selectedTenants.forEach((tenant, idx) => {
       const pageIdx = Math.floor(idx / labelsPerPage);
@@ -103,52 +104,66 @@ export default function AddressLabels({ tenants, settings }) {
 
       const x = config.marginL + col * config.labelW;
       const y = config.marginT + row * config.labelH;
-
-      // Label border (optional subtle)
-      // doc.setDrawColor(240, 240, 240); // Optional: disabled to prevent printing borders on actual labels
-      // doc.rect(x, y, config.labelW, config.labelH);
-
-      const isSmallLabel = config.labelW < 80;
-      const padX = isSmallLabel ? 4 : 5;
-      const padY = config.labelH < 45 ? 5 : 8;
-
-      const nameFontSize = isSmallLabel ? 11 : 14;
-      const addressFontSize = isSmallLabel ? 9 : 12;
-      const orgFontSize = isSmallLabel ? 6 : 8;
-      const lineSpacing = isSmallLabel ? 4.5 : 5.5;
-
-      // Name
-      doc.setFontSize(nameFontSize);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(0, 0, 0);
-      doc.text(tenant.fullName || '', x + padX, y + padY);
-
-      // Address
-      doc.setFontSize(addressFontSize);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(60, 60, 60);
       
-      const stAddress = tenant.address || '';
-      const townCounty = [tenant.city, tenant.county].filter(Boolean).join(', ');
-      const eircode = tenant.eircode || '';
-      
-      const addressLines = [stAddress, townCounty, eircode].filter(Boolean);
-      
-      // Fallback: if they only have 'address' field and no others, it might be a long string
-      const linesToPrint = addressLines.length > 1 ? addressLines : doc.splitTextToSize(stAddress, config.labelW - padX * 2);
-
-      linesToPrint.slice(0, 4).forEach((line, li) => {
-        doc.text(line, x + padX, y + padY + (isSmallLabel ? 5 : 7) + li * lineSpacing);
-      });
-
-      // Org name at bottom
-      doc.setFontSize(orgFontSize);
-      doc.setTextColor(150, 150, 150);
-      doc.text(orgName, x + padX, y + config.labelH - (isSmallLabel ? 3 : 4));
+      // Check if label would exceed page height
+      if (y + config.labelH > pageHeight - config.marginB) {
+        doc.addPage();
+        const newRow = 0;
+        const newY = config.marginT + newRow * config.labelH;
+        // Place on new page instead
+        printLabelContent(doc, tenant, x, newY, config, orgName);
+      } else {
+        printLabelContent(doc, tenant, x, y, config, orgName);
+      }
     });
 
     doc.autoPrint();
     window.open(doc.output('bloburl'), '_blank');
+  };
+
+  const printLabelContent = (doc, tenant, x, y, config, orgName) => {
+
+    // Label border (optional subtle)
+    // doc.setDrawColor(240, 240, 240); // Optional: disabled to prevent printing borders on actual labels
+    // doc.rect(x, y, config.labelW, config.labelH);
+
+    const isSmallLabel = config.labelW < 80;
+    const padX = isSmallLabel ? 4 : 5;
+    const padY = config.labelH < 45 ? 5 : 8;
+
+    const nameFontSize = isSmallLabel ? 11 : 14;
+    const addressFontSize = isSmallLabel ? 9 : 12;
+    const orgFontSize = isSmallLabel ? 6 : 8;
+    const lineSpacing = isSmallLabel ? 4.5 : 5.5;
+
+    // Name
+    doc.setFontSize(nameFontSize);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(0, 0, 0);
+    doc.text(tenant.fullName || '', x + padX, y + padY);
+
+    // Address
+    doc.setFontSize(addressFontSize);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(60, 60, 60);
+    
+    const stAddress = tenant.address || '';
+    const townCounty = [tenant.city, tenant.county].filter(Boolean).join(', ');
+    const eircode = tenant.eircode || '';
+    
+    const addressLines = [stAddress, townCounty, eircode].filter(Boolean);
+    
+    // Fallback: if they only have 'address' field and no others, it might be a long string
+    const linesToPrint = addressLines.length > 1 ? addressLines : doc.splitTextToSize(stAddress, config.labelW - padX * 2);
+
+    linesToPrint.slice(0, 4).forEach((line, li) => {
+      doc.text(line, x + padX, y + padY + (isSmallLabel ? 5 : 7) + li * lineSpacing);
+    });
+
+    // Org name at bottom
+    doc.setFontSize(orgFontSize);
+    doc.setTextColor(150, 150, 150);
+    doc.text(orgName, x + padX, y + config.labelH - (isSmallLabel ? 3 : 4));
   };
 
   return (
