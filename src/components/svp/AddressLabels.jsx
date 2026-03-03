@@ -222,8 +222,31 @@ export default function AddressLabels({ tenants, settings }) {
             ))}
           </div>
 
-          <div className="text-sm text-slate-500 dark:text-gray-400">
-            Labels per page: <strong>{labelsPerPage}</strong> &nbsp;|&nbsp; Usable area: <strong>{usableW.toFixed(0)}mm × {usableH.toFixed(0)}mm</strong>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="text-sm text-slate-500 dark:text-gray-400">
+              Labels per page: <strong>{labelsPerPage}</strong> &nbsp;|&nbsp; Usable area: <strong>{usableW.toFixed(0)}mm × {usableH.toFixed(0)}mm</strong>
+            </div>
+            
+            {preset === -1 && (
+              <div className="flex items-center gap-2">
+                <Input
+                  placeholder="Custom preset name..."
+                  value={newPresetName}
+                  onChange={(e) => setNewPresetName(e.target.value)}
+                  className="h-8 text-sm w-48"
+                />
+                <Button 
+                  size="sm" 
+                  onClick={saveCustomPreset} 
+                  disabled={!newPresetName.trim()}
+                  variant="outline"
+                  className="h-8"
+                >
+                  <Save className="w-3.5 h-3.5 mr-1.5" />
+                  Save
+                </Button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
