@@ -570,26 +570,30 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
         {/* Period Selection */}
         {selectedTenant && (
         <>
-         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" data-tour="period-dates">
-           <div className="space-y-2">
-             <Label>Period Start Date</Label>
-                <Input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="h-11"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Period End Date</Label>
-                <Input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="h-11"
-                />
-              </div>
-            </div>
+        <div className="space-y-2" data-tour="period-dates">
+        <Label>Statement Period</Label>
+        <div className="flex flex-col sm:flex-row gap-2">
+         <div className="relative flex-1">
+           <Input
+             type="date"
+             value={startDate}
+             onChange={(e) => setStartDate(e.target.value)}
+             className="h-11 pl-4"
+           />
+           <span className="absolute -top-2.5 left-2 bg-white dark:bg-gray-800 px-1 text-xs text-slate-500">From</span>
+         </div>
+         <div className="hidden sm:flex items-center justify-center text-slate-400">—</div>
+         <div className="relative flex-1">
+           <Input
+             type="date"
+             value={endDate}
+             onChange={(e) => setEndDate(e.target.value)}
+             className="h-11 pl-4"
+           />
+           <span className="absolute -top-2.5 left-2 bg-white dark:bg-gray-800 px-1 text-xs text-slate-500">To</span>
+         </div>
+        </div>
+        </div>
 
             {/* Starting Debt and Credit */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" data-tour="starting-debt">

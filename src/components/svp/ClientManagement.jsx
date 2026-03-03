@@ -425,7 +425,6 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                     <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Full Name</th>
                     <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Phone Number</th>
                     <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Address</th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Lodgment ID</th>
                     <th className="text-right py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Balance</th>
                     <th className="text-right py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Actions</th>
                   </tr>
@@ -440,7 +439,6 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                       <td className="py-3 px-4 font-medium text-slate-800 dark:text-gray-200 text-sm whitespace-nowrap">{tenant.fullName}</td>
                       <td className="py-3 px-4 font-mono text-sm text-slate-600 dark:text-gray-400 whitespace-nowrap">{tenant.phoneNumber || '-'}</td>
                       <td className="py-3 px-4 text-slate-600 dark:text-gray-400 text-sm whitespace-nowrap">{tenant.address}</td>
-                      <td className="py-3 px-4 font-mono text-sm text-slate-500 dark:text-gray-400 whitespace-nowrap">{tenant.lodgmentRange || '-'}</td>
                       <td className={`py-3 px-4 text-right font-semibold text-sm whitespace-nowrap ${(tenant.currentBalance || 0) > 0 ? 'text-red-600' : 'text-green-600'}`}>
                         {formatCurrency(tenant.currentBalance || 0)}
                       </td>
@@ -449,10 +447,6 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                           <Button size="sm" onClick={() => setProfileTenant(tenant)} data-tour={index === 0 ? "btn-profile" : undefined} className="bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white h-8 px-3 text-xs">
                             <User className="w-4 h-4" />
                             <span className="hidden lg:inline ml-1">Profile</span>
-                          </Button>
-                          <Button size="sm" onClick={() => onSelectTenant(tenant.id)} data-tour={index === 0 ? "btn-select" : undefined} className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white h-8 px-3 text-xs">
-                            <UserCheck className="w-4 h-4" />
-                            <span className="hidden lg:inline ml-1">Select</span>
                           </Button>
                           <Button size="sm" variant="outline" onClick={() => handleOpenEdit(tenant)} data-tour={index === 0 ? "btn-edit" : undefined} className="border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 h-8 px-3">
                             <Pencil className="w-4 h-4" />
