@@ -259,6 +259,7 @@ export default function AddressLabels({ tenants, settings }) {
                   ))}
                 </div>
               </div>
+              </div>
             </div>
           </CardContent>
         </Card>
