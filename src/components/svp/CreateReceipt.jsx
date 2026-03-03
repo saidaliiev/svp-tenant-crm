@@ -252,7 +252,7 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
       smartNote += `You have paid €${totalTenantPayments.toFixed(2)} this month, your rent for the month of ${monthName} is €${tenantPortionRent.toFixed(2)} (with RAS €${totalRentWithRas.toFixed(2)}). Your arrears at the start of ${monthName} is €${debtAmt.toFixed(2)}.\n\n`;
 
       if (finalTenantBalance > 200) {
-        smartNote += `(!!) Your arrears are €${finalTenantBalance.toFixed(2)}. It is important to contact SVP to arrange a repayment plan, otherwise your arrears will increase again and your tenancy will be affected.`;
+        smartNote += `Your arrears are €${finalTenantBalance.toFixed(2)}.`;
       }
     }
 
