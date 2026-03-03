@@ -17,31 +17,37 @@ export default function BulkLetters({ tenants, settings }) {
     }
 
     const doc = new jsPDF();
+    const logoUrl = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/36ae01103_SVP-1200x675-Photoroom.png';
+    const logoWidth = 70;
+    const logoHeight = 23;
+
     debtors.forEach((tenant, index) => {
       if (index > 0) doc.addPage();
       
+      doc.addImage(logoUrl, 'PNG', 20, 15, logoWidth, logoHeight);
+      
       doc.setFontSize(12);
-      doc.text(new Date().toLocaleDateString('en-IE'), 20, 20);
+      doc.text(new Date().toLocaleDateString('en-IE'), 20, 55);
       
       doc.setFontSize(14);
       doc.setFont("helvetica", "bold");
-      doc.text(tenant.fullName, 20, 40);
+      doc.text(tenant.fullName, 20, 70);
       
       doc.setFontSize(12);
       doc.setFont("helvetica", "normal");
       if (tenant.address) {
         const addressLines = doc.splitTextToSize(tenant.address, 100);
-        doc.text(addressLines, 20, 48);
+        doc.text(addressLines, 20, 78);
       }
       
       doc.setFont("helvetica", "bold");
-      doc.text("Re: Arrears Notification", 20, 80);
+      doc.text("Re: Arrears Notification", 20, 110);
       
       doc.setFont("helvetica", "normal");
       const text = `Dear ${tenant.fullName},\n\nAccording to our records, your current rent arrears amount to €${(tenant.currentBalance || 0).toFixed(2)}.\n\nPlease contact us as soon as possible to arrange payment or discuss a repayment plan. It is important to address this to avoid further action.\n\nThank you,\n${settings?.organizationName || 'Society of Saint Vincent de Paul'}\nPhone: ${settings?.contactPhone || ''}`;
       
       const lines = doc.splitTextToSize(text, 170);
-      doc.text(lines, 20, 100);
+      doc.text(lines, 20, 130);
     });
 
     const pdfBlob = doc.output('blob');
