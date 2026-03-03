@@ -14,9 +14,21 @@ const PRESETS = [
 ];
 
 export default function AddressLabels({ tenants, settings }) {
+  const [savedPresets, setSavedPresets] = useState(() => {
+    try {
+      const saved = localStorage.getItem('svp_custom_label_presets');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const allPresets = [...PRESETS, ...savedPresets];
+
   const [preset, setPreset] = useState(0);
   const [config, setConfig] = useState({ ...PRESETS[0] });
   const [selectedIds, setSelectedIds] = useState(() => tenants.map(t => t.id));
+  const [newPresetName, setNewPresetName] = useState('');
 
   const labelsPerPage = config.cols * config.rows;
   const selectedTenants = tenants.filter(t => selectedIds.includes(t.id));
@@ -26,14 +38,31 @@ export default function AddressLabels({ tenants, settings }) {
 
   const handlePreset = (idx) => {
     setPreset(idx);
-    if (idx < PRESETS.length - 1) {
-      setConfig({ ...PRESETS[idx] });
-    }
+    setConfig({ ...allPresets[idx] });
   };
 
   const updateConfig = (key, val) => {
-    setPreset(PRESETS.length - 1); // switch to custom
+    setPreset(-1); // switch to custom
     setConfig(prev => ({ ...prev, [key]: parseFloat(val) || 0 }));
+  };
+
+  const saveCustomPreset = () => {
+    if (!newPresetName.trim()) return;
+    const newPreset = { ...config, name: newPresetName.trim() };
+    const updated = [...savedPresets, newPreset];
+    setSavedPresets(updated);
+    localStorage.setItem('svp_custom_label_presets', JSON.stringify(updated));
+    setNewPresetName('');
+    setPreset(PRESETS.length + updated.length - 1);
+  };
+
+  const deleteCustomPreset = (index) => {
+    const customIndex = index - PRESETS.length;
+    const updated = savedPresets.filter((_, i) => i !== customIndex);
+    setSavedPresets(updated);
+    localStorage.setItem('svp_custom_label_presets', JSON.stringify(updated));
+    setPreset(0);
+    setConfig({ ...PRESETS[0] });
   };
 
   const toggleTenant = (id) => {
