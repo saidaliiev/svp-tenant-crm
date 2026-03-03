@@ -23,7 +23,7 @@ export default function MobilePortfolioTrigger({ onReveal }) {
     <div className="sm:hidden flex justify-center py-5 mb-4">
       <button
         onClick={handleTap}
-        className="relative overflow-hidden inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-sm text-xs active:scale-95 transition-all group"
+        className="relative overflow-hidden inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-sm text-xs active:scale-95 transition-all group"
         aria-label="View developer portfolio"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-500/10 dark:to-purple-500/10" />

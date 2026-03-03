@@ -53,7 +53,7 @@ export default function SecretFooter({ onReveal }) {
         onMouseLeave={handleMouseLeave}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="relative group flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700/50 rounded-full shadow-sm hover:shadow-md transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 overflow-hidden"
+        className="relative group flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700/50 rounded-full shadow-sm hover:shadow-md transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 overflow-hidden"
         aria-label="Click to view developer portfolio"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-500/10 dark:to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -78,7 +78,7 @@ export default function SecretFooter({ onReveal }) {
           Iskan
         </span>
         
-        <motion.div animate={arrowControls} className="relative z-10 flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-full p-1 ml-1 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 transition-colors">
+        <motion.div animate={arrowControls} className="relative z-10 flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-full p-1 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 transition-colors">
           <ArrowRight className="w-3 h-3 text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
         </motion.div>
       </motion.button>
