@@ -488,214 +488,203 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
 
         {/* Add/Edit Dialog */}
         <Dialog open={showAddDialog} onOpenChange={(open) => { if (!open) resetForm(); setShowAddDialog(open); }}>
-          <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
+          <DialogContent className="sm:max-w-4xl max-h-[95vh] p-4 sm:p-6 overflow-hidden flex flex-col">
+            <DialogHeader className="shrink-0 mb-2">
               <DialogTitle>{editingTenant ? 'Edit Tenant' : 'Add New Tenant'}</DialogTitle>
-              <DialogDescription>
-                {editingTenant ? 'Update the tenant information below.' : 'Enter the tenant details below.'}
-              </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              {error && (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
+            
+            <div className="flex-1 overflow-y-auto px-1 custom-scrollbar">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
+                {error && (
+                  <Alert variant="destructive" className="md:col-span-3 py-2">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
 
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name *</Label>
-                <Input
-                  id="fullName"
-                  value={formData.fullName}
-                  onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
-                  placeholder="Enter full name"
-                />
-              </div>
+                {/* Left Column - Personal Info */}
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="fullName">Full Name *</Label>
+                    <Input
+                      id="fullName"
+                      value={formData.fullName}
+                      onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
+                      className="h-9"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="phoneNumber">Phone Number</Label>
+                    <Input
+                      id="phoneNumber"
+                      value={formData.phoneNumber}
+                      onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                      className="h-9"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="moveInDate">Move-in Date</Label>
+                    <Input
+                      id="moveInDate"
+                      type="date"
+                      value={formData.moveInDate}
+                      onChange={(e) => setFormData(prev => ({ ...prev, moveInDate: e.target.value }))}
+                      className="h-9"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Avatar (Optional)</Label>
+                    <div className="flex gap-2 overflow-x-auto pb-1 custom-scrollbar">
+                      <button
+                        onClick={() => setFormData(prev => ({ ...prev, avatarUrl: '' }))}
+                        className={`w-9 h-9 rounded-full shrink-0 flex items-center justify-center border-2 transition-all ${!formData.avatarUrl ? 'border-blue-500 bg-blue-50 text-blue-500 dark:bg-blue-900/30' : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-400 hover:border-blue-300'}`}
+                      >
+                        <User className="w-4 h-4" />
+                      </button>
+                      {TENANT_AVATARS.map((url, idx) => (
+                        <div 
+                          key={idx}
+                          onClick={() => setFormData(prev => ({ ...prev, avatarUrl: url }))}
+                          className={`w-9 h-9 rounded-full overflow-hidden shrink-0 cursor-pointer border-2 transition-all hover:scale-105 relative ${formData.avatarUrl === url ? 'border-blue-500 shadow-md scale-105' : 'border-transparent'}`}
+                        >
+                          <img
+                            src={url}
+                            alt={`Avatar ${idx}`}
+                            className="w-full h-full object-cover scale-[1.35]"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
 
-              <div className="space-y-2">
-                <Label>Avatar (Optional)</Label>
-                <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
-                  <button
-                    onClick={() => setFormData(prev => ({ ...prev, avatarUrl: '' }))}
-                    className={`w-12 h-12 rounded-full shrink-0 flex items-center justify-center border-2 transition-all ${!formData.avatarUrl ? 'border-blue-500 bg-blue-50 text-blue-500 dark:bg-blue-900/30' : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-400 hover:border-blue-300'}`}
-                  >
-                    <User className="w-5 h-5" />
-                  </button>
-                  {TENANT_AVATARS.map((url, idx) => (
-                    <div 
-                      key={idx}
-                      onClick={() => setFormData(prev => ({ ...prev, avatarUrl: url }))}
-                      className={`w-12 h-12 rounded-full overflow-hidden shrink-0 cursor-pointer border-2 transition-all hover:scale-105 relative ${formData.avatarUrl === url ? 'border-blue-500 shadow-md scale-105' : 'border-transparent'}`}
-                    >
-                      <img
-                        src={url}
-                        alt={`Avatar ${idx}`}
-                        className="w-full h-full object-cover scale-[1.35]"
+                {/* Middle Column - Address */}
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="address">Street Address *</Label>
+                    <Input
+                      id="address"
+                      value={formData.address}
+                      onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+                      className="h-9"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="city">Town / City</Label>
+                    <Input
+                      id="city"
+                      value={formData.city}
+                      onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+                      className="h-9"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="county">County</Label>
+                    <Input
+                      id="county"
+                      value={formData.county}
+                      onChange={(e) => setFormData(prev => ({ ...prev, county: e.target.value }))}
+                      className="h-9"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="eircode">Eircode</Label>
+                    <Input
+                      id="eircode"
+                      value={formData.eircode}
+                      onChange={(e) => setFormData(prev => ({ ...prev, eircode: e.target.value }))}
+                      className="h-9"
+                    />
+                  </div>
+                </div>
+
+                {/* Right Column - Financials */}
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="previousDebt">Prev Debt</Label>
+                      <Input
+                        id="previousDebt"
+                        type="number"
+                        step="0.01"
+                        value={formData.previousDebt}
+                        onChange={(e) => setFormData(prev => ({ ...prev, previousDebt: e.target.value }))}
+                        className="h-9"
                       />
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="phoneNumber">Phone Number</Label>
-                  <Input
-                    id="phoneNumber"
-                    value={formData.phoneNumber}
-                    onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
-                    placeholder="Enter phone number"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="moveInDate">Move-in Date</Label>
-                  <Input
-                    id="moveInDate"
-                    type="date"
-                    value={formData.moveInDate}
-                    onChange={(e) => setFormData(prev => ({ ...prev, moveInDate: e.target.value }))}
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="address">Street Address *</Label>
-                <Input
-                  id="address"
-                  value={formData.address}
-                  onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-                  placeholder="e.g. 1 Ard Phadraig"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="city">Town / City</Label>
-                  <Input
-                    id="city"
-                    value={formData.city}
-                    onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
-                    placeholder="e.g. Carndonagh"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="county">County</Label>
-                  <Input
-                    id="county"
-                    value={formData.county}
-                    onChange={(e) => setFormData(prev => ({ ...prev, county: e.target.value }))}
-                    placeholder="e.g. Co Donegal"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="eircode">Eircode</Label>
-                <Input
-                  id="eircode"
-                  value={formData.eircode}
-                  onChange={(e) => setFormData(prev => ({ ...prev, eircode: e.target.value }))}
-                  placeholder="e.g. F93 X0X0"
-                  className="w-full sm:w-1/2"
-                />
-              </div>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="previousDebt">Previous Debt (€)</Label>
-                    <Input
-                      id="previousDebt"
-                      type="number"
-                      step="0.01"
-                      value={formData.previousDebt}
-                      onChange={(e) => setFormData(prev => ({ ...prev, previousDebt: e.target.value }))}
-                    />
+                    <div className="space-y-1.5">
+                      <Label htmlFor="credit">Credit</Label>
+                      <Input
+                        id="credit"
+                        type="number"
+                        step="0.01"
+                        value={formData.credit}
+                        onChange={(e) => setFormData(prev => ({ ...prev, credit: e.target.value }))}
+                        className="h-9"
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="credit">Credit (€)</Label>
-                    <Input
-                      id="credit"
-                      type="number"
-                      step="0.01"
-                      value={formData.credit}
-                      onChange={(e) => setFormData(prev => ({ ...prev, credit: e.target.value }))}
-                    />
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="monthlyRent">W. Rent</Label>
+                      <Input
+                        id="monthlyRent"
+                        type="number"
+                        step="0.01"
+                        value={formData.monthlyRent}
+                        onChange={(e) => setFormData(prev => ({ ...prev, monthlyRent: e.target.value }))}
+                        className="h-9"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="weeklyRasAmount">W. RAS</Label>
+                      <Input
+                        id="weeklyRasAmount"
+                        type="number"
+                        step="0.01"
+                        value={formData.weeklyRasAmount}
+                        onChange={(e) => setFormData(prev => ({ ...prev, weeklyRasAmount: e.target.value }))}
+                        className="h-9"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="monthlyRent">Weekly Rent (€)</Label>
-                    <Input
-                      id="monthlyRent"
-                      type="number"
-                      step="0.01"
-                      value={formData.monthlyRent}
-                      onChange={(e) => setFormData(prev => ({ ...prev, monthlyRent: e.target.value }))}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="weeklyTenantPayment">Weekly Tenant Payment (€)</Label>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="weeklyTenantPayment">Weekly Tenant Payment</Label>
                     <Input
                       id="weeklyTenantPayment"
                       type="number"
                       step="0.01"
                       value={formData.weeklyTenantPayment}
                       onChange={(e) => setFormData(prev => ({ ...prev, weeklyTenantPayment: e.target.value }))}
+                      className="h-9"
                     />
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="weeklyRasAmount">Weekly RAS (€)</Label>
-                  <Input
-                    id="weeklyRasAmount"
-                    type="number"
-                    step="0.01"
-                    value={formData.weeklyRasAmount}
-                    onChange={(e) => setFormData(prev => ({ ...prev, weeklyRasAmount: e.target.value }))}
-                  />
-                </div>
-              </div>
-              
-              {/* Automatic Payment Detection Fields */}
-              <div className="pt-4 border-t">
-                <h4 className="font-semibold text-sm text-slate-700 dark:text-gray-300 mb-3">Automatic Payment Detection</h4>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="lodgmentRange">Lodgment Range (for cash payments)</Label>
-                    <Input
-                      id="lodgmentRange"
-                      value={formData.lodgmentRange}
-                      onChange={(e) => setFormData(prev => ({ ...prev, lodgmentRange: e.target.value }))}
-                      placeholder="e.g., 3251-3300 or 3563"
-                    />
-                    <p className="text-xs text-slate-500">Enter single number or range (e.g., "3251-3300")</p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="paymentKeywords">Payment Keywords (for Direct Debit/Bank Transfer)</Label>
-                    <Input
-                      id="paymentKeywords"
-                      value={formData.paymentKeywords}
-                      onChange={(e) => setFormData(prev => ({ ...prev, paymentKeywords: e.target.value }))}
-                      placeholder="e.g., MARGARET BARR, BARR SP, MARGARET B"
-                    />
-                    <p className="text-xs text-slate-500">Comma-separated keywords for matching bank descriptions</p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="expectedMonthlyTenantPayment">Expected Monthly Tenant Payment (€)</Label>
-                    <Input
-                      id="expectedMonthlyTenantPayment"
-                      type="number"
-                      step="0.01"
-                      value={formData.expectedMonthlyTenantPayment}
-                      onChange={(e) => setFormData(prev => ({ ...prev, expectedMonthlyTenantPayment: e.target.value }))}
-                      placeholder="Auto-calculated from weekly payment"
-                    />
-                    <p className="text-xs text-slate-500">
-                      {formData.weeklyTenantPayment > 0 && `Default: €${(formData.weeklyTenantPayment * 4.3).toFixed(2)}`}
-                    </p>
+                  
+                  {/* Auto Detection in right column to save space */}
+                  <div className="pt-2 border-t mt-1">
+                    <h4 className="font-semibold text-[11px] text-slate-700 dark:text-gray-300 mb-2 uppercase tracking-wider">Payment Matching</h4>
+                    <div className="space-y-2">
+                      <Input
+                        id="lodgmentRange"
+                        value={formData.lodgmentRange}
+                        onChange={(e) => setFormData(prev => ({ ...prev, lodgmentRange: e.target.value }))}
+                        placeholder="Lodgment (e.g. 3251-3300)"
+                        className="h-9 text-xs"
+                      />
+                      <Input
+                        id="paymentKeywords"
+                        value={formData.paymentKeywords}
+                        onChange={(e) => setFormData(prev => ({ ...prev, paymentKeywords: e.target.value }))}
+                        placeholder="Keywords (e.g. M BARR)"
+                        className="h-9 text-xs"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <DialogFooter>
+            
+            <DialogFooter className="shrink-0 mt-4 pt-4 border-t">
               <Button variant="outline" onClick={() => { resetForm(); setShowAddDialog(false); }}>
                 Cancel
               </Button>
