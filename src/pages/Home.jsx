@@ -98,7 +98,7 @@ export default function HomePage() {
       <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
         {/* Desktop Tab Navigation */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <div className="hidden sm:flex items-center gap-2 mb-4 sm:mb-6">
+          <div className="hidden sm:flex items-stretch gap-2 mb-4 sm:mb-6">
             <TabsList className="flex-1 grid grid-cols-4 bg-white/80 dark:bg-gray-800/60 backdrop-blur-sm shadow-lg dark:shadow-gray-950/30 rounded-lg sm:rounded-xl p-0.5 sm:p-1 h-auto select-none border-0 dark:border dark:border-gray-700/50">
               <TabsTrigger
                 value="tenants"
@@ -135,7 +135,7 @@ export default function HomePage() {
             {/* Settings Icon */}
             <button
               onClick={() => setShowSettings(true)}
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/80 dark:bg-gray-800/60 backdrop-blur-sm shadow-lg dark:shadow-gray-950/30 border-0 dark:border dark:border-gray-700/50 text-slate-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+              className="px-4 sm:px-5 flex-shrink-0 flex items-center justify-center rounded-lg sm:rounded-xl bg-white/80 dark:bg-gray-800/60 backdrop-blur-sm shadow-lg dark:shadow-gray-950/30 border-0 dark:border dark:border-gray-700/50 text-slate-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
             >
               <Settings className="w-5 h-5" />
             </button>
