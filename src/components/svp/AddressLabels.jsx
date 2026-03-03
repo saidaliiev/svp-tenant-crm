@@ -4,14 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Tag, Printer } from 'lucide-react';
+import { Tag, Printer, Save, X } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 
 const PRESETS = [
   { name: 'Avery L7163 (2×5, 99×57mm)', cols: 2, rows: 5, labelW: 99, labelH: 57, marginT: 15, marginB: 15, marginL: 5, marginR: 5 },
   { name: 'Avery L7160 (3×7, 63×38mm)', cols: 3, rows: 7, labelW: 63.5, labelH: 38.1, marginT: 15, marginB: 15, marginL: 5, marginR: 5 },
-  { name: 'Avery L7159 (3×8, 63×34mm)', cols: 3, rows: 8, labelW: 63.5, labelH: 33.9, marginT: 13, marginB: 13, marginL: 5, marginR: 5 },
-  { name: 'Custom', cols: 2, rows: 5, labelW: 99, labelH: 57, marginT: 15, marginB: 15, marginL: 5, marginR: 5 },
+  { name: 'Avery L7159 (3×8, 63×34mm)', cols: 3, rows: 8, labelW: 63.5, labelH: 33.9, marginT: 13, marginB: 13, marginL: 5, marginR: 5 }
 ];
 
 export default function AddressLabels({ tenants, settings }) {
