@@ -162,6 +162,7 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
                       <div className="flex items-center justify-between mb-1.5">
                         <div className="min-w-0">
                           <p className="font-medium text-slate-800 dark:text-gray-200 text-sm truncate">{receipt.clientName}</p>
+                          <p className="text-[10px] text-slate-400 dark:text-gray-500 truncate mb-1">{receipt.clientAddress}</p>
                           <div className="flex items-center gap-1">
                             <p className="text-[10px] text-slate-400 dark:text-gray-500">{receipt.receiptId} · {formatDate(getReceiptDateObj(receipt))}</p>
                             <button onClick={() => { setEditDateReceipt(receipt); setNewReceiptDate(getReceiptDateForInput(receipt)); }} className="text-blue-500 p-0.5">
@@ -209,6 +210,7 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
                             <td className="py-3 px-4">
                               <p className="font-medium text-slate-800 dark:text-gray-200 text-sm">{receipt.clientName}</p>
                               <p className="text-xs text-slate-500 dark:text-gray-500">{receipt.receiptId}</p>
+                              <p className="text-xs text-slate-400 dark:text-gray-600 mt-0.5">{receipt.clientAddress}</p>
                             </td>
                             <td className="py-3 px-4 text-slate-600 dark:text-gray-400 text-sm hidden md:table-cell">
                               <div className="flex items-center gap-2">
