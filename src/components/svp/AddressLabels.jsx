@@ -118,12 +118,20 @@ export default function AddressLabels({ tenants, settings }) {
       doc.text(tenant.fullName || '', x + padX, y + padY);
 
       // Address
-      doc.setFontSize(11);
+      doc.setFontSize(12);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(60, 60, 60);
-      const address = tenant.address || '';
-      const addrLines = doc.splitTextToSize(address, config.labelW - padX * 2);
-      addrLines.slice(0, 4).forEach((line, li) => {
+      
+      const stAddress = tenant.address || '';
+      const townCounty = [tenant.city, tenant.county].filter(Boolean).join(', ');
+      const eircode = tenant.eircode || '';
+      
+      const addressLines = [stAddress, townCounty, eircode].filter(Boolean);
+      
+      // Fallback: if they only have 'address' field and no others, it might be a long string
+      const linesToPrint = addressLines.length > 1 ? addressLines : doc.splitTextToSize(stAddress, config.labelW - padX * 2);
+
+      linesToPrint.slice(0, 4).forEach((line, li) => {
         doc.text(line, x + padX, y + padY + 7 + li * 5.5);
       });
 
@@ -338,7 +346,11 @@ export default function AddressLabels({ tenants, settings }) {
                       style={{ width: `${config.labelW}mm`, height: `${config.labelH}mm` }}
                     >
                       <div className="font-bold text-[16px] text-slate-900 leading-tight truncate">{t.fullName}</div>
-                      <div className="text-[13px] text-slate-700 mt-1.5 leading-snug line-clamp-4">{t.address}</div>
+                      <div className="text-[14px] text-slate-700 mt-1.5 leading-snug flex flex-col gap-0.5">
+                        {t.address && <span>{t.address}</span>}
+                        {(t.city || t.county) && <span>{[t.city, t.county].filter(Boolean).join(', ')}</span>}
+                        {t.eircode && <span>{t.eircode}</span>}
+                      </div>
                       <div className="text-[10px] text-slate-400 absolute bottom-3 left-5">
                         {settings?.organizationName || 'Society of Saint Vincent de Paul'}
                       </div>
