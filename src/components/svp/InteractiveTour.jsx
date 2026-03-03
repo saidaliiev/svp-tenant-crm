@@ -5,124 +5,171 @@ const TOUR_CONFIG = {
   Home_TenantManagement: [
     {
       selector: '[data-tour="btn-add-tenant"]',
-      title: '➕ Add New Tenant',
-      description: 'Click to add a new tenant to the system. Fill in their details: name, address, phone, rent amount, and move-in date.'
+      title: '➕ Добавить арендатора',
+      description: 'Нажмите, чтобы добавить нового арендатора. Заполните его имя, адрес, телефон и данные об аренде.'
     },
     {
       selector: '[data-tour="btn-import"]',
-      title: '📥 Import CSV/Excel',
-      description: 'Bulk import multiple tenants from a CSV or Excel file. Great for migrating existing tenant data.'
+      title: '📥 Импорт CSV/Excel',
+      description: 'Массовая загрузка арендаторов из файла CSV или Excel.'
     },
     {
       selector: '[data-tour="btn-export"]',
-      title: '📤 Export to PDF',
-      description: 'Generate a professional PDF report with all tenant information and current balances.'
+      title: '📤 Экспорт в PDF',
+      description: 'Создание профессионального PDF-отчета со всеми арендаторами и их балансами.'
     },
     {
       selector: '[data-tour="tenant-table"]',
-      title: '📋 Tenant Table',
-      description: 'View all your tenants with their ID, name, address, and current balance. Use the action buttons to manage each tenant.'
+      title: '📋 Таблица арендаторов',
+      description: 'Просмотр всех арендаторов. Используйте кнопки действий для управления каждым из них.'
     },
     {
       selector: '[data-tour="btn-profile"]',
-      title: '👤 View Profile',
-      description: 'Click to view detailed tenant information including full history and notes.'
+      title: '👤 Просмотр профиля',
+      description: 'Нажмите для просмотра подробной информации, истории платежей и заметок.'
     },
     {
       selector: '[data-tour="btn-select"]',
-      title: '✅ Select Tenant',
-      description: 'Quick select a tenant to create a receipt for them. Takes you directly to the Create Receipt tab.'
+      title: '✅ Выбрать арендатора',
+      description: 'Быстрый выбор арендатора для создания новой квитанции.'
     },
     {
       selector: '[data-tour="btn-edit"]',
-      title: '✏️ Edit Tenant',
-      description: 'Update tenant details like phone, address, rent amount, or any other information.'
+      title: '✏️ Редактировать',
+      description: 'Изменение данных арендатора (телефон, адрес, размер аренды).'
     },
     {
       selector: '[data-tour="btn-delete"]',
-      title: '🗑️ Delete Tenant',
-      description: 'Permanently remove a tenant from the system. Use with caution - this action cannot be undone.'
+      title: '🗑️ Удалить',
+      description: 'Полное удаление арендатора. Действие нельзя отменить.'
     }
   ],
   Home_CreateReceipt: [
     {
       selector: '[data-tour="tenant-selector"]',
-      title: '👥 Select Tenant',
-      description: 'Choose which tenant you\'re creating a receipt for. Click on any tenant to select them.'
+      title: '👥 Выбор арендатора',
+      description: 'Выберите арендатора, для которого создается квитанция.'
     },
     {
       selector: '[data-tour="manual-mode"]',
-      title: '✍️ Manual Mode',
-      description: 'Manually enter all payment data, transaction details, and calculate balances. Use this for custom statements.'
+      title: '✍️ Ручной режим',
+      description: 'Вводите все данные о платежах вручную по неделям.'
     },
     {
       selector: '[data-tour="automatic-mode"]',
-      title: '🤖 Automatic Mode',
-      description: 'Upload a bank statement and automatically detect payments. The system will match payments to tenants for you.'
+      title: '🤖 Автоматический режим',
+      description: 'Загрузите банковскую выписку (PDF), и система сама распознает платежи.'
     },
     {
       selector: '[data-tour="period-dates"]',
-      title: '📅 Period Dates',
-      description: 'Set the start and end dates for the statement period. This defines the billing period for the rent statement.'
+      title: '📅 Даты периода',
+      description: 'Установите даты начала и конца квитанции.'
     },
     {
       selector: '[data-tour="starting-debt"]',
-      title: '💰 Starting Debt/Credit',
-      description: 'Enter the previous balance. Red numbers = debt, green = credit. Toggle "Include" to add/subtract from final balance.'
+      title: '💰 Начальный долг/кредит',
+      description: 'Введите предыдущий баланс (красный = долг, зеленый = переплата).'
     },
     {
       selector: '[data-tour="add-transaction"]',
-      title: '➕ Add Transaction',
-      description: 'Add payment records: rent due, tenant payments, and RAS amounts. Each row represents one week or period.'
+      title: '➕ Добавить транзакцию',
+      description: 'Добавляйте записи об оплате за каждую неделю.'
     },
     {
       selector: '[data-tour="balance-preview"]',
-      title: '📊 Balance Preview',
-      description: 'Real-time calculation showing final balance based on all entries. Red = debt, green = credit.'
+      title: '📊 Предварительный баланс',
+      description: 'Автоматический подсчет итогового баланса.'
     },
     {
       selector: '[data-tour="receipt-notes"]',
-      title: '📝 Notes',
-      description: 'Add any additional notes that will appear on the printed receipt. Optional but useful for special instructions.'
+      title: '📝 Заметки',
+      description: 'Добавьте комментарии, которые будут напечатаны на квитанции.'
     }
   ],
   Home_AutomaticMode: [
     {
       selector: '[data-tour="auto-upload"]',
-      title: '📄 Upload Bank Statement',
-      description: 'Click here to upload your monthly BOI PDF bank statement. The system will automatically parse and detect tenant payments.'
+      title: '📄 Загрузка выписки',
+      description: 'Загрузите PDF банковской выписки. Система найдет платежи.'
     },
     {
       selector: '[data-tour="auto-payments"]',
-      title: '✅ Detected Payments',
-      description: 'Once uploaded, you will see a list of detected payments. The system tries to match them with tenants automatically using keywords or IDs.'
+      title: '✅ Найденные платежи',
+      description: 'Список распознанных платежей. Система постарается автоматически привязать их к арендаторам.'
     },
     {
       selector: '[data-tour="auto-apply"]',
-      title: '🚀 Apply Payments',
-      description: 'Select a tenant from the dropdown and click Apply. This will transfer their matched payments into a new receipt for you to review and save.'
+      title: '🚀 Применить платежи',
+      description: 'Выберите арендатора и нажмите Apply, чтобы перенести платежи в новую квитанцию.'
     }
   ],
   Home_ReceiptHistory: [
     {
       selector: '[data-tour="tenant-filter"]',
-      title: '🔍 Tenant Filter',
-      description: 'Filter receipts by tenant. Select "All Tenants" to see receipts for everyone, or choose a specific tenant.'
+      title: '🔍 Фильтр',
+      description: 'Фильтрация квитанций по конкретному арендатору.'
     },
     {
       selector: '[data-tour="receipt-row"]',
-      title: '📄 Receipt Row',
-      description: 'Each row shows a receipt with tenant name, receipt date, period covered, and final balance.'
+      title: '📄 Квитанция',
+      description: 'Каждая строка — это сохраненная квитанция.'
     },
     {
       selector: '[data-tour="btn-view-print"]',
-      title: '🖨️ View/Print',
-      description: 'Open the receipt to view it on screen or print it directly. You can also save as PDF.'
+      title: '🖨️ Просмотр и Печать',
+      description: 'Откройте квитанцию для печати или сохранения в PDF.'
     },
     {
       selector: '[data-tour="btn-delete-receipt"]',
-      title: '🗑️ Delete Receipt',
-      description: 'Remove a receipt from history. A confirmation dialog will appear before deletion.'
+      title: '🗑️ Удаление',
+      description: 'Удаление квитанции. Потребуется указать причину (минимум 6 символов).'
+    }
+  ],
+  Home_Tools: [
+    {
+      selector: '[data-tour="tools-grid"]',
+      title: '🛠️ Инструменты',
+      description: 'Дополнительные утилиты для анализа и управления данными.'
+    },
+    {
+      selector: '[data-tour="tool-card-labels"]',
+      title: '🏷️ Address Labels',
+      description: 'Печать наклеек с адресами.'
+    },
+    {
+      selector: '[data-tour="tool-card-rent-report"]',
+      title: '📊 Rent Report',
+      description: 'PDF-отчет о статусе оплат всех арендаторов.'
+    },
+    {
+      selector: '[data-tour="tool-card-arrears-overview"]',
+      title: '📈 Arrears Overview',
+      description: 'Графики и аналитика задолженностей.'
+    },
+    {
+      selector: '[data-tour="tool-card-arrears-alert"]',
+      title: '🔔 Arrears Alert',
+      description: 'Список арендаторов с большими долгами.'
+    },
+    {
+      selector: '[data-tour="tool-card-bulk-letters"]',
+      title: '✉️ Bulk Letters',
+      description: 'Генерация писем о задолженности.'
+    },
+    {
+      selector: '[data-tour="tool-card-payment-lookup"]',
+      title: '🔍 Payment Lookup',
+      description: 'Поиск платежей по сумме или дате.'
+    },
+    {
+      selector: '[data-tour="tool-card-statement-calendar"]',
+      title: '📅 Statement Calendar',
+      description: 'Календарь закрытых месяцев для каждого арендатора.'
+    },
+    {
+      selector: '[data-tour="tool-card-export-excel"]',
+      title: '📥 Export to Excel',
+      description: 'Экспорт всех данных в Excel/CSV.'
     }
   ]
 };
@@ -140,6 +187,7 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
       tourKey = currentMode === 'automatic' ? 'Home_AutomaticMode' : 'Home_CreateReceipt';
     }
     else if (currentTab === 'history') tourKey = 'Home_ReceiptHistory';
+    else if (currentTab === 'tools') tourKey = 'Home_Tools';
   }
 
   const tourSteps = TOUR_CONFIG[tourKey] || [];

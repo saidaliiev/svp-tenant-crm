@@ -126,11 +126,12 @@ export default function ToolsTab({ tenants, settings, statements }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-tour="tools-grid">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {TOOLS.map(tool => (
           <button
             key={tool.id}
+            data-tour={`tool-card-${tool.id}`}
             onClick={() => setActiveTool(tool.id)}
             className="flex items-center gap-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 transition-all text-left group relative"
           >

@@ -43,6 +43,10 @@ export default function UserGuide() {
             <span className="text-2xl">7️⃣</span>
             <div><strong>Полезные советы</strong> — лучшие практики и ответы на вопросы</div>
           </div>
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">8️⃣</span>
+            <div><strong>Инструменты</strong> — отчеты, экспорт, наклейки и аналитика</div>
+          </div>
         </div>
       </div>
 
@@ -336,7 +340,7 @@ export default function UserGuide() {
           <div className="border-l-4 border-red-500 bg-red-50 p-6 rounded">
             <h4 className="text-xl font-bold text-red-700 mb-4">🗑️ Удаление квитанции</h4>
             <p className="text-gray-700 mb-3">Нажмите кнопку <span className="bg-red-200 px-3 py-1 rounded font-semibold">Delete</span></p>
-            <p className="text-gray-700">Система попросит подтверждение — нажмите ещё раз, если вы уверены</p>
+            <p className="text-gray-700">Система попросит подтверждение и <strong>обязательно потребует указать причину удаления</strong> (минимум 6 символов) — нажмите Delete ещё раз, если вы уверены.</p>
             <p className="mt-4 pt-4 border-t border-red-300 text-gray-700">
               ⚠️ <strong>Важно!</strong> Удаление невозможно отменить. Удаляйте только ошибочные квитанции.
             </p>
@@ -518,6 +522,57 @@ export default function UserGuide() {
                 <p className="text-gray-700">О: Да! Приложение полностью адаптировано для мобильных устройств. Все функции доступны на телефоне и планшете.</p>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 8: Tools */}
+      <section className="mb-16">
+        <h2 className="text-3xl font-bold mb-6">🛠️ Инструменты (Tools)</h2>
+        
+        <p className="text-gray-700 mb-8">
+          Дополнительные утилиты для работы с данными, анализа и генерации отчетов.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="border-l-4 border-blue-500 bg-blue-50 p-6 rounded">
+            <h4 className="text-xl font-bold text-blue-700 mb-2">🏷️ Address Labels</h4>
+            <p className="text-gray-700">Печать наклеек с адресами арендаторов на листах формата А4 для почтовой рассылки.</p>
+          </div>
+
+          <div className="border-l-4 border-emerald-500 bg-emerald-50 p-6 rounded">
+            <h4 className="text-xl font-bold text-emerald-700 mb-2">📊 Rent Report</h4>
+            <p className="text-gray-700">Создание сводного PDF-отчета по всем арендаторам с информацией о платежах и долгах.</p>
+          </div>
+
+          <div className="border-l-4 border-purple-500 bg-purple-50 p-6 rounded">
+            <h4 className="text-xl font-bold text-purple-700 mb-2">📈 Arrears Overview</h4>
+            <p className="text-gray-700">Визуальный график, отображающий общую задолженность и тенденции по месяцам.</p>
+          </div>
+
+          <div className="border-l-4 border-red-500 bg-red-50 p-6 rounded">
+            <h4 className="text-xl font-bold text-red-700 mb-2">🔔 Arrears Alert</h4>
+            <p className="text-gray-700">Вывод списка арендаторов, чья задолженность превышает установленный вами лимит.</p>
+          </div>
+
+          <div className="border-l-4 border-orange-500 bg-orange-50 p-6 rounded">
+            <h4 className="text-xl font-bold text-orange-700 mb-2">✉️ Bulk Letters</h4>
+            <p className="text-gray-700">Массовая генерация персонализированных писем-уведомлений о задолженности.</p>
+          </div>
+
+          <div className="border-l-4 border-cyan-500 bg-cyan-50 p-6 rounded">
+            <h4 className="text-xl font-bold text-cyan-700 mb-2">🔍 Payment Lookup</h4>
+            <p className="text-gray-700">Глобальный поиск конкретного платежа по всем выданным квитанциям.</p>
+          </div>
+
+          <div className="border-l-4 border-violet-500 bg-violet-50 p-6 rounded">
+            <h4 className="text-xl font-bold text-violet-700 mb-2">📅 Statement Calendar</h4>
+            <p className="text-gray-700">Удобная таблица, показывающая закрытые месяцы для каждого арендатора.</p>
+          </div>
+
+          <div className="border-l-4 border-teal-500 bg-teal-50 p-6 rounded">
+            <h4 className="text-xl font-bold text-teal-700 mb-2">📥 Export to Excel</h4>
+            <p className="text-gray-700">Экспорт всех данных (балансы и транзакции) в формат CSV/Excel для внешнего анализа.</p>
           </div>
         </div>
       </section>
