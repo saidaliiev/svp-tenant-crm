@@ -33,11 +33,13 @@ export default function MobilePortfolioTrigger({ onReveal }) {
           <HeartSVG className="w-3.5 h-3.5" />
         </motion.span>
         <span className="text-gray-500 dark:text-gray-400 relative z-10 font-medium">by</span>
-        <img 
-          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/4eb575439_IMG_7239.jpeg"
-          alt="Avatar"
-          className="w-5 h-5 rounded-full object-cover border border-gray-200/60 dark:border-gray-700/60 relative z-10"
-        />
+        <div className="w-5 h-5 rounded-full border border-gray-200/60 dark:border-gray-700/60 relative z-10 overflow-hidden shrink-0">
+          <img 
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6981d4cc4b4335396c2fe553/4eb575439_IMG_7239.jpeg"
+            alt="Avatar"
+            className="w-full h-full object-cover scale-[1.35]"
+          />
+        </div>
         <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 relative z-10">
           Iskan
         </span>
