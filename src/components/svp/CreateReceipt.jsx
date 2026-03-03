@@ -351,7 +351,8 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
           totalRasReceived: pendingReceiptData.totalRasReceived,
           finalBalance: pendingReceiptData.finalBalance,
           notes: pendingReceiptData.notes,
-          createdDate: pendingReceiptData.createdDate
+          createdDate: pendingReceiptData.createdDate,
+          receiptDate: pendingReceiptData.createdDate
         });
         
         onReceiptCreated(pendingReceiptData);

@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { History, Printer, Trash2, FileText } from 'lucide-react';
+import { History, Printer, Trash2, FileText, Pencil } from 'lucide-react';
 import { generateReceiptPDF } from './pdfGenerator';
 
 export default function ReceiptHistory({ tenants = [], statements, settings }) {
@@ -30,14 +30,33 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
   const [filterClientId, setFilterClientId] = useState('all');
   const [deleteReceipt, setDeleteReceipt] = useState(null);
   const [deleteReason, setDeleteReason] = useState('');
+  const [editDateReceipt, setEditDateReceipt] = useState(null);
+  const [newReceiptDate, setNewReceiptDate] = useState('');
 
   const filteredStatements = filterClientId === 'all' 
     ? statements 
     : statements.filter(s => s.clientId === filterClientId);
 
+  const getReceiptDateObj = (receipt) => {
+    return new Date(receipt.receiptDate || receipt.createdDate || receipt.created_date);
+  };
+
+  const getReceiptDateForInput = (receipt) => {
+    return getReceiptDateObj(receipt).toISOString().split('T')[0];
+  };
+
   const sortedStatements = [...filteredStatements].sort(
-    (a, b) => new Date(b.createdDate || b.created_date) - new Date(a.createdDate || a.created_date)
+    (a, b) => getReceiptDateObj(b) - getReceiptDateObj(a)
   );
+
+  const groupedStatements = sortedStatements.reduce((groups, receipt) => {
+    const monthYear = getReceiptDateObj(receipt).toLocaleDateString('en-IE', { month: 'long', year: 'numeric' });
+    if (!groups[monthYear]) {
+      groups[monthYear] = [];
+    }
+    groups[monthYear].push(receipt);
+    return groups;
+  }, {});
 
   const handleViewPDF = (receipt) => {
     generateReceiptPDF(receipt, settings);
@@ -47,6 +66,26 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
     mutationFn: (id) => base44.entities.Statement.delete(id),
     onSuccess: () => queryClient.invalidateQueries(['statements'])
   });
+
+  const updateStatementMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.Statement.update(id, data),
+    onSuccess: () => queryClient.invalidateQueries(['statements'])
+  });
+
+  const handleSaveDate = async () => {
+    if (editDateReceipt && newReceiptDate) {
+      try {
+        await updateStatementMutation.mutateAsync({ 
+          id: editDateReceipt.id, 
+          data: { receiptDate: newReceiptDate } 
+        });
+        setEditDateReceipt(null);
+        setNewReceiptDate('');
+      } catch (err) {
+        console.error('Error updating statement date:', err);
+      }
+    }
+  };
 
   const handleDeleteReceipt = async () => {
     if (deleteReceipt && deleteReason.trim().length >= 6) {
@@ -114,15 +153,23 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
         ) : (
           <>
             {/* Mobile: Card layout */}
-            <div className="sm:hidden space-y-2.5">
-              {sortedStatements.map((receipt, index) => (
-                <div key={receipt.id} className="bg-white dark:bg-gray-800/60 rounded-xl border border-slate-200 dark:border-gray-700/50 p-3 shadow-sm" data-tour={index === 0 ? "receipt-row" : undefined}>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="min-w-0">
-                      <p className="font-medium text-slate-800 dark:text-gray-200 text-sm truncate">{receipt.clientName}</p>
-                      <p className="text-[10px] text-slate-400 dark:text-gray-500">{receipt.receiptId} · {formatDate(receipt.createdDate || receipt.created_date)}</p>
-                    </div>
-                    <span className={`text-sm font-bold shrink-0 ml-2 ${receipt.finalBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>
+            <div className="sm:hidden space-y-6">
+              {Object.entries(groupedStatements).map(([monthYear, receipts]) => (
+                <div key={monthYear} className="space-y-2.5">
+                  <h3 className="text-md font-bold text-slate-800 dark:text-gray-200 px-1 border-b pb-1 dark:border-gray-700">{monthYear}</h3>
+                  {receipts.map((receipt, index) => (
+                    <div key={receipt.id} className="bg-white dark:bg-gray-800/60 rounded-xl border border-slate-200 dark:border-gray-700/50 p-3 shadow-sm" data-tour={index === 0 ? "receipt-row" : undefined}>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <div className="min-w-0">
+                          <p className="font-medium text-slate-800 dark:text-gray-200 text-sm truncate">{receipt.clientName}</p>
+                          <div className="flex items-center gap-1">
+                            <p className="text-[10px] text-slate-400 dark:text-gray-500">{receipt.receiptId} · {formatDate(getReceiptDateObj(receipt))}</p>
+                            <button onClick={() => { setEditDateReceipt(receipt); setNewReceiptDate(getReceiptDateForInput(receipt)); }} className="text-blue-500 p-0.5">
+                              <Pencil className="w-2.5 h-2.5" />
+                            </button>
+                          </div>
+                        </div>
+                        <span className={`text-sm font-bold shrink-0 ml-2 ${receipt.finalBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>
                       {formatCurrency(receipt.finalBalance)}
                     </span>
                   </div>
@@ -137,27 +184,40 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
                   </div>
                 </div>
               ))}
+                </div>
+              ))}
             </div>
             {/* Desktop: Table layout */}
-            <div className="hidden sm:block overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b-2 border-slate-200 dark:border-gray-700">
-                    <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm">Tenant Name</th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm hidden md:table-cell">Receipt Date</th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm hidden lg:table-cell">Period</th>
-                    <th className="text-right py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm">Final Balance</th>
-                    <th className="text-right py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedStatements.map((receipt, index) => (
-                    <tr key={receipt.id} data-tour={index === 0 ? "receipt-row" : undefined} className={`border-b border-slate-100 dark:border-gray-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-950/20 dark:hover:to-purple-950/20 transition-colors ${index % 2 === 0 ? 'bg-white dark:bg-transparent' : 'bg-slate-50/50 dark:bg-gray-800/30'}`}>
-                      <td className="py-3 px-4">
-                        <p className="font-medium text-slate-800 dark:text-gray-200 text-sm">{receipt.clientName}</p>
-                        <p className="text-xs text-slate-500 dark:text-gray-500">{receipt.receiptId}</p>
-                      </td>
-                      <td className="py-3 px-4 text-slate-600 dark:text-gray-400 text-sm hidden md:table-cell">{formatDate(receipt.createdDate || receipt.created_date)}</td>
+            <div className="hidden sm:block">
+              {Object.entries(groupedStatements).map(([monthYear, receipts]) => (
+                <div key={monthYear} className="mb-8">
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-gray-200 mb-3 px-2 border-b-2 border-blue-500 inline-block">{monthYear}</h3>
+                  <div className="overflow-x-auto bg-white dark:bg-gray-800/40 rounded-xl border border-slate-200 dark:border-gray-700/50 shadow-sm">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-slate-200 dark:border-gray-700 bg-slate-50 dark:bg-gray-800">
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm">Tenant Name</th>
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm hidden md:table-cell">Receipt Date</th>
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm hidden lg:table-cell">Period</th>
+                          <th className="text-right py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm">Final Balance</th>
+                          <th className="text-right py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {receipts.map((receipt, index) => (
+                          <tr key={receipt.id} data-tour={index === 0 ? "receipt-row" : undefined} className={`border-b border-slate-100 dark:border-gray-700/50 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 transition-colors ${index % 2 === 0 ? 'bg-transparent' : 'bg-slate-50/30 dark:bg-gray-800/20'}`}>
+                            <td className="py-3 px-4">
+                              <p className="font-medium text-slate-800 dark:text-gray-200 text-sm">{receipt.clientName}</p>
+                              <p className="text-xs text-slate-500 dark:text-gray-500">{receipt.receiptId}</p>
+                            </td>
+                            <td className="py-3 px-4 text-slate-600 dark:text-gray-400 text-sm hidden md:table-cell">
+                              <div className="flex items-center gap-2">
+                                {formatDate(getReceiptDateObj(receipt))}
+                                <button onClick={() => { setEditDateReceipt(receipt); setNewReceiptDate(getReceiptDateForInput(receipt)); }} className="text-blue-500 hover:text-blue-700 p-1 opacity-60 hover:opacity-100 transition-opacity">
+                                  <Pencil className="w-3 h-3" />
+                                </button>
+                              </div>
+                            </td>
                       <td className="py-3 px-4 text-slate-600 dark:text-gray-400 text-sm hidden lg:table-cell">{formatDate(receipt.startDate)} – {formatDate(receipt.endDate)}</td>
                       <td className={`py-3 px-4 text-right font-semibold text-sm ${receipt.finalBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>{formatCurrency(receipt.finalBalance)}</td>
                       <td className="py-3 px-4">
@@ -171,10 +231,13 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
                           </Button>
                         </div>
                       </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
             </div>
           </>
         )}
@@ -221,6 +284,42 @@ export default function ReceiptHistory({ tenants = [], statements, settings }) {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* Edit Date Dialog */}
+        <AlertDialog open={!!editDateReceipt} onOpenChange={(open) => {
+          if (!open) {
+            setEditDateReceipt(null);
+            setNewReceiptDate('');
+          }
+        }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Edit Receipt Date</AlertDialogTitle>
+              <AlertDialogDescription asChild>
+                <div className="space-y-4 mt-2">
+                  <p>Change the date for receipt <strong>{editDateReceipt?.receiptId}</strong> to move it between months.</p>
+                  <div className="space-y-2 text-left">
+                    <Label htmlFor="newDate" className="text-slate-700 dark:text-slate-300">New Date</Label>
+                    <Input
+                      id="newDate"
+                      type="date"
+                      value={newReceiptDate}
+                      onChange={(e) => setNewReceiptDate(e.target.value)}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleSaveDate} disabled={!newReceiptDate} className="bg-blue-500 hover:bg-blue-600 text-white">
+                Save Date
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
       </CardContent>
     </Card>
   );

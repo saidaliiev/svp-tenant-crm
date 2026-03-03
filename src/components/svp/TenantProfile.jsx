@@ -125,7 +125,7 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-4 pt-0">
-                <p className={`text-xl font-bold ${tenant.currentBalance > 0 ? 'text-red-600' : 'text-slate-400'}`}>
+                <p className={`text-xl font-bold ${tenant.currentBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>
                   {tenant.currentBalance > 0 ? formatCurrency(tenant.currentBalance) : '€0.00'}
                 </p>
               </CardContent>
@@ -139,7 +139,7 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-4 pt-0">
-                <p className={`text-xl font-bold ${tenant.credit > 0 ? 'text-green-600' : 'text-slate-400'}`}>
+                <p className={`text-xl font-bold text-green-600`}>
                   {formatCurrency(tenant.credit || 0)}
                 </p>
               </CardContent>
