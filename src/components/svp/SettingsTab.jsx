@@ -14,7 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Settings, Save, RotateCcw, Trash2, AlertTriangle, Type } from 'lucide-react';
+import { Settings, Save, RotateCcw, Trash2, AlertTriangle, Type, Layers, Droplets } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const DEFAULT_SETTINGS = {
@@ -37,6 +37,7 @@ export default function SettingsTab({ settings, setSettings }) {
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [fontSize, setFontSize] = useState('medium');
+  const [designStyle, setDesignStyle] = useState('default');
   const [prefsLoaded, setPrefsLoaded] = useState(false);
 
   useEffect(() => {
@@ -44,6 +45,7 @@ export default function SettingsTab({ settings, setSettings }) {
       try {
         const user = await base44.auth.me();
         if (user.fontSize) setFontSize(user.fontSize);
+        if (user.designStyle) setDesignStyle(user.designStyle);
       } catch {}
       setPrefsLoaded(true);
     };
@@ -65,6 +67,19 @@ export default function SettingsTab({ settings, setSettings }) {
     } catch (e) {
       console.error('Error saving preferences:', e);
     }
+  };
+
+  const handleDesignStyleChange = async (newStyle) => {
+    setDesignStyle(newStyle);
+    const root = document.documentElement;
+    if (newStyle === 'liquid') {
+      root.classList.add('theme-liquid');
+    } else {
+      root.classList.remove('theme-liquid');
+    }
+    try {
+      await base44.auth.updateMe({ designStyle: newStyle });
+    } catch (e) {}
   };
 
   const handleSave = () => {

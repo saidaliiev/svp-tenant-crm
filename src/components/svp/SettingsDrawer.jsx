@@ -146,13 +146,44 @@ export default function SettingsDrawer({ open, onClose, settings, setSettings })
                     onClick={() => handleFontSizeChange(opt.value)}
                     className={`py-2 px-3 rounded-lg border-2 transition-all text-center text-sm font-medium ${
                       fontSize === opt.value
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                        : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                        ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                        : 'border-gray-200 hover:border-gray-300 text-gray-600 dark:border-gray-700 dark:text-gray-400'
                     }`}
                   >
                     {opt.label}
                   </button>
                 ))}
+              </div>
+            </div>
+
+            {/* Design Style */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-sm text-slate-500 uppercase tracking-wide flex items-center gap-2">
+                <Layers className="w-4 h-4" /> Design Style
+              </h3>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => handleDesignStyleChange('default')}
+                  className={`flex flex-col items-center justify-center gap-1.5 py-3 px-3 rounded-xl border-2 transition-all text-sm font-medium ${
+                    designStyle === 'default'
+                      ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                      : 'border-gray-200 hover:border-gray-300 text-gray-600 dark:border-gray-700 dark:text-gray-400'
+                  }`}
+                >
+                  <Layers className="w-5 h-5" />
+                  <span>Default Solid</span>
+                </button>
+                <button
+                  onClick={() => handleDesignStyleChange('liquid')}
+                  className={`flex flex-col items-center justify-center gap-1.5 py-3 px-3 rounded-xl border-2 transition-all text-sm font-medium ${
+                    designStyle === 'liquid'
+                      ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                      : 'border-gray-200 hover:border-gray-300 text-gray-600 dark:border-gray-700 dark:text-gray-400'
+                  }`}
+                >
+                  <Droplets className="w-5 h-5" />
+                  <span>Liquid Glass</span>
+                </button>
               </div>
             </div>
 
