@@ -72,12 +72,16 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4">
-                <p className="text-slate-600 dark:text-gray-400 flex items-center gap-2 text-sm">
-                  <span className="w-8 h-8 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm shrink-0">
+                <div className="text-slate-600 dark:text-gray-400 flex items-start gap-2 text-sm">
+                  <span className="w-8 h-8 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm shrink-0 mt-0.5">
                     <Home className="w-4 h-4 text-blue-500" />
                   </span>
-                  <span className="truncate" title={tenant.address}>{tenant.address}</span>
-                </p>
+                  <div className="flex flex-col">
+                    {tenant.address && <span title={tenant.address}>{tenant.address}</span>}
+                    {(tenant.city || tenant.county) && <span>{[tenant.city, tenant.county].filter(Boolean).join(', ')}</span>}
+                    {tenant.eircode && <span>{tenant.eircode}</span>}
+                  </div>
+                </div>
                 {tenant.phoneNumber && (
                   <p className="text-slate-600 dark:text-gray-400 flex items-center gap-2 text-sm">
                     <span className="w-8 h-8 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm shrink-0">
