@@ -29,11 +29,6 @@ const TOUR_CONFIG = {
       description: 'Click to view detailed information, payment history, and notes.'
     },
     {
-      selector: '[data-tour="btn-select"]',
-      title: '✅ Select Tenant',
-      description: 'Quickly select a tenant to create a new receipt.'
-    },
-    {
       selector: '[data-tour="btn-edit"]',
       title: '✏️ Edit',
       description: 'Update tenant details (phone, address, rent amount).'
