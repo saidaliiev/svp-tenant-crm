@@ -59,6 +59,8 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
     id: '',
     fullName: '',
     address: '',
+    phoneNumber: '',
+    moveInDate: '',
     previousDebt: 0,
     credit: 0,
     monthlyRent: 143.40,
@@ -78,6 +80,8 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
       id: '',
       fullName: '',
       address: '',
+      phoneNumber: '',
+      moveInDate: '',
       previousDebt: 0,
       credit: 0,
       monthlyRent: 143.40,
@@ -101,6 +105,8 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
       id: tenant.id,
       fullName: tenant.fullName,
       address: tenant.address,
+      phoneNumber: tenant.phoneNumber || '',
+      moveInDate: tenant.moveInDate || '',
       previousDebt: tenant.currentBalance ?? 0,
       credit: tenant.credit ?? 0,
       monthlyRent: tenant.monthlyRent ?? 143.40,
@@ -128,6 +134,8 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
       displayId: editingTenant ? editingTenant.displayId : generateDisplayId(),
       fullName: formData.fullName.trim(),
       address: formData.address.trim(),
+      phoneNumber: formData.phoneNumber.trim() || null,
+      moveInDate: formData.moveInDate || null,
       currentBalance: parseFloat(formData.previousDebt) || 0,
       credit: parseFloat(formData.credit) || 0,
       monthlyRent: parseFloat(formData.monthlyRent) || 0,
@@ -154,11 +162,19 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
     }
   };
 
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
+
   const handleDeleteTenant = async () => {
     if (deleteTenant) {
+      if (deleteConfirmation.length < 6) {
+        setError('Please provide a reason (at least 6 characters) to delete the tenant.');
+        return;
+      }
       try {
         await deleteTenantMutation.mutateAsync(deleteTenant.id);
         setDeleteTenant(null);
+        setDeleteConfirmation('');
+        setError('');
         setSuccess('Tenant deleted successfully');
         setTimeout(() => setSuccess(''), 3000);
       } catch (err) {
@@ -406,8 +422,8 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                <table className="w-full">
                 <thead>
                   <tr className="border-b-2 border-slate-200 dark:border-gray-700">
-                    <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">ID</th>
                     <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Full Name</th>
+                    <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Phone Number</th>
                     <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Address</th>
                     <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Lodgment ID</th>
                     <th className="text-right py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Balance</th>
@@ -421,8 +437,8 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                       className={`border-b border-slate-100 dark:border-gray-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-950/20 dark:hover:to-purple-950/20 transition-colors cursor-pointer ${index % 2 === 0 ? 'bg-white dark:bg-transparent' : 'bg-slate-50/50 dark:bg-gray-800/30'}`}
                       onClick={() => setProfileTenant(tenant)}
                     >
-                      <td className="py-3 px-4 font-mono text-sm text-slate-600 dark:text-gray-400 whitespace-nowrap">{tenant.displayId || tenant.id}</td>
                       <td className="py-3 px-4 font-medium text-slate-800 dark:text-gray-200 text-sm whitespace-nowrap">{tenant.fullName}</td>
+                      <td className="py-3 px-4 font-mono text-sm text-slate-600 dark:text-gray-400 whitespace-nowrap">{tenant.phoneNumber || '-'}</td>
                       <td className="py-3 px-4 text-slate-600 dark:text-gray-400 text-sm whitespace-nowrap">{tenant.address}</td>
                       <td className="py-3 px-4 font-mono text-sm text-slate-500 dark:text-gray-400 whitespace-nowrap">{tenant.lodgmentRange || '-'}</td>
                       <td className={`py-3 px-4 text-right font-semibold text-sm whitespace-nowrap ${(tenant.currentBalance || 0) > 0 ? 'text-red-600' : 'text-green-600'}`}>
@@ -479,6 +495,26 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                   onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
                   placeholder="Enter full name"
                 />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="phoneNumber">Phone Number</Label>
+                  <Input
+                    id="phoneNumber"
+                    value={formData.phoneNumber}
+                    onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                    placeholder="Enter phone number"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="moveInDate">Move-in Date</Label>
+                  <Input
+                    id="moveInDate"
+                    type="date"
+                    value={formData.moveInDate}
+                    onChange={(e) => setFormData(prev => ({ ...prev, moveInDate: e.target.value }))}
+                  />
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="address">Address *</Label>
@@ -602,19 +638,36 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
         </Dialog>
 
         {/* Delete Confirmation Dialog */}
-        <AlertDialog open={!!deleteTenant} onOpenChange={(open) => !open && setDeleteTenant(null)}>
+        <AlertDialog open={!!deleteTenant} onOpenChange={(open) => {
+          if (!open) {
+            setDeleteTenant(null);
+            setDeleteConfirmation('');
+            setError('');
+          }
+        }}>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Delete Tenant</AlertDialogTitle>
               <AlertDialogDescription>
                 Are you sure you want to delete <strong>{deleteTenant?.fullName}</strong>? This action cannot be undone.
+                <div className="mt-4">
+                  <Label htmlFor="deleteConfirmation" className="text-red-500">Reason for deletion (min 6 characters):</Label>
+                  <Input
+                    id="deleteConfirmation"
+                    value={deleteConfirmation}
+                    onChange={(e) => setDeleteConfirmation(e.target.value)}
+                    placeholder="e.g. Moved out"
+                    className="mt-2"
+                  />
+                </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction 
                 onClick={handleDeleteTenant}
-                className="bg-red-500 hover:bg-red-600"
+                disabled={deleteConfirmation.length < 6}
+                className="bg-red-500 hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Delete
               </AlertDialogAction>

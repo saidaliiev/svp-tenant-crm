@@ -57,26 +57,47 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
 
         <div className="space-y-6">
           {/* Header with Avatar */}
-          <div className="flex items-center gap-4 pb-6 border-b dark:border-gray-700">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 p-6 rounded-2xl bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-950/20 dark:to-purple-950/20 border border-blue-100 dark:border-blue-900/30">
+            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-xl shadow-blue-500/20 shrink-0">
               {getInitials(tenant.fullName)}
             </div>
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold text-slate-800 dark:text-gray-100">{tenant.fullName}</h2>
-              <p className="text-slate-600 dark:text-gray-400 flex items-center gap-2 mt-1">
-                <Home className="w-4 h-4" />
-                {tenant.address}
-              </p>
-              {tenant.phoneNumber && (
-                <p className="text-slate-600 dark:text-gray-400 flex items-center gap-2 mt-1">
-                  <Phone className="w-4 h-4" />
-                  {tenant.phoneNumber}
+            <div className="flex-1 space-y-3 w-full">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                <h2 className="text-3xl font-bold text-slate-800 dark:text-gray-100 tracking-tight">{tenant.fullName}</h2>
+                <div className="flex flex-wrap gap-2">
+                  <Badge className="bg-white/80 dark:bg-gray-800/80 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800 hover:bg-white dark:hover:bg-gray-800 shadow-sm">
+                    ID: {tenant.displayId || tenant.id}
+                  </Badge>
+                  {tenant.lodgmentRange && (
+                    <Badge variant="outline" className="bg-white/80 dark:bg-gray-800/80 font-mono shadow-sm">
+                      Lodgment ID: {tenant.lodgmentRange}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4">
+                <p className="text-slate-600 dark:text-gray-400 flex items-center gap-2 text-sm">
+                  <span className="w-8 h-8 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm shrink-0">
+                    <Home className="w-4 h-4 text-blue-500" />
+                  </span>
+                  <span className="truncate" title={tenant.address}>{tenant.address}</span>
                 </p>
-              )}
-              <div className="flex gap-2 mt-2">
-                <Badge>ID: {tenant.displayId || tenant.id}</Badge>
-                {tenant.lodgmentRange && (
-                  <Badge variant="outline" className="font-mono">Lodgment ID: {tenant.lodgmentRange}</Badge>
+                {tenant.phoneNumber && (
+                  <p className="text-slate-600 dark:text-gray-400 flex items-center gap-2 text-sm">
+                    <span className="w-8 h-8 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm shrink-0">
+                      <Phone className="w-4 h-4 text-green-500" />
+                    </span>
+                    {tenant.phoneNumber}
+                  </p>
+                )}
+                {tenant.moveInDate && (
+                  <p className="text-slate-600 dark:text-gray-400 flex items-center gap-2 text-sm">
+                    <span className="w-8 h-8 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm shrink-0">
+                      <Calendar className="w-4 h-4 text-purple-500" />
+                    </span>
+                    Moved in: {formatDate(tenant.moveInDate)}
+                  </p>
                 )}
               </div>
             </div>
