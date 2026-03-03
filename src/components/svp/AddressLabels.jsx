@@ -153,8 +153,9 @@ export default function AddressLabels({ tenants, settings }) {
     
     const addressLines = [stAddress, townCounty, eircode].filter(Boolean);
     
-    // Fallback: if they only have 'address' field and no others, it might be a long string
-    const linesToPrint = addressLines.length > 1 ? addressLines : doc.splitTextToSize(stAddress, config.labelW - padX * 2);
+    // Split each address line to fit within label width
+    const maxWidth = config.labelW - padX * 2;
+    const linesToPrint = addressLines.flatMap(line => doc.splitTextToSize(line, maxWidth));
 
     linesToPrint.slice(0, 4).forEach((line, li) => {
       doc.text(line, x + padX, y + padY + (isSmallLabel ? 5 : 7) + li * lineSpacing);
