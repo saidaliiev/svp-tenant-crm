@@ -31,7 +31,19 @@ export default function AddressLabels({ tenants, settings }) {
   const [newPresetName, setNewPresetName] = useState('');
 
   const labelsPerPage = config.cols * config.rows;
-  const selectedTenants = tenants.filter(t => selectedIds.includes(t.id));
+  let selectedTenants = tenants.filter(t => selectedIds.includes(t.id));
+  
+  if (selectedTenants.length > 0) {
+    const remainder = selectedTenants.length % labelsPerPage;
+    if (remainder !== 0) {
+      const needed = labelsPerPage - remainder;
+      const originalLength = selectedTenants.length;
+      for (let i = 0; i < needed; i++) {
+        selectedTenants.push(selectedTenants[i % originalLength]);
+      }
+    }
+  }
+
   const totalPages = Math.ceil(selectedTenants.length / labelsPerPage);
   const usableW = 210 - config.marginL - config.marginR;
   const usableH = 297 - config.marginT - config.marginB;
@@ -96,27 +108,27 @@ export default function AddressLabels({ tenants, settings }) {
       doc.setDrawColor(220, 220, 220);
       doc.rect(x, y, config.labelW, config.labelH);
 
-      const padX = 4;
-      const padY = 6;
+      const padX = 5;
+      const padY = 8;
 
       // Name
-      doc.setFontSize(11);
+      doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(0, 0, 0);
       doc.text(tenant.fullName || '', x + padX, y + padY);
 
       // Address
-      doc.setFontSize(9);
+      doc.setFontSize(11);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(60, 60, 60);
       const address = tenant.address || '';
       const addrLines = doc.splitTextToSize(address, config.labelW - padX * 2);
-      addrLines.slice(0, 3).forEach((line, li) => {
-        doc.text(line, x + padX, y + padY + 6 + li * 5);
+      addrLines.slice(0, 4).forEach((line, li) => {
+        doc.text(line, x + padX, y + padY + 7 + li * 5.5);
       });
 
       // Org name at bottom
-      doc.setFontSize(7);
+      doc.setFontSize(8);
       doc.setTextColor(150, 150, 150);
       doc.text(orgName, x + padX, y + config.labelH - 4);
     });
@@ -319,15 +331,15 @@ export default function AddressLabels({ tenants, settings }) {
                     width: 'max-content'
                   }}
                 >
-                  {selectedTenants.slice(0, labelsPerPage).map(t => (
+                  {selectedTenants.slice(0, labelsPerPage).map((t, i) => (
                     <div
-                      key={t.id}
-                      className="border border-dashed border-gray-200 p-4 overflow-hidden relative flex flex-col justify-center"
+                      key={`${t.id}-${i}`}
+                      className="border border-dashed border-gray-200 p-5 overflow-hidden relative flex flex-col justify-center"
                       style={{ width: `${config.labelW}mm`, height: `${config.labelH}mm` }}
                     >
-                      <div className="font-bold text-[13px] text-slate-900 leading-tight truncate">{t.fullName}</div>
-                      <div className="text-[11px] text-slate-700 mt-1 leading-snug line-clamp-3">{t.address}</div>
-                      <div className="text-[9px] text-slate-400 absolute bottom-3 left-4">
+                      <div className="font-bold text-[16px] text-slate-900 leading-tight truncate">{t.fullName}</div>
+                      <div className="text-[13px] text-slate-700 mt-1.5 leading-snug line-clamp-4">{t.address}</div>
+                      <div className="text-[10px] text-slate-400 absolute bottom-3 left-5">
                         {settings?.organizationName || 'Society of Saint Vincent de Paul'}
                       </div>
                     </div>
