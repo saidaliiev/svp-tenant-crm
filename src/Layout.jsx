@@ -44,9 +44,16 @@ export default function Layout({ children, currentPageName }) {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       <Toaster position="bottom-center" />
-      <div className="flex-1 pb-safe">
-        <div className="pb-20 sm:pb-0">
-          {children}
+      <div className="flex-1 pb-safe flex flex-col">
+        <div className="flex-1 pb-20 sm:pb-0 flex flex-col">
+          <div className="flex-1">
+            {children}
+          </div>
+          
+          <div className="mt-8 mb-4 sm:mb-0 sm:mt-auto">
+            <SecretFooter onReveal={handleReveal} />
+            <MobilePortfolioTrigger onReveal={handleReveal} />
+          </div>
         </div>
       </div>
 
@@ -58,8 +65,6 @@ export default function Layout({ children, currentPageName }) {
         />
       )}
 
-      <SecretFooter onReveal={handleReveal} />
-      <MobilePortfolioTrigger onReveal={handleReveal} />
       <DevPortfolio isOpen={showPortfolio} onClose={handleClose} />
       <InteractiveTour 
         isOpen={showGuide} 

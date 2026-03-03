@@ -20,21 +20,21 @@ export default function MobilePortfolioTrigger({ onReveal }) {
   };
 
   return (
-    <div className="sm:hidden flex justify-center py-2 pb-1">
+    <div className="sm:hidden flex justify-center py-4">
       <button
         onClick={handleTap}
-        className="inline-flex items-center gap-1 text-[10px] text-gray-400 dark:text-gray-500 active:opacity-60 transition-opacity"
+        className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 rounded-full shadow-sm text-xs text-gray-500 dark:text-gray-400 active:scale-95 transition-all"
         aria-label="View developer portfolio"
       >
         <span>Developed with</span>
         <motion.span animate={heartControls} className="inline-block text-red-500">
-          <HeartSVG className="w-2.5 h-2.5" />
+          <HeartSVG className="w-3 h-3" />
         </motion.span>
         <span>by</span>
-        <span className="font-medium text-gray-500 dark:text-gray-400 underline underline-offset-2 decoration-gray-300 dark:decoration-gray-600">
+        <span className="font-semibold text-gray-700 dark:text-gray-300">
           Iskan
         </span>
-        <ArrowRight className="w-2.5 h-2.5" />
+        <ArrowRight className="w-3 h-3 ml-0.5 text-gray-400" />
       </button>
     </div>
   );
