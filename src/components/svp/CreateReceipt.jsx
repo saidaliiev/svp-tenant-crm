@@ -290,11 +290,17 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
     const randomDigits = Math.floor(1000 + Math.random() * 9000);
     const receiptId = `${firstInitial}${lastInitial}${randomDigits}`;
 
+    const fullAddress = [
+      tenant.address,
+      [tenant.city, tenant.county].filter(Boolean).join(', '),
+      tenant.eircode
+    ].filter(Boolean).join('\n');
+
     const receiptData = {
       id: receiptId,
       clientId,
       clientName: tenant.fullName,
-      clientAddress: tenant.address,
+      clientAddress: fullAddress,
       startDate,
       endDate,
       startingDebt: parseFloat(startingDebt) || 0,
