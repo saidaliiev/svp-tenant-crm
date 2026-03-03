@@ -229,8 +229,8 @@ export default function SettingsTab({ settings, setSettings }) {
                     onClick={() => handleFontSizeChange(opt.value)}
                     className={`py-2.5 px-3 rounded-xl border-2 transition-all text-center ${
                       fontSize === opt.value
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                        : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                        ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                        : 'border-gray-200 hover:border-gray-300 text-gray-600 dark:border-gray-700 dark:text-gray-400'
                     }`}
                   >
                     <span className={`font-medium ${opt.value === 'small' ? 'text-xs' : opt.value === 'medium' ? 'text-sm' : 'text-base'}`}>
@@ -238,6 +238,47 @@ export default function SettingsTab({ settings, setSettings }) {
                     </span>
                   </button>
                 ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Design Style Card */}
+          <Card className="bg-white/90 backdrop-blur-sm shadow-xl border-0">
+            <CardHeader className="border-b bg-gradient-to-r from-emerald-50 to-teal-50 p-4 sm:p-5">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
+                  <Layers className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Design Style</CardTitle>
+                  <p className="text-xs text-slate-500 mt-0.5">Choose your preferred visual theme</p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-5">
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => handleDesignStyleChange('default')}
+                  className={`flex flex-col items-center justify-center gap-2 py-4 px-3 rounded-xl border-2 transition-all text-sm font-medium ${
+                    designStyle === 'default'
+                      ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                      : 'border-gray-200 hover:border-gray-300 text-gray-600 dark:border-gray-700 dark:text-gray-400'
+                  }`}
+                >
+                  <Layers className="w-6 h-6" />
+                  <span>Default Solid</span>
+                </button>
+                <button
+                  onClick={() => handleDesignStyleChange('liquid')}
+                  className={`flex flex-col items-center justify-center gap-2 py-4 px-3 rounded-xl border-2 transition-all text-sm font-medium ${
+                    designStyle === 'liquid'
+                      ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                      : 'border-gray-200 hover:border-gray-300 text-gray-600 dark:border-gray-700 dark:text-gray-400'
+                  }`}
+                >
+                  <Droplets className="w-6 h-6" />
+                  <span>Liquid Glass</span>
+                </button>
               </div>
             </CardContent>
           </Card>
