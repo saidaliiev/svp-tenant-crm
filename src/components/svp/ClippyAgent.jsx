@@ -93,7 +93,7 @@ export default function ClippyAgent({ currentPage, onStartGuide }) {
         transition={mode === 'agent' ? {
           rotate: { repeat: Infinity, duration: 2, ease: "easeInOut" }
         } : {}}
-        className={`relative w-12 h-12 rounded-full shadow-xl flex items-center justify-center transition-colors duration-500 overflow-hidden ${
+        className={`relative w-11 h-11 rounded-full shadow-xl flex items-center justify-center transition-colors duration-500 overflow-hidden ${
           mode === 'agent' ? 'bg-transparent shadow-none' : 'bg-blue-600 hover:bg-blue-700 text-white'
         }`}
       >
@@ -105,7 +105,7 @@ export default function ClippyAgent({ currentPage, onStartGuide }) {
               animate={{ rotate: 0, opacity: 1 }}
               exit={{ rotate: 90, opacity: 0 }}
             >
-              <HelpCircle className="w-7 h-7" />
+              <HelpCircle className="w-6 h-6" />
             </motion.div>
           ) : (
             <motion.div
@@ -116,7 +116,7 @@ export default function ClippyAgent({ currentPage, onStartGuide }) {
               className="relative w-full h-full flex items-center justify-center"
             >
               {/* Custom CSS Clippy Body */}
-              <div className="relative w-10 h-10">
+              <div className="relative w-9 h-9">
                 {/* Paperclip Icon Base */}
                 <Paperclip className="w-full h-full text-gray-400 stroke-[1.5]" />
                 

@@ -67,6 +67,7 @@ export default function Layout({ children, currentPageName }) {
         currentPage={currentPageName}
         currentTab={new URLSearchParams(location.search).get('tab') || 'tenants'}
         currentMode={new URLSearchParams(location.search).get('mode') || 'manual'}
+        currentTool={new URLSearchParams(location.search).get('tool')}
       />
     </div>
   );

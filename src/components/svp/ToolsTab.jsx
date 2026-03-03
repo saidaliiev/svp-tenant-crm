@@ -87,8 +87,22 @@ const TOOL_COMPONENTS = {
   'export-excel': ExportExcel,
 };
 
+import { useSearchParams } from 'react-router-dom';
+
 export default function ToolsTab({ tenants, settings, statements }) {
-  const [activeTool, setActiveTool] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeToolUrl = searchParams.get('tool');
+  const [activeToolState, setActiveToolState] = useState(activeToolUrl || null);
+
+  const activeTool = activeToolState;
+
+  const setActiveTool = (toolId) => {
+    setActiveToolState(toolId);
+    const newParams = new URLSearchParams(searchParams);
+    if (toolId) newParams.set('tool', toolId);
+    else newParams.delete('tool');
+    setSearchParams(newParams, { replace: true });
+  };
 
   const ActiveComponent = activeTool ? TOOL_COMPONENTS[activeTool] : null;
   const activeMeta = TOOLS.find(t => t.id === activeTool);
@@ -102,7 +116,9 @@ export default function ToolsTab({ tenants, settings, statements }) {
         >
           <ArrowLeft className="w-4 h-4" /> Back to Tools
         </button>
-        <ActiveComponent tenants={tenants} settings={settings} statements={statements} />
+        <div id="active-tool-container">
+          <ActiveComponent tenants={tenants} settings={settings} statements={statements} />
+        </div>
       </div>
     );
   }

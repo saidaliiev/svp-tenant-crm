@@ -171,10 +171,34 @@ const TOUR_CONFIG = {
       title: '📥 Export to Excel',
       description: 'Export all data (balances and transactions) to CSV/Excel format.'
     }
+  ],
+  Tool_labels: [
+    { selector: '#active-tool-container', title: '🏷️ Address Labels', description: 'This tool lets you print mailing address stickers for all tenants. Select your preset and hit Print!' }
+  ],
+  'Tool_rent-report': [
+    { selector: '#active-tool-container', title: '📊 Rent Report', description: 'Generate a comprehensive PDF report showing payment status and debts for all your tenants.' }
+  ],
+  'Tool_arrears-overview': [
+    { selector: '#active-tool-container', title: '📈 Arrears Overview', description: 'View visual charts mapping total debt and trends across your organization.' }
+  ],
+  'Tool_arrears-alert': [
+    { selector: '#active-tool-container', title: '🔔 Arrears Alert', description: 'Quickly find tenants whose debt has exceeded a specific threshold.' }
+  ],
+  'Tool_bulk-letters': [
+    { selector: '#active-tool-container', title: '✉️ Bulk Letters', description: 'Generate and print personalized warning letters for tenants with outstanding balances.' }
+  ],
+  'Tool_payment-lookup': [
+    { selector: '#active-tool-container', title: '🔍 Payment Lookup', description: 'Search for a specific payment by date, amount, or name across all receipts.' }
+  ],
+  'Tool_statement-calendar': [
+    { selector: '#active-tool-container', title: '📅 Statement Calendar', description: 'A calendar view showing which months have been closed or receipted for each tenant.' }
+  ],
+  'Tool_export-excel': [
+    { selector: '#active-tool-container', title: '📥 Export to Excel', description: 'Export all tenants and statement data to CSV files for use in Excel.' }
   ]
 };
 
-export default function InteractiveTour({ isOpen, onClose, currentPage, currentTab, currentMode }) {
+export default function InteractiveTour({ isOpen, onClose, currentPage, currentTab, currentMode, currentTool }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [highlightedElement, setHighlightedElement] = useState(null);
   const [elementRect, setElementRect] = useState(null);
@@ -187,7 +211,10 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
       tourKey = currentMode === 'automatic' ? 'Home_AutomaticMode' : 'Home_CreateReceipt';
     }
     else if (currentTab === 'history') tourKey = 'Home_ReceiptHistory';
-    else if (currentTab === 'tools') tourKey = 'Home_Tools';
+    else if (currentTab === 'tools') {
+      if (currentTool) tourKey = `Tool_${currentTool}`;
+      else tourKey = 'Home_Tools';
+    }
   }
 
   const tourSteps = TOUR_CONFIG[tourKey] || [];
