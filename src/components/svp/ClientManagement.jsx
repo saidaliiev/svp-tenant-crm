@@ -373,25 +373,7 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
               <span className="hidden xs:inline">Add Tenant</span>
               <span className="xs:hidden">Add</span>
             </Button>
-            <Button 
-              variant="outline"
-              size="sm"
-              data-tour="btn-import"
-              onClick={() => fileInputRef.current?.click()}
-              className="border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 text-xs sm:text-sm"
-            >
-              <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">Import CSV/Excel</span>
-              <span className="sm:hidden">Import</span>
-            </Button>
             <ExportClientsPDF tenants={tenants} settings={settings} />
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".csv,.xlsx,.xls"
-              onChange={handleFileUpload}
-              className="hidden"
-            />
           </div>
         </div>
       </CardHeader>
