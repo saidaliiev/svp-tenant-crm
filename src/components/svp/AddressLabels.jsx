@@ -345,23 +345,48 @@ export default function AddressLabels({ tenants, settings }) {
                     width: 'max-content'
                   }}
                 >
-                  {selectedTenants.slice(0, labelsPerPage).map((t, i) => (
-                    <div
-                      key={`${t.id}-${i}`}
-                      className="border border-dashed border-gray-200 p-5 overflow-hidden relative flex flex-col justify-center"
-                      style={{ width: `${config.labelW}mm`, height: `${config.labelH}mm` }}
-                    >
-                      <div className="font-bold text-[16px] text-slate-900 leading-tight truncate">{t.fullName}</div>
-                      <div className="text-[14px] text-slate-700 mt-1.5 leading-snug flex flex-col gap-0.5">
-                        {t.address && <span>{t.address}</span>}
-                        {(t.city || t.county) && <span>{[t.city, t.county].filter(Boolean).join(', ')}</span>}
-                        {t.eircode && <span>{t.eircode}</span>}
+                  {selectedTenants.slice(0, labelsPerPage).map((t, i) => {
+                    const isSmall = config.labelW < 80;
+                    return (
+                      <div
+                        key={`${t.id}-${i}`}
+                        className="border border-dashed border-gray-200 overflow-hidden relative flex flex-col justify-center"
+                        style={{ 
+                          width: `${config.labelW}mm`, 
+                          height: `${config.labelH}mm`,
+                          padding: isSmall ? '4mm 4mm' : '5mm 5mm' 
+                        }}
+                      >
+                        <div 
+                          className="font-bold text-slate-900 leading-tight truncate"
+                          style={{ fontSize: isSmall ? '13px' : '16px' }}
+                        >
+                          {t.fullName}
+                        </div>
+                        <div 
+                          className="text-slate-700 leading-snug flex flex-col gap-0.5"
+                          style={{ 
+                            fontSize: isSmall ? '11px' : '14px',
+                            marginTop: isSmall ? '4px' : '6px'
+                          }}
+                        >
+                          {t.address && <span>{t.address}</span>}
+                          {(t.city || t.county) && <span>{[t.city, t.county].filter(Boolean).join(', ')}</span>}
+                          {t.eircode && <span>{t.eircode}</span>}
+                        </div>
+                        <div 
+                          className="text-slate-400 absolute"
+                          style={{ 
+                            fontSize: isSmall ? '8px' : '10px',
+                            bottom: isSmall ? '3mm' : '4mm',
+                            left: isSmall ? '4mm' : '5mm'
+                          }}
+                        >
+                          {settings?.organizationName || 'Society of Saint Vincent de Paul'}
+                        </div>
                       </div>
-                      <div className="text-[10px] text-slate-400 absolute bottom-3 left-5">
-                        {settings?.organizationName || 'Society of Saint Vincent de Paul'}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
               </div>
