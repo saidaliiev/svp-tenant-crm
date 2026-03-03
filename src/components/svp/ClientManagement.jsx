@@ -423,7 +423,6 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                 <thead>
                   <tr className="border-b-2 border-slate-200 dark:border-gray-700">
                     <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Full Name</th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Phone Number</th>
                     <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Address</th>
                     <th className="text-right py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Balance</th>
                     <th className="text-right py-3 px-4 font-semibold text-slate-700 dark:text-gray-300 text-sm whitespace-nowrap">Actions</th>
@@ -437,7 +436,6 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                       onClick={() => setProfileTenant(tenant)}
                     >
                       <td className="py-3 px-4 font-medium text-slate-800 dark:text-gray-200 text-sm whitespace-nowrap">{tenant.fullName}</td>
-                      <td className="py-3 px-4 font-mono text-sm text-slate-600 dark:text-gray-400 whitespace-nowrap">{tenant.phoneNumber || '-'}</td>
                       <td className="py-3 px-4 text-slate-600 dark:text-gray-400 text-sm whitespace-nowrap">{tenant.address}</td>
                       <td className={`py-3 px-4 text-right font-semibold text-sm whitespace-nowrap ${(tenant.currentBalance || 0) > 0 ? 'text-red-600' : 'text-green-600'}`}>
                         {formatCurrency(tenant.currentBalance || 0)}
