@@ -60,6 +60,9 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
     id: '',
     fullName: '',
     address: '',
+    city: '',
+    county: '',
+    eircode: '',
     phoneNumber: '',
     moveInDate: '',
     previousDebt: 0,
@@ -82,6 +85,9 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
       id: '',
       fullName: '',
       address: '',
+      city: '',
+      county: '',
+      eircode: '',
       phoneNumber: '',
       moveInDate: '',
       previousDebt: 0,
@@ -108,6 +114,9 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
       id: tenant.id,
       fullName: tenant.fullName,
       address: tenant.address,
+      city: tenant.city || '',
+      county: tenant.county || '',
+      eircode: tenant.eircode || '',
       phoneNumber: tenant.phoneNumber || '',
       moveInDate: tenant.moveInDate || '',
       previousDebt: tenant.currentBalance ?? 0,
@@ -138,6 +147,9 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
       displayId: editingTenant ? editingTenant.displayId : generateDisplayId(),
       fullName: formData.fullName.trim(),
       address: formData.address.trim(),
+      city: formData.city.trim() || null,
+      county: formData.county.trim() || null,
+      eircode: formData.eircode.trim() || null,
       phoneNumber: formData.phoneNumber.trim() || null,
       moveInDate: formData.moveInDate || null,
       currentBalance: parseFloat(formData.previousDebt) || 0,
@@ -547,12 +559,42 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="address">Address *</Label>
+                <Label htmlFor="address">Street Address *</Label>
                 <Input
                   id="address"
                   value={formData.address}
                   onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-                  placeholder="Enter address"
+                  placeholder="e.g. 1 Ard Phadraig"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="city">Town / City</Label>
+                  <Input
+                    id="city"
+                    value={formData.city}
+                    onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+                    placeholder="e.g. Carndonagh"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="county">County</Label>
+                  <Input
+                    id="county"
+                    value={formData.county}
+                    onChange={(e) => setFormData(prev => ({ ...prev, county: e.target.value }))}
+                    placeholder="e.g. Co Donegal"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="eircode">Eircode</Label>
+                <Input
+                  id="eircode"
+                  value={formData.eircode}
+                  onChange={(e) => setFormData(prev => ({ ...prev, eircode: e.target.value }))}
+                  placeholder="e.g. F93 X0X0"
+                  className="w-full sm:w-1/2"
                 />
               </div>
               <div className="space-y-4">
