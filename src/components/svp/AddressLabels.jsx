@@ -105,20 +105,26 @@ export default function AddressLabels({ tenants, settings }) {
       const y = config.marginT + row * config.labelH;
 
       // Label border (optional subtle)
-      doc.setDrawColor(220, 220, 220);
-      doc.rect(x, y, config.labelW, config.labelH);
+      // doc.setDrawColor(240, 240, 240); // Optional: disabled to prevent printing borders on actual labels
+      // doc.rect(x, y, config.labelW, config.labelH);
 
-      const padX = 5;
-      const padY = 8;
+      const isSmallLabel = config.labelW < 80;
+      const padX = isSmallLabel ? 4 : 5;
+      const padY = config.labelH < 45 ? 5 : 8;
+
+      const nameFontSize = isSmallLabel ? 11 : 14;
+      const addressFontSize = isSmallLabel ? 9 : 12;
+      const orgFontSize = isSmallLabel ? 6 : 8;
+      const lineSpacing = isSmallLabel ? 4.5 : 5.5;
 
       // Name
-      doc.setFontSize(14);
+      doc.setFontSize(nameFontSize);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(0, 0, 0);
       doc.text(tenant.fullName || '', x + padX, y + padY);
 
       // Address
-      doc.setFontSize(12);
+      doc.setFontSize(addressFontSize);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(60, 60, 60);
       
@@ -132,13 +138,13 @@ export default function AddressLabels({ tenants, settings }) {
       const linesToPrint = addressLines.length > 1 ? addressLines : doc.splitTextToSize(stAddress, config.labelW - padX * 2);
 
       linesToPrint.slice(0, 4).forEach((line, li) => {
-        doc.text(line, x + padX, y + padY + 7 + li * 5.5);
+        doc.text(line, x + padX, y + padY + (isSmallLabel ? 5 : 7) + li * lineSpacing);
       });
 
       // Org name at bottom
-      doc.setFontSize(8);
+      doc.setFontSize(orgFontSize);
       doc.setTextColor(150, 150, 150);
-      doc.text(orgName, x + padX, y + config.labelH - 4);
+      doc.text(orgName, x + padX, y + config.labelH - (isSmallLabel ? 3 : 4));
     });
 
     doc.autoPrint();
