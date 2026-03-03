@@ -407,71 +407,46 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
 
       const weeklyRent = (tenant.weeklyTenantPayment || 0) + (tenant.weeklyRasAmount || 0);
       const newTransactions = [];
-      const usedPaymentIds = new Set();
+      
+      // Sort payments chronologically
+      allPayments.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-      // Create weekly slots and match payments to each week
-      for (let i = 0; i < weeksInPeriod; i++) {
-        const weekStart = new Date(start);
-        weekStart.setDate(weekStart.getDate() + (i * 7));
-        const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekEnd.getDate() + 6);
-        weekEnd.setHours(23, 59, 59, 999);
-
-        let tenantPaidAmount = 0;
-        let rasPaidAmount = 0;
-        let tenantPaidFlag = false;
-        let rasReceivedFlag = false;
-
-        // Find payments that fall within this week
-        allPayments.forEach(p => {
-          if (usedPaymentIds.has(p.id)) return;
-          const pDate = new Date(p.date);
-          if (pDate >= weekStart && pDate <= weekEnd) {
-            if (p.paymentType === 'tenant') {
-              tenantPaidAmount += p.amount;
-              tenantPaidFlag = true;
-            } else {
-              rasPaidAmount += p.amount;
-              rasReceivedFlag = true;
-            }
-            usedPaymentIds.add(p.id);
-          }
-        });
-
+      // 1. Add all actual payments with their real dates
+      allPayments.forEach((p, i) => {
         newTransactions.push({
           id: Date.now() + Math.random() + i,
-          date: weekStart.toISOString().split('T')[0],
+          date: new Date(p.date).toISOString().split('T')[0],
           rentDue: weeklyRent,
-          tenantPayment: tenantPaidAmount,
-          tenantPaid: tenantPaidFlag,
-          rasPayment: rasPaidAmount,
-          rasReceived: rasReceivedFlag
+          tenantPayment: p.paymentType === 'tenant' ? p.amount : 0,
+          tenantPaid: p.paymentType === 'tenant',
+          rasPayment: p.paymentType === 'ras' ? p.amount : 0,
+          rasReceived: p.paymentType === 'ras'
+        });
+      });
+
+      // 2. Add empty weeks if they paid fewer times than weeks in the period
+      const missingWeeks = weeksInPeriod - allPayments.length;
+      for (let i = 0; i < missingWeeks; i++) {
+        newTransactions.push({
+          id: Date.now() + Math.random() + 100 + i,
+          date: end.toISOString().split('T')[0], // Assign to end of month
+          rentDue: weeklyRent,
+          tenantPayment: 0,
+          tenantPaid: false,
+          rasPayment: 0,
+          rasReceived: false
         });
       }
-
-      // Any remaining payments that didn't fall into a week slot
-      allPayments.forEach(p => {
-        if (!usedPaymentIds.has(p.id)) {
-          newTransactions.push({
-            id: Date.now() + Math.random(),
-            date: new Date(p.date).toISOString().split('T')[0],
-            rentDue: 0,
-            tenantPayment: p.paymentType === 'tenant' ? p.amount : 0,
-            tenantPaid: p.paymentType === 'tenant',
-            rasPayment: p.paymentType === 'ras' ? p.amount : 0,
-            rasReceived: p.paymentType === 'ras'
-          });
-        }
-      });
 
       newTransactions.sort((a, b) => new Date(a.date) - new Date(b.date));
       setTransactions(newTransactions);
     } else {
       // Fallback: create one transaction per payment
+      const weeklyRent = tenant ? ((tenant.weeklyTenantPayment || 0) + (tenant.weeklyRasAmount || 0)) : 0;
       const newTransactions = allPayments.map((payment, i) => ({
         id: Date.now() + Math.random() + i,
         date: new Date(payment.date).toISOString().split('T')[0],
-        rentDue: 0,
+        rentDue: weeklyRent,
         tenantPayment: payment.paymentType === 'tenant' ? payment.amount : 0,
         tenantPaid: payment.paymentType === 'tenant',
         rasPayment: payment.paymentType === 'ras' ? payment.amount : 0,
@@ -493,8 +468,9 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
 
     setCredit(tenant?.credit || 0);
     
-    // Switch to manual mode to review
+    // Switch to manual mode to review and scroll to top
     setMode('manual');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (

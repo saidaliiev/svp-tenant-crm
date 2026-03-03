@@ -251,9 +251,6 @@ export default function AddressLabels({ tenants, settings }) {
                 </div>
               </div>
             </div>
-            {totalPages > 1 && (
-              <p className="text-sm text-center font-medium text-slate-500 mt-4">Showing page 1 of {totalPages} — remaining {selectedTenants.length - labelsPerPage} labels on next page{totalPages > 2 ? 's' : ''}</p>
-            )}
           </CardContent>
         </Card>
       )}
