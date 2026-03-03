@@ -5,171 +5,171 @@ const TOUR_CONFIG = {
   Home_TenantManagement: [
     {
       selector: '[data-tour="btn-add-tenant"]',
-      title: '➕ Добавить арендатора',
-      description: 'Нажмите, чтобы добавить нового арендатора. Заполните его имя, адрес, телефон и данные об аренде.'
+      title: '➕ Add Tenant',
+      description: 'Click to add a new tenant. Fill in their name, address, phone, and rent details.'
     },
     {
       selector: '[data-tour="btn-import"]',
-      title: '📥 Импорт CSV/Excel',
-      description: 'Массовая загрузка арендаторов из файла CSV или Excel.'
+      title: '📥 Import CSV/Excel',
+      description: 'Bulk import tenants from a CSV or Excel file.'
     },
     {
       selector: '[data-tour="btn-export"]',
-      title: '📤 Экспорт в PDF',
-      description: 'Создание профессионального PDF-отчета со всеми арендаторами и их балансами.'
+      title: '📤 Export to PDF',
+      description: 'Generate a professional PDF report with all tenants and their balances.'
     },
     {
       selector: '[data-tour="tenant-table"]',
-      title: '📋 Таблица арендаторов',
-      description: 'Просмотр всех арендаторов. Используйте кнопки действий для управления каждым из них.'
+      title: '📋 Tenant Table',
+      description: 'View all your tenants. Use the action buttons to manage each of them.'
     },
     {
       selector: '[data-tour="btn-profile"]',
-      title: '👤 Просмотр профиля',
-      description: 'Нажмите для просмотра подробной информации, истории платежей и заметок.'
+      title: '👤 View Profile',
+      description: 'Click to view detailed information, payment history, and notes.'
     },
     {
       selector: '[data-tour="btn-select"]',
-      title: '✅ Выбрать арендатора',
-      description: 'Быстрый выбор арендатора для создания новой квитанции.'
+      title: '✅ Select Tenant',
+      description: 'Quickly select a tenant to create a new receipt.'
     },
     {
       selector: '[data-tour="btn-edit"]',
-      title: '✏️ Редактировать',
-      description: 'Изменение данных арендатора (телефон, адрес, размер аренды).'
+      title: '✏️ Edit',
+      description: 'Update tenant details (phone, address, rent amount).'
     },
     {
       selector: '[data-tour="btn-delete"]',
-      title: '🗑️ Удалить',
-      description: 'Полное удаление арендатора. Действие нельзя отменить.'
+      title: '🗑️ Delete',
+      description: 'Completely delete a tenant. This action cannot be undone.'
     }
   ],
   Home_CreateReceipt: [
     {
       selector: '[data-tour="tenant-selector"]',
-      title: '👥 Выбор арендатора',
-      description: 'Выберите арендатора, для которого создается квитанция.'
+      title: '👥 Select Tenant',
+      description: 'Choose the tenant you are creating a receipt for.'
     },
     {
       selector: '[data-tour="manual-mode"]',
-      title: '✍️ Ручной режим',
-      description: 'Вводите все данные о платежах вручную по неделям.'
+      title: '✍️ Manual Mode',
+      description: 'Manually enter all payment data week by week.'
     },
     {
       selector: '[data-tour="automatic-mode"]',
-      title: '🤖 Автоматический режим',
-      description: 'Загрузите банковскую выписку (PDF), и система сама распознает платежи.'
+      title: '🤖 Automatic Mode',
+      description: 'Upload a bank statement (PDF) and the system will automatically detect payments.'
     },
     {
       selector: '[data-tour="period-dates"]',
-      title: '📅 Даты периода',
-      description: 'Установите даты начала и конца квитанции.'
+      title: '📅 Period Dates',
+      description: 'Set the start and end dates for the receipt.'
     },
     {
       selector: '[data-tour="starting-debt"]',
-      title: '💰 Начальный долг/кредит',
-      description: 'Введите предыдущий баланс (красный = долг, зеленый = переплата).'
+      title: '💰 Starting Debt/Credit',
+      description: 'Enter the previous balance (red = debt, green = credit).'
     },
     {
       selector: '[data-tour="add-transaction"]',
-      title: '➕ Добавить транзакцию',
-      description: 'Добавляйте записи об оплате за каждую неделю.'
+      title: '➕ Add Transaction',
+      description: 'Add payment records for each week.'
     },
     {
       selector: '[data-tour="balance-preview"]',
-      title: '📊 Предварительный баланс',
-      description: 'Автоматический подсчет итогового баланса.'
+      title: '📊 Balance Preview',
+      description: 'Automatic calculation of the final balance.'
     },
     {
       selector: '[data-tour="receipt-notes"]',
-      title: '📝 Заметки',
-      description: 'Добавьте комментарии, которые будут напечатаны на квитанции.'
+      title: '📝 Notes',
+      description: 'Add comments that will be printed on the receipt.'
     }
   ],
   Home_AutomaticMode: [
     {
       selector: '[data-tour="auto-upload"]',
-      title: '📄 Загрузка выписки',
-      description: 'Загрузите PDF банковской выписки. Система найдет платежи.'
+      title: '📄 Upload Statement',
+      description: 'Upload a bank statement PDF. The system will find the payments.'
     },
     {
       selector: '[data-tour="auto-payments"]',
-      title: '✅ Найденные платежи',
-      description: 'Список распознанных платежей. Система постарается автоматически привязать их к арендаторам.'
+      title: '✅ Detected Payments',
+      description: 'A list of detected payments. The system will try to automatically link them to tenants.'
     },
     {
       selector: '[data-tour="auto-apply"]',
-      title: '🚀 Применить платежи',
-      description: 'Выберите арендатора и нажмите Apply, чтобы перенести платежи в новую квитанцию.'
+      title: '🚀 Apply Payments',
+      description: 'Select a tenant and click Apply to transfer the payments into a new receipt.'
     }
   ],
   Home_ReceiptHistory: [
     {
       selector: '[data-tour="tenant-filter"]',
-      title: '🔍 Фильтр',
-      description: 'Фильтрация квитанций по конкретному арендатору.'
+      title: '🔍 Filter',
+      description: 'Filter receipts by a specific tenant.'
     },
     {
       selector: '[data-tour="receipt-row"]',
-      title: '📄 Квитанция',
-      description: 'Каждая строка — это сохраненная квитанция.'
+      title: '📄 Receipt Row',
+      description: 'Each row represents a saved receipt.'
     },
     {
       selector: '[data-tour="btn-view-print"]',
-      title: '🖨️ Просмотр и Печать',
-      description: 'Откройте квитанцию для печати или сохранения в PDF.'
+      title: '🖨️ View & Print',
+      description: 'Open the receipt to print or save it as a PDF.'
     },
     {
       selector: '[data-tour="btn-delete-receipt"]',
-      title: '🗑️ Удаление',
-      description: 'Удаление квитанции. Потребуется указать причину (минимум 6 символов).'
+      title: '🗑️ Delete',
+      description: 'Delete a receipt. You must provide a reason (minimum 6 characters).'
     }
   ],
   Home_Tools: [
     {
       selector: '[data-tour="tools-grid"]',
-      title: '🛠️ Инструменты',
-      description: 'Дополнительные утилиты для анализа и управления данными.'
+      title: '🛠️ Tools',
+      description: 'Additional utilities for data analysis and management.'
     },
     {
       selector: '[data-tour="tool-card-labels"]',
       title: '🏷️ Address Labels',
-      description: 'Печать наклеек с адресами.'
+      description: 'Print address labels on A4 sheets for mailing.'
     },
     {
       selector: '[data-tour="tool-card-rent-report"]',
       title: '📊 Rent Report',
-      description: 'PDF-отчет о статусе оплат всех арендаторов.'
+      description: 'A summary PDF report for all tenants with payment and debt information.'
     },
     {
       selector: '[data-tour="tool-card-arrears-overview"]',
       title: '📈 Arrears Overview',
-      description: 'Графики и аналитика задолженностей.'
+      description: 'Visual graphs showing total debt and monthly trends.'
     },
     {
       selector: '[data-tour="tool-card-arrears-alert"]',
       title: '🔔 Arrears Alert',
-      description: 'Список арендаторов с большими долгами.'
+      description: 'A list of tenants whose debt exceeds the limit you set.'
     },
     {
       selector: '[data-tour="tool-card-bulk-letters"]',
       title: '✉️ Bulk Letters',
-      description: 'Генерация писем о задолженности.'
+      description: 'Mass generation of personalized debt notification letters.'
     },
     {
       selector: '[data-tour="tool-card-payment-lookup"]',
       title: '🔍 Payment Lookup',
-      description: 'Поиск платежей по сумме или дате.'
+      description: 'Global search for a specific payment across all receipts.'
     },
     {
       selector: '[data-tour="tool-card-statement-calendar"]',
       title: '📅 Statement Calendar',
-      description: 'Календарь закрытых месяцев для каждого арендатора.'
+      description: 'A convenient table showing closed months for each tenant.'
     },
     {
       selector: '[data-tour="tool-card-export-excel"]',
       title: '📥 Export to Excel',
-      description: 'Экспорт всех данных в Excel/CSV.'
+      description: 'Export all data (balances and transactions) to CSV/Excel format.'
     }
   ]
 };
@@ -332,13 +332,6 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
       >
         <div className="flex items-start justify-between mb-4 relative">
           <h3 className="font-bold text-gray-900 text-lg sm:text-xl leading-tight pr-8">{currentTourStep.title}</h3>
-          <button
-            onClick={handleClose}
-            className="absolute top-0 right-0 p-1.5 hover:bg-gray-100/80 rounded-full transition-colors bg-gray-50/50 text-gray-400 hover:text-gray-900"
-            aria-label="Close tour"
-          >
-            <X className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
         </div>
 
         <p className="text-gray-600 text-sm sm:text-base mb-6 leading-relaxed">{currentTourStep.description}</p>
@@ -363,14 +356,23 @@ export default function InteractiveTour({ isOpen, onClose, currentPage, currentT
             </span>
           </div>
 
-          <button
-            onClick={handleNext}
-            disabled={currentStep === tourSteps.length - 1}
-            className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-xl transition-all active:scale-95 disabled:opacity-30 disabled:active:scale-100 bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20"
-          >
-            Next
-            <ChevronRight className="w-4 h-4" strokeWidth={2.5} />
-          </button>
+          {currentStep === tourSteps.length - 1 ? (
+            <button
+              onClick={handleClose}
+              className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-xl transition-all active:scale-95 bg-green-600 hover:bg-green-700 text-white shadow-md shadow-green-500/20"
+            >
+              Close
+              <X className="w-4 h-4" strokeWidth={2.5} />
+            </button>
+          ) : (
+            <button
+              onClick={handleNext}
+              className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-xl transition-all active:scale-95 bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20"
+            >
+              Next
+              <ChevronRight className="w-4 h-4" strokeWidth={2.5} />
+            </button>
+          )}
         </div>
       </div>
 
