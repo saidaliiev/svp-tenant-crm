@@ -1,6 +1,6 @@
-import React, { useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, ArrowDown, Github, Linkedin, Mail, Globe, Code2, Sparkles, X, Phone, Facebook } from 'lucide-react';
+import { ExternalLink, Github, Linkedin, Mail, Globe, Code2, Sparkles, X, Phone, Facebook, Briefcase } from 'lucide-react';
 
 const SOCIAL_LINKS = [
   { name: 'LinkedIn', url: 'https://www.linkedin.com/in/saidaliiev/', icon: Linkedin, color: 'from-blue-500 to-blue-700' },
@@ -18,20 +18,7 @@ const PROJECTS = [
   { name: 'Custom Dashboards', desc: 'Data visualization and management tools', tech: ['Recharts', 'PDF', 'Analytics'] },
 ];
 
-function FloatingParticle({ delay, x }) {
-  return (
-    <motion.div
-      className="absolute w-1 h-1 rounded-full bg-white/15"
-      style={{ left: x }}
-      initial={{ bottom: '-2%', opacity: 0 }}
-      animate={{ bottom: '102%', opacity: [0, 0.5, 0] }}
-      transition={{ duration: 8 + Math.random() * 4, delay, repeat: Infinity, ease: 'linear' }}
-    />
-  );
-}
-
 export default function DevPortfolio({ isOpen, onClose }) {
-  const scrollRef = useRef(null);
   const scrollPosRef = useRef(0);
 
   useEffect(() => {
@@ -52,229 +39,153 @@ export default function DevPortfolio({ isOpen, onClose }) {
     return () => window.removeEventListener('keydown', handleKey);
   }, [isOpen, onClose]);
 
-  // Swipe down to close (mobile)
-  const touchStartY = useRef(null);
-  const handleTouchStart = useCallback((e) => {
-    if (scrollRef.current && scrollRef.current.scrollTop <= 0) {
-      touchStartY.current = e.touches[0].clientY;
-    }
-  }, []);
-  const handleTouchEnd = useCallback((e) => {
-    if (touchStartY.current === null) return;
-    const delta = e.changedTouches[0].clientY - touchStartY.current;
-    if (delta > 100) onClose();
-    touchStartY.current = null;
-  }, [onClose]);
-
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-[200] flex flex-col"
-          initial={{ y: '100%' }}
-          animate={{ y: 0 }}
-          exit={{ y: '100%' }}
-          transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 md:p-12"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4 }}
         >
-          {/* Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-950 to-purple-950 overflow-hidden">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <FloatingParticle key={i} delay={i * 0.5} x={`${6 + (i * 7.5) % 88}%`} />
-            ))}
-            <motion.div
-              className="absolute top-16 left-8 w-72 h-72 bg-blue-500/8 rounded-full blur-3xl"
-              animate={{ x: [0, 20, 0], y: [0, -10, 0] }}
-              transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-            />
-            <motion.div
-              className="absolute bottom-32 right-4 w-80 h-80 bg-purple-500/8 rounded-full blur-3xl"
-              animate={{ x: [0, -15, 0], y: [0, 15, 0] }}
-              transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-            />
+          {/* Blurred Backdrop */}
+          <motion.div 
+            className="absolute inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+          />
+
+          {/* Animated Orbs */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <motion.div className="absolute top-[10%] left-[20%] w-96 h-96 bg-blue-500/30 rounded-full blur-[100px]" animate={{ x: [0, 50, 0], y: [0, -50, 0] }} transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }} />
+            <motion.div className="absolute bottom-[10%] right-[20%] w-96 h-96 bg-purple-500/30 rounded-full blur-[100px]" animate={{ x: [0, -50, 0], y: [0, 50, 0] }} transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }} />
           </div>
 
-          {/* Scrollable content */}
-          <div
-            ref={scrollRef}
-            className="relative z-10 flex-1 overflow-y-auto overscroll-contain"
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
+          {/* Modal Container */}
+          <motion.div
+            className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-[2rem] bg-white/70 dark:bg-slate-900/70 border border-white/40 dark:border-white/10 shadow-2xl backdrop-blur-2xl custom-scrollbar"
+            initial={{ scale: 0.95, y: 20, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
+            exit={{ scale: 0.95, y: 20, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
-            {/* Close bar */}
-            <div className="sticky top-0 z-20 pt-3 pb-2 flex flex-col items-center bg-gradient-to-b from-slate-900/95 via-slate-900/60 to-transparent backdrop-blur-sm">
-              {/* Drag handle — mobile only */}
-              <motion.div
-                className="w-10 h-1 rounded-full bg-white/25 mb-2 cursor-pointer md:hidden"
-                onClick={onClose}
-                whileHover={{ scaleX: 1.5 }}
-              />
-              <button
-                onClick={onClose}
-                className="md:hidden flex items-center gap-1.5 text-white/40 hover:text-white/70 text-[11px] transition-colors"
-              >
-                <ArrowDown className="w-3 h-3" />
-                <span>Swipe down to close</span>
-              </button>
-            </div>
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              className="absolute top-6 right-6 z-50 p-2.5 rounded-full bg-white/80 dark:bg-black/50 hover:bg-white dark:hover:bg-black text-slate-600 dark:text-slate-300 transition-colors shadow-sm"
+            >
+              <X className="w-5 h-5" />
+            </button>
 
-
-
-            <div className="px-6 pb-24 max-w-lg mx-auto">
-              {/* Hero */}
-              <motion.div
-                className="text-center pt-2 pb-8"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 }}
-              >
-                {/* Desktop close text above avatar */}
-                <button
-                  onClick={onClose}
-                  className="hidden md:flex items-center justify-center gap-1.5 text-white/30 hover:text-white/50 text-xs transition-colors mb-3 mx-auto"
-                  aria-label="Close portfolio"
+            <div className="p-6 md:p-10">
+              {/* Grid Layout (Bento Box) */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 md:gap-6">
+                
+                {/* Profile Card (Span 8) */}
+                <motion.div 
+                  className="lg:col-span-8 rounded-3xl bg-white/80 dark:bg-slate-800/80 p-8 border border-white/50 dark:border-white/5 shadow-sm relative overflow-hidden group"
+                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
                 >
-                  <X className="w-3 h-3" />
-                  <span>Close</span>
-                  <kbd className="ml-1 px-1.5 py-0.5 rounded bg-white/5 text-[9px] text-white/20 font-mono">Esc</kbd>
-                </button>
-
-                <motion.div
-                  className="w-24 h-24 mx-auto mb-5 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 p-[2px]"
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ delay: 0.2, type: 'spring', stiffness: 180, damping: 15 }}
-                >
-                  <motion.div
-                    className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center"
-                    animate={{ y: [0, -3, 0] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                  >
-                    <Code2 className="w-10 h-10 text-blue-400" />
-                  </motion.div>
+                  <div className="absolute -top-10 -right-10 p-8 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity duration-500">
+                    <Code2 className="w-64 h-64 text-blue-500" />
+                  </div>
+                  <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-8">
+                    <div className="w-32 h-32 rounded-[2rem] bg-gradient-to-br from-blue-500 to-purple-600 p-[3px] shadow-xl shrink-0 rotate-3 group-hover:rotate-0 transition-transform duration-500">
+                      <div className="w-full h-full rounded-[1.8rem] bg-slate-900 flex items-center justify-center overflow-hidden relative">
+                         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 mix-blend-overlay"></div>
+                         <div className="text-4xl font-black text-white tracking-tighter z-10">IS</div>
+                      </div>
+                    </div>
+                    <div className="text-center md:text-left flex-1">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 text-xs font-bold tracking-wide uppercase mb-4 shadow-sm border border-blue-200 dark:border-blue-500/30">
+                        <Sparkles className="w-3.5 h-3.5" /> Open to new projects
+                      </div>
+                      <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">Iskander Saidaliiev</h1>
+                      <p className="text-xl text-blue-600 dark:text-blue-400 mb-5 font-semibold">Full-Stack Software Engineer</p>
+                      <p className="text-slate-600 dark:text-slate-300 text-base max-w-lg leading-relaxed font-medium">
+                        Passionate about building beautiful, functional, and user-centric web applications. Specializing in React, complex workflows, and modern cloud architectures.
+                      </p>
+                    </div>
+                  </div>
                 </motion.div>
 
-                <motion.h1
-                  className="text-2xl font-bold text-white mb-1"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
+                {/* Contact Card (Span 4) */}
+                <motion.div 
+                  className="lg:col-span-4 rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 p-8 border border-white/20 shadow-xl text-white flex flex-col justify-center items-center text-center relative overflow-hidden"
+                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
                 >
-                  Iskander Saidaliiev
-                </motion.h1>
-                <motion.p
-                  className="text-blue-300/60 text-sm"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.35 }}
-                >
-                  Full-Stack Developer
-                </motion.p>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                  <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-6 backdrop-blur-md border border-white/30 shadow-inner">
+                    <Mail className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-3">Let's work together!</h3>
+                  <p className="text-blue-100 text-base mb-8 font-medium px-4">Have a project in mind? I'd love to help you build it.</p>
+                  <a href="mailto:saidaliiev@hotmail.com" className="w-full py-4 px-6 bg-white text-blue-700 rounded-2xl font-bold text-base hover:bg-blue-50 hover:scale-[1.02] transition-all shadow-lg active:scale-95">
+                    Send me an email
+                  </a>
+                </motion.div>
 
-                <motion.p
-                  className="text-white/35 text-xs mt-3 max-w-xs mx-auto leading-relaxed"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.45 }}
+                {/* Social Links (Span 12) */}
+                <motion.div 
+                  className="lg:col-span-12 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-4"
+                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
                 >
-                  Building modern web applications with passion and precision.
-                  <br />
-                  Developed with ❤️
-                </motion.p>
-              </motion.div>
-
-              {/* Social Links */}
-              <motion.div
-                className="mb-8"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-              >
-                <h2 className="text-[10px] font-semibold text-white/25 uppercase tracking-widest mb-3 text-center">Connect</h2>
-                <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-                  {SOCIAL_LINKS.map((link, i) => (
-                    <motion.a
-                      key={link.name}
-                      href={link.url}
-                      target="_blank"
+                  {SOCIAL_LINKS.map((link) => (
+                    <a 
+                      key={link.name} 
+                      href={link.url} 
+                      target="_blank" 
                       rel="noopener noreferrer"
-                      className="group flex items-center gap-2.5 px-3.5 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:border-white/20 hover:bg-white/[0.07] transition-all duration-300 min-h-[44px]"
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.45 + i * 0.07 }}
-                      whileHover={{ scale: 1.03, y: -2 }}
-                      whileTap={{ scale: 0.97 }}
+                      className="flex flex-col items-center justify-center gap-3 p-5 rounded-3xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700/90 border border-white/50 dark:border-white/5 transition-all duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-xl shadow-sm group"
                     >
-                      <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${link.color} flex items-center justify-center shrink-0`}>
-                        <link.icon className="w-4 h-4 text-white" />
+                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${link.color} flex items-center justify-center shadow-md group-hover:rotate-6 transition-transform duration-300`}>
+                        <link.icon className="w-5 h-5 text-white" />
                       </div>
-                      <span className="text-white/70 text-xs font-medium group-hover:text-white transition-colors">{link.name}</span>
-                    </motion.a>
+                      <span className="text-sm font-bold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white">{link.name}</span>
+                    </a>
                   ))}
-                </div>
-              </motion.div>
+                </motion.div>
 
-              {/* Projects */}
-              <motion.div
-                className="mb-8"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-              >
-                <h2 className="text-[10px] font-semibold text-white/25 uppercase tracking-widest mb-3 text-center">Projects</h2>
-                <div className="space-y-2.5">
-                  {PROJECTS.map((project, i) => (
-                    <motion.div
-                      key={project.name}
-                      className="p-4 rounded-xl bg-white/[0.04] border border-white/[0.08]"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.65 + i * 0.08 }}
-                    >
-                      <h3 className="text-white text-sm font-semibold">{project.name}</h3>
-                      <p className="text-white/35 text-xs mt-0.5">{project.desc}</p>
-                      <div className="flex gap-1.5 mt-2 flex-wrap">
-                        {project.tech.map(t => (
-                          <span key={t} className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-300/70 text-[10px] font-medium">{t}</span>
-                        ))}
+                {/* Projects Section (Span 12) */}
+                <motion.div 
+                  className="lg:col-span-12 rounded-3xl bg-white/80 dark:bg-slate-800/80 p-8 border border-white/50 dark:border-white/5 shadow-sm"
+                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+                >
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2.5 rounded-xl bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400">
+                      <Briefcase className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">Featured Work</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    {PROJECTS.map((project) => (
+                      <div key={project.name} className="p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-700/50 hover:border-purple-300 dark:hover:border-purple-500/50 transition-colors shadow-sm hover:shadow-md group">
+                        <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">{project.name}</h4>
+                        <p className="text-base text-slate-600 dark:text-slate-400 mb-6 min-h-[48px] font-medium">{project.desc}</p>
+                        <div className="flex flex-wrap gap-2 mt-auto">
+                          {project.tech.map(t => (
+                            <span key={t} className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold tracking-wide shadow-sm">
+                              {t}
+                            </span>
+                          ))}
+                        </div>
                       </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
 
-              {/* Contact */}
-              <motion.div
-                className="text-center pb-8"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.85 }}
-              >
-                <h2 className="text-[10px] font-semibold text-white/25 uppercase tracking-widest mb-3">Get in Touch</h2>
-                <a
-                  href="mailto:saidaliiev@hotmail.com"
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-medium hover:from-blue-600 hover:to-purple-600 transition-all shadow-lg shadow-blue-500/20 min-h-[44px]"
-                >
-                  <Mail className="w-3.5 h-3.5" />
-                  saidaliiev@hotmail.com
-                </a>
-              </motion.div>
-
-              {/* Back */}
-              <motion.div
-                className="text-center"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.95 }}
-              >
-                <button
-                  onClick={onClose}
-                  className="text-white/25 hover:text-white/50 text-xs underline underline-offset-4 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
-                >
-                  ← Back to App
-                </button>
-              </motion.div>
+              </div>
+              
+              <div className="mt-10 text-center">
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-semibold tracking-wide">
+                  Designed & Developed with ❤️ by Iskander Saidaliiev
+                </p>
+              </div>
             </div>
-          </div>
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
