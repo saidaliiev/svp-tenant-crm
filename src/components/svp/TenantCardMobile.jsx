@@ -12,7 +12,9 @@ export default function TenantCardMobile({ tenant, index, onProfile, onSelect, o
     >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2 min-w-0">
-          <img src={tenant.avatarUrl || getRandomAvatar(tenant.id)} alt={tenant.fullName} className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm border border-gray-100 dark:border-gray-700" />
+          <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 shadow-sm border border-gray-100 dark:border-gray-700 relative">
+            <img src={tenant.avatarUrl || getRandomAvatar(tenant.id)} alt={tenant.fullName} className="w-full h-full object-cover scale-[1.35]" />
+          </div>
           <div>
             <span className="font-medium text-slate-800 dark:text-gray-200 text-sm block truncate">{tenant.fullName}</span>
             <span className="text-[10px] font-mono text-slate-400 dark:text-gray-500">

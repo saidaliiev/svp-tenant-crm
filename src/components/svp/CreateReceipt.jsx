@@ -550,7 +550,9 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
                       : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 bg-white dark:bg-gray-800'
                   }`}
                 >
-                  <img src={tenantAvatar} alt={t.fullName} className="w-10 h-10 rounded-full object-cover shrink-0 shadow-sm border border-gray-100 dark:border-gray-700" />
+                  <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 shadow-sm border border-gray-100 dark:border-gray-700 relative">
+                    <img src={tenantAvatar} alt={t.fullName} className="w-full h-full object-cover scale-[1.35]" />
+                  </div>
                   <div className="overflow-hidden">
                     <div className="font-medium text-slate-800 dark:text-gray-200 truncate">{t.fullName}</div>
                     {t.address && <div className="text-xs text-slate-500 dark:text-gray-500 truncate">{t.address}</div>}
@@ -565,7 +567,9 @@ export default function CreateReceipt({ tenants = [], statements, settings, sele
         {selectedTenant && (
             <div ref={tenantInfoRef} className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 rounded-xl p-4 border border-blue-100 dark:border-blue-800/40">
             <div className="flex items-start gap-3">
-              <img src={selectedTenant.avatarUrl || getRandomAvatar(selectedTenant.id)} alt={selectedTenant.fullName} className="w-10 h-10 rounded-full object-cover shadow-sm border border-white dark:border-gray-700" />
+              <div className="w-10 h-10 rounded-full overflow-hidden shadow-sm border border-white dark:border-gray-700 shrink-0 relative">
+                <img src={selectedTenant.avatarUrl || getRandomAvatar(selectedTenant.id)} alt={selectedTenant.fullName} className="w-full h-full object-cover scale-[1.35]" />
+              </div>
               <div>
                 <h3 className="font-semibold text-slate-800 dark:text-gray-100">{selectedTenant.fullName}</h3>
                 <p className="text-sm text-slate-600 dark:text-gray-400">{selectedTenant.address}</p>

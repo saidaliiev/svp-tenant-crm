@@ -49,11 +49,13 @@ export default function TenantProfile({ tenant, statements, isOpen, onClose }) {
         <div className="space-y-6">
           {/* Header with Avatar */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 p-6 rounded-2xl bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-950/20 dark:to-purple-950/20 border border-blue-100 dark:border-blue-900/30">
-            <img 
-              src={tenant.avatarUrl || getRandomAvatar(tenant.id)} 
-              alt={tenant.fullName} 
-              className="w-24 h-24 rounded-full object-cover shadow-xl shadow-blue-500/20 shrink-0 border-4 border-white dark:border-gray-800" 
-            />
+            <div className="w-24 h-24 rounded-full shadow-xl shadow-blue-500/20 shrink-0 border-4 border-white dark:border-gray-800 overflow-hidden relative">
+              <img 
+                src={tenant.avatarUrl || getRandomAvatar(tenant.id)} 
+                alt={tenant.fullName} 
+                className="w-full h-full object-cover scale-[1.35]" 
+              />
+            </div>
             <div className="flex-1 space-y-3 w-full">
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
                 <h2 className="text-3xl font-bold text-slate-800 dark:text-gray-100 tracking-tight">{tenant.fullName}</h2>

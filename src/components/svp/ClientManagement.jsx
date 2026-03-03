@@ -442,7 +442,9 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                     >
                       <td className="py-3 px-4 font-medium text-slate-800 dark:text-gray-200 text-sm whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <img src={tenant.avatarUrl || getRandomAvatar(tenant.id)} alt="" className="w-7 h-7 rounded-full object-cover shrink-0 shadow-sm" />
+                          <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 shadow-sm relative">
+                            <img src={tenant.avatarUrl || getRandomAvatar(tenant.id)} alt="" className="w-full h-full object-cover scale-[1.35]" />
+                          </div>
                           {tenant.fullName}
                         </div>
                       </td>
@@ -509,13 +511,17 @@ export default function ClientManagement({ tenants = [], tenantsLoading, stateme
                     <User className="w-5 h-5" />
                   </button>
                   {TENANT_AVATARS.map((url, idx) => (
-                    <img
+                    <div 
                       key={idx}
-                      src={url}
-                      alt={`Avatar ${idx}`}
                       onClick={() => setFormData(prev => ({ ...prev, avatarUrl: url }))}
-                      className={`w-12 h-12 rounded-full shrink-0 object-cover cursor-pointer border-2 transition-all hover:scale-105 ${formData.avatarUrl === url ? 'border-blue-500 shadow-md scale-105' : 'border-transparent'}`}
-                    />
+                      className={`w-12 h-12 rounded-full overflow-hidden shrink-0 cursor-pointer border-2 transition-all hover:scale-105 relative ${formData.avatarUrl === url ? 'border-blue-500 shadow-md scale-105' : 'border-transparent'}`}
+                    >
+                      <img
+                        src={url}
+                        alt={`Avatar ${idx}`}
+                        className="w-full h-full object-cover scale-[1.35]"
+                      />
+                    </div>
                   ))}
                 </div>
               </div>
